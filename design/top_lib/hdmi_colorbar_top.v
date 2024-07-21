@@ -40,6 +40,8 @@ wire  [10:0]  pixel_xpos_w;
 wire  [10:0]  pixel_ypos_w;
 wire  [23:0]  pixel_data_serial;
 wire  [23:0]  pixel_data_w;
+wire  [23:0]  pixel_data_dpc;
+
 
 wire          video_hs;
 wire          video_vs;
@@ -72,7 +74,9 @@ video_driver u_video_driver(
 
     .pixel_xpos     (pixel_xpos_w),
     .pixel_ypos     (pixel_ypos_w),
-    .pixel_data     (pixel_data_w)
+    //.pixel_data     (pixel_data_w)    // show raw img
+    .pixel_data     (pixel_data_dpc)    // show dpc img
+
     );
 
 //������Ƶ��ʾģ��
@@ -85,6 +89,19 @@ video_display  u_video_display(
     .pixel_data_serial(pixel_data_serial),
     .pixel_data     (pixel_data_w)
     );
+
+// DPC module
+dpc #(
+    .THRES      (30 ),
+    .DPC_MODE   (0  ),
+    .CLIP       (100),
+    .H          (720)
+) dpc_inst(
+    .clk            (pixel_clk          ),
+    .rstn           (sys_rst_n          ),
+    .pixel_data_in  (pixel_data_serial  ),
+    .pixel_data_out (pixel_data_dpc     )
+);
 
 //����HDMI����ģ��
 dvi_transmitter_top u_rgb2dvi_0(
