@@ -3,6 +3,7 @@ import numpy as np
 from PIL import Image
 import cv2
 from matplotlib import pyplot as plt
+from statistics import mean
 
 class WBGC:
     'Auto White Balance Gain Control'
@@ -26,14 +27,22 @@ class WBGC:
         raw_w = self.img.shape[1]
         awb_img = np.empty((raw_h, raw_w), np.uint16)
         if self.bayer_pattern == 'rggb':
-            r = self.img[::2, ::2] * r_gain
-            b = self.img[1::2, 1::2] * b_gain
-            gr = self.img[::2, 1::2] * gr_gain
-            gb = self.img[1::2, ::2] * gb_gain
-            awb_img[::2, ::2] = r
-            awb_img[::2, 1::2] = gr
-            awb_img[1::2, ::2] = gb
-            awb_img[1::2, 1::2] = b
+            r = self.img[::2, ::2] 
+            b = self.img[1::2, 1::2] 
+            gr = self.img[::2, 1::2] 
+            gb = self.img[1::2, ::2] 
+            r_avg = np.mean(r)
+            b_avg = np.mean(b)
+            g_avg = (np.mean(gr)+np.mean(gb))/2
+            k = (r_avg+b_avg+g_avg)/3
+            r_gain = k/r_avg
+            gr_gain = k/g_avg
+            gb_gain = k/g_avg
+            b_gain = k/b_avg
+            awb_img[::2, ::2] = r * r_gain
+            awb_img[::2, 1::2] = gr * b_gain
+            awb_img[1::2, ::2] = gb * gr_gain
+            awb_img[1::2, 1::2] = b * gb_gain
         elif self.bayer_pattern == 'bggr':
             b = self.img[::2, ::2] * b_gain
             r = self.img[1::2, 1::2] * r_gain
