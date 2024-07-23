@@ -32,7 +32,7 @@ class DPC:
         raw_w = self.img.shape[1]
         print(raw_h)
         print(raw_w)
-        dpc_img = np.empty((raw_h, raw_w), np.uint16)
+        dpc_img = np.empty((raw_h, raw_w), np.uint8)
         for y in range(img_pad.shape[0] - 4):
             for x in range(img_pad.shape[1] - 4):
                 p0 = img_pad[y + 2, x + 2]
@@ -74,36 +74,47 @@ class DPC:
 # 获取原始像素数据
 
 # 读取图像
-raw_data = cv2.imread('img.jpg',cv2.IMREAD_GRAYSCALE)
-#plt.imshow(raw_data)
+raw_data = cv2.imread('img.jpg')
+b, g, r = cv2.split(raw_data)
 #plt.show()
-# 获取原始像素数据
-#raw_data = img.tobytes()
-# 获取图像尺寸 (width, height)
-#width, height = img.size
-
-# 获取图像模式（颜色模式）
-#img_mode = img.mode
-#rawimg = np.fromfile('./img.jpg', dtype='uint16', sep='')
-#rawimg_b, rawimg_g , rawimg_r = cv2.split(raw_data)
-
 print(50*'-' + '\nLoading RAW Image Done......')
-# plt.imshow(rawimg, cmap='gray')
-# plt.show()
 
 # dead pixel correction
-dpc0 = DPC(raw_data, 10, 'mean', 1023)
-rawimg_dpc0 = dpc0.execute()
-dpc1 = DPC(raw_data, 100, 'mean', 1023)
-rawimg_dpc1 = dpc1.execute()
+# dpc0 = DPC(raw_data, 10, 'mean', 1023)
+# rawimg_dpc0 = dpc0.execute()
+# dpc1 = DPC(raw_data, 100, 'mean', 1023)
+# rawimg_dpc1 = dpc1.execute()
+thres = 10
+clip = 1023
+obj_b = DPC(b,thres,'mean',clip)
+obj_g = DPC(g,thres,'mean',clip)
+obj_r = DPC(r,thres,'mean',clip)
+dpc_b = obj_b.execute()
+dpc_g = obj_g.execute()
+dpc_r = obj_r.execute()
+
+dpc_data = cv2.merge([dpc_b, dpc_g, dpc_r])
 print(50*'-' + '\nDead Pixel Correction Done......')
 
+cv2.imwrite('img_dpc.jpg', dpc_data)
+
+## CV2(BGR) --> PLT(RGB)
+
+raw_data_rgb = cv2.cvtColor(raw_data, cv2.COLOR_BGR2RGB)
+dpc_b_rgb = cv2.cvtColor(dpc_b, cv2.COLOR_BGR2RGB)
+dpc_g_rgb = cv2.cvtColor(dpc_g, cv2.COLOR_BGR2RGB)
+dpc_r_rgb = cv2.cvtColor(dpc_r, cv2.COLOR_BGR2RGB)
+dpc_data_rgb = cv2.cvtColor(dpc_data, cv2.COLOR_BGR2RGB)
 
 plt.figure()
-plt.subplot(2,2,1)
-plt.imshow(raw_data,cmap='gray')
-plt.subplot(2,2,3)
-plt.imshow(rawimg_dpc0,cmap='gray')
-plt.subplot(2,2,4)
-plt.imshow(rawimg_dpc1,cmap='gray')
+plt.subplot(2,3,1)
+plt.imshow(raw_data_rgb)
+plt.subplot(2,3,4)
+plt.imshow(dpc_b_rgb)
+plt.subplot(2,3,5)
+plt.imshow(dpc_g_rgb)
+plt.subplot(2,3,6)
+plt.imshow(dpc_r_rgb)
+plt.subplot(2,3,3)
+plt.imshow(dpc_data_rgb)
 plt.show()
