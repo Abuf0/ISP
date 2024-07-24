@@ -27,28 +27,28 @@ logic [7:0] dpc_b;
 genvar i;
 generate
     for(i=0;i<4*H+4;i=i+1) begin: SFT_ARRAY
-        if(i=0) begin
+        if(i==0) begin
             always_ff @( posedge clk or negedge rstn ) begin
                 if(~rstn)
-                shift_reg[i] <= 'd0;
-            else if(dpc_en)
-                shift_reg[i] <= pixel_data_in;
+                    shift_reg[i] <= 'd0;
+                else if(dpc_en)
+                    shift_reg[i] <= pixel_data_in;
             end
         end
-        else if(i=2*H+2) begin  // replace dead pixel
+        else if(i==2*H+2) begin  // replace dead pixel
             always_ff @( posedge clk or negedge rstn ) begin
                 if(~rstn)
-                shift_reg[i] <= 'd0;
-            else if(dpc_en)
-                shift_reg[i] <= (pixel_data_dpc > CLIP)?    CLIP : pixel_data_dpc;  // clip
+                    shift_reg[i] <= 'd0;
+                else if(dpc_en)
+                    shift_reg[i] <= (pixel_data_dpc > CLIP)?    CLIP : pixel_data_dpc;  // clip
             end
         end
         else begin
             always_ff @( posedge clk or negedge rstn ) begin
                 if(~rstn)
-                shift_reg[i] <= 'd0;
-            else if(dpc_en)
-                shift_reg[i] <= shift_reg[i-1];
+                    shift_reg[i] <= 'd0;
+                else if(dpc_en)
+                    shift_reg[i] <= shift_reg[i-1];
             end
         end
         assign shift_r[i] = shift_reg[23:16][i];

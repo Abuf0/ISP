@@ -27,7 +27,12 @@ module  video_display(
     
     input        [10:0]  pixel_xpos,  //���ص������?
     input        [10:0]  pixel_ypos,  //���ص�������
-    output  reg  [23:0]  pixel_data_serial,
+    output  reg  [23:0]  pixel_data_load,
+    input        [23:0]  pixel_data_update,
+    input                rd_rst,
+    input                rd_en,
+    input                wt_rst,
+    input                wt_en,
     output  reg  [23:0]  pixel_data   //���ص�����
 );
 
@@ -69,21 +74,36 @@ always @(posedge pixel_clk ) begin
             pixel_data <= BLUE;
     end
 end
+// TODO
+reg [13:0] rd_addr;
+reg [13:0] wt_addr;
 
-reg [13:0] mem_addr;
 always@(posedge pixel_clk or negedge sys_rst_n) begin
     if(~sys_rst_n)
-        mem_addr <= 14'd0;
-    else
-        mem_addr <= (mem_addr==14'd9215)?   14'd0 : mem_addr+1'b1;
+        rd_addr <= 14'd0;
+    else if(rd_rst)
+        rd_addr <= 14'd0;
+    else if(rd_en)
+        rd_addr <= (rd_addr==14'd9215)?   14'd0 : rd_addr+1'b1;
 end
 
 always@(posedge pixel_clk or negedge sys_rst_n) begin
     if(~sys_rst_n)
-        pixel_data_serial <= 24'd0;
+        pixel_data_load <= 24'd0;
     else 
-        pixel_data_serial <= mem[mem_addr];
+        pixel_data_load <= mem[rd_addr];
 end
 
-
+always@(posedge pixel_clk) begin
+    if(wt_en)   
+        mem[wt_addr] <= pixel_data_update;
+end
+always@(posedge pixel_clk or negedge sys_rst_n) begin
+    if(~sys_rst_n)
+        wt_addr <= 14'd0;
+    else if(wt_rst)
+        wt_addr <= 14'd0;
+    else if(wt_en)
+        wt_addr <= (wt_addr==14'd9215)?   14'd0 : wt_addr+1'b1;
+end
 endmodule
