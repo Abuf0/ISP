@@ -44,11 +44,13 @@ class DPC:
                 p6 = img_pad[y + 4, x]
                 p7 = img_pad[y + 4, x + 2]
                 p8 = img_pad[y + 4, x + 4]
-                arr = np.array([(abs(p1 - p0) > self.thres),(abs(p2 - p0) > self.thres),(abs(p3 - p0) > self.thres),(abs(p4 - p0) > self.thres),(abs(p5 - p0) > self.thres),(abs(p6 - p0) > self.thres),(abs(p7 - p0) > self.thres),(abs(p8 - p0) > self.thres)])
+                arr_p = np.array([((p1 - p0) > self.thres),((p2 - p0) > self.thres),((p3 - p0) > self.thres),((p4 - p0) > self.thres),((p5 - p0) > self.thres),((p6 - p0) > self.thres),((p7 - p0) > self.thres),((p8 - p0) > self.thres)])
+                arr_n = np.array([(-(p1 - p0) > self.thres),(-(p2 - p0) > self.thres),(-(p3 - p0) > self.thres),(-(p4 - p0) > self.thres),(-(p5 - p0) > self.thres),(-(p6 - p0) > self.thres),(-(p7 - p0) > self.thres),(-(p8 - p0) > self.thres)])
+
                 #if (abs(p1 - p0) > self.thres) and (abs(p2 - p0) > self.thres) and (abs(p3 - p0) > self.thres) \
                 #        and (abs(p4 - p0) > self.thres) and (abs(p5 - p0) > self.thres) and (abs(p6 - p0) > self.thres) \
                 #        and (abs(p7 - p0) > self.thres) and (abs(p8 - p0) > self.thres):
-                if(arr.all()):
+                if(arr_p.all() or arr_n.all()):
                     #print("go")
                     if self.mode == 'mean':
                         p0 = (p2 + p4 + p5 + p7) / 4
@@ -80,7 +82,7 @@ raw_data = cv2.imread('bayer_img.jpg',cv2.IMREAD_UNCHANGED)
 print(50*'-' + '\nLoading RAW Image Done......')
 
 # dead pixel correction
-thres = 50
+thres = 180
 clip = 1000
 # obj_b = DPC(b,thres,'mean',clip)
 # obj_g = DPC(g,thres,'mean',clip)
