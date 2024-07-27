@@ -3,7 +3,7 @@ module dpc#(
     parameter THRES = 30        ,
     parameter DPC_MODE = 0      , // 0: mean  1: gradient
     parameter CLIP = 100        ,
-    parameter H = 720  
+    parameter H = 1280  
 )(
     input               clk             ,
     input               rstn            ,

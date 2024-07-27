@@ -75,8 +75,8 @@ class WBGC:
     
 # 读取图像
 parameter = [1,1,1,1]
-raw_data = cv2.imread('bayer_img_blc.jpg',cv2.IMREAD_UNCHANGED)
-obj = WBGC(raw_data,parameter,'rggb',1000)
+raw_data = cv2.imread('bayer_img_aaf.jpg',cv2.IMREAD_UNCHANGED)
+obj = WBGC(raw_data,parameter,'rggb',1000)  
 awb_data_bayer = obj.execute()
 cv2.imwrite('bayer_img_awb.jpg', awb_data_bayer)
 awb_data_rgb = cv2.cvtColor(awb_data_bayer, cv2.COLOR_BayerRGGB2BGR)
