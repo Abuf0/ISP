@@ -15,7 +15,7 @@ module aaf#(
     output logic            aaf_done        
 );
 // 原方案：padding时停顿，shift入0；舍弃原因：串行输入是连续的
-logic [DW-1:0] shift_reg[0:4*H+4-1];
+logic [DW-1:0] shift_reg[0:4*H+4];
 logic [DW-1:0] mac_arr[0:8];
 logic [DW-1:0] pixel_data_out_tmp;
 logic [HW-1:0] h_cnt;
@@ -24,7 +24,7 @@ logic flag;
 genvar i;
 generate 
     for(i=0;i<4*H+4;i=i+1) begin: SFT_REG
-        if(i==0) begin:
+        if(i==0) begin
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
                     shift_reg[i] <= 'd0;
@@ -32,7 +32,7 @@ generate
                     shift_reg[i] <= pixel_data_in;
             end
         end
-        else begin:
+        else begin
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
                     shift_reg[i] <= 'd0;
@@ -82,7 +82,7 @@ always_ff@(posedge clk or negedge rstn) begin
         else if(v_cnt > 'd2 && pixel_data_in_vld)
             pixel_data_out_vld <= 1'b1;
         else 
-            pixel_data_in_vld <= 1'b0;
+            pixel_data_out_vld <= 1'b0;
     end
     else if(flag) begin
         if(v_cnt == 'd2 && h_cnt > 'd2)
