@@ -91,6 +91,9 @@ always_ff@(posedge clk or negedge rstn) begin
             pixel_data_out_vld <= 1'b1;
     end
 end
+
+assign pixel_data_out = pixel_data_out_tmp;
+
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         aaf_done <= 1'b0;
