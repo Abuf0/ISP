@@ -7,14 +7,14 @@ module cnf#(
 )(
     input                   clk                   ,
     input                   rstn                  ,
-    input                   aaf_en                ,
+    input                   cnf_en                ,
     input        [DW-1:0]   thres                 ,
     input        [2:0]      bayer_pattern         ,  
     input        [DW-1:0]   pixel_data_in         ,
     input                   pixel_data_in_vld     ,
     output logic [DW-1:0]   pixel_data_out        ,
     output logic            pixel_data_out_vld    ,
-    output logic            aaf_done        
+    output logic            cnf_done        
 );
 // 原方案：padding时停顿，shift入0；舍弃原因：串行输入是连续的
 logic [DW-1:0] shift_reg[0:8*H+8];
@@ -64,7 +64,7 @@ generate
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
                     shift_reg[i] <= 'd0;
-                else if(aaf_en && pixel_data_in_vld) 
+                else if(cnf_en && pixel_data_in_vld) 
                     shift_reg[i] <= pixel_data_in;
             end
         end
@@ -72,7 +72,7 @@ generate
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
                     shift_reg[i] <= 'd0;
-                else if(aaf_en && pixel_data_in_vld)
+                else if(cnf_en && pixel_data_in_vld)
                     shift_reg[i] <= shift_reg[i-1];
             end
         end
@@ -268,19 +268,19 @@ assign pixel_data_out_tmp = (bayer_arr[bayer_index]==R || bayer_arr[bayer_index]
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         h_cnt <= 'd0;
-    else if(aaf_en && (pixel_data_in_vld || flag))
+    else if(cnf_en && (pixel_data_in_vld || flag))
         h_cnt <= (h_cnt==H-1)?  'd0:(h_cnt+1'b1);
 end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         v_cnt <= 'd0;
-    else if(aaf_en && (pixel_data_in_vld || flag) && h_cnt==H-1)
+    else if(cnf_en && (pixel_data_in_vld || flag) && h_cnt==H-1)
         v_cnt <= (v_cnt==V-1)?  'd0:(v_cnt+1'b1);
 end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         flag <= 1'b0;
-    else if(aaf_en && v_cnt==V-1 && h_cnt==H-1)
+    else if(cnf_en && v_cnt==V-1 && h_cnt==H-1)
         flag <= 1'b1;
 end
 
@@ -288,15 +288,15 @@ always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         pixel_data_out_vld <= 1'b0;
     else if(~flag) begin
-        if(v_cnt == 'd2 && h_cnt >= 'd2 && pixel_data_in_vld)  
+        if(v_cnt == 'd4 && h_cnt >= 'd4 && pixel_data_in_vld)  
             pixel_data_out_vld <= 1'b1;
-        else if(v_cnt > 'd2 && pixel_data_in_vld)
+        else if(v_cnt > 'd4 && pixel_data_in_vld)
             pixel_data_out_vld <= 1'b1;
         else 
             pixel_data_out_vld <= 1'b0;
     end
     else if(flag) begin
-        if(v_cnt == 'd2 && h_cnt > 'd2)
+        if(v_cnt == 'd4 && h_cnt > 'd4)
             pixel_data_out_vld <= 1'b0;
         else 
             pixel_data_out_vld <= 1'b1;
@@ -307,11 +307,11 @@ assign pixel_data_out = pixel_data_out_tmp;
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
-        aaf_done <= 1'b0;
-    else if(aaf_en && v_cnt==V-1 && h_cnt==H-1 && flag && ~aaf_done)
-        aaf_done <= 1'b1;
-    else if(aaf_done)
-        aaf_done <= 1'b0;
+        cnf_done <= 1'b0;
+    else if(cnf_en && v_cnt==V-1 && h_cnt==H-1 && flag && ~cnf_done)
+        cnf_done <= 1'b1;
+    else if(cnf_done)
+        cnf_done <= 1'b0;
 end
 
 endmodule
