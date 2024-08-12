@@ -9,6 +9,7 @@ module cnf#(
     input                   rstn                  ,
     input                   cnf_en                ,
     input        [DW-1:0]   thres                 ,
+    input        [DW-1:0]   cnf_clip              ,
     input        [2:0]      bayer_pattern         ,  
     input        [DW-1:0]   pixel_data_in         ,
     input                   pixel_data_in_vld     ,
@@ -303,7 +304,7 @@ always_ff@(posedge clk or negedge rstn) begin
     end
 end
 
-assign pixel_data_out = pixel_data_out_tmp;
+assign pixel_data_out = (pixel_data_out_tmp > cnf_clip)?    cnf_clip : pixel_data_out_tmp;
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
