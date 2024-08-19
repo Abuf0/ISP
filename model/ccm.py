@@ -21,7 +21,7 @@ class CCM:
                 ccm_img[y,x,1] = np.sum(mulval[1]) + self.ccm[1,3]
                 ccm_img[y,x,2] = np.sum(mulval[2]) + self.ccm[2,3]
                 ccm_img[y,x,:] = ccm_img[y,x,:] / 1024
-        self.img = ccm_img.astype(np.uint8)
+        self.img = ccm_img.astype(np.uint16)
         return self.img
 
 ccm = np.zeros((3,4))  
