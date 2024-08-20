@@ -20,13 +20,13 @@ class GC:
                 gc_img[y,x,0] = self.lut[self.img[y,x,0]]
                 gc_img[y,x,1] = self.lut[self.img[y,x,1]]
                 gc_img[y,x,2] = self.lut[self.img[y,x,2]]
-                gc_img[y,x,:] = gc_img[y,x,:]/4
+                gc_img[y,x,:] = gc_img[y,x,:]
                 #print(gc_img[y,x,:])
         self.img = gc_img
         return self.img
 
 gamma = 1/2.2
-bw = 10
+bw = 8
 maxval = pow(2,bw)
 ind = range(0,maxval)
 val = [round(pow(float(i)/maxval,gamma)*maxval) for i in ind]
