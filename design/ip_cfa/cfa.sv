@@ -76,11 +76,11 @@ generate
         assign mac_arr[j*5+4] = (v_cnt > (1-j) && h_cnt < H-2)? shift_reg[j*H+4]            : 'd0 ;       
     end 
     for(j=2;j<5;j=j+1) begin
-        assign mac_arr[j*5+0] = (v_cnt < (H+2-j) && h_cnt > 'd1)? shift_reg[j*H+0]            : 'd0 ;
-        assign mac_arr[j*5+1] = (v_cnt < (H+2-j) && h_cnt > 'd0)? shift_reg[j*H+1]            : 'd0 ;
-        assign mac_arr[j*5+2] = (v_cnt < (H+2-j)               )? shift_reg[j*H+2]            : 'd0 ;
-        assign mac_arr[j*5+3] = (v_cnt < (H+2-j) && h_cnt < H-1)? shift_reg[j*H+3]            : 'd0 ;
-        assign mac_arr[j*5+4] = (v_cnt < (H+2-j) && h_cnt < H-2)? shift_reg[j*H+4]            : 'd0 ; 
+        assign mac_arr[j*5+0] = (v_cnt < (V+2-j) && h_cnt > 'd1)? shift_reg[j*H+0]            : 'd0 ;
+        assign mac_arr[j*5+1] = (v_cnt < (V+2-j) && h_cnt > 'd0)? shift_reg[j*H+1]            : 'd0 ;
+        assign mac_arr[j*5+2] = (v_cnt < (V+2-j)               )? shift_reg[j*H+2]            : 'd0 ;
+        assign mac_arr[j*5+3] = (v_cnt < (V+2-j) && h_cnt < H-1)? shift_reg[j*H+3]            : 'd0 ;
+        assign mac_arr[j*5+4] = (v_cnt < (V+2-j) && h_cnt < H-2)? shift_reg[j*H+4]            : 'd0 ; 
     end
 endgenerate
 
