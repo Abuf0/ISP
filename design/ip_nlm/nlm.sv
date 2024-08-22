@@ -63,7 +63,7 @@ genvar y;
 generate 
     for(x=0;x<DS*2+1;x=x+1) begin
         for(y=0;y<DS*2+1;y=y+1) begin
-            array[x][y] = ( (v_cnt < (DS-x)) || (v_cnt > V+DS-x) || (h_cnt < (DS-y)) || (h_cnt > (H+DS-y)))?   shift_reg[x*H+y]    : 'd0;
+            assign array[x][y] = ( (v_cnt < (DS-x)) || (v_cnt > V+DS-x) || (h_cnt < (DS-y)) || (h_cnt > (H+DS-y)))?   shift_reg[x*H+y]    : 'd0;
         end 
     end
 endgenerate
