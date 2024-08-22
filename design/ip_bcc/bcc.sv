@@ -18,14 +18,6 @@ module bcc#(
     output logic            bcc_done        
 );
 
-logic [DW-1:0]   pixel_data_r;          
-logic [DW-1:0]   pixel_data_g;          
-logic [DW-1:0]   pixel_data_b;  
-
-logic [DW+DW+2-1:0] pixel_data_out_r_tmp;
-logic [DW+DW+2-1:0] pixel_data_out_g_tmp;
-logic [DW+DW+2-1:0] pixel_data_out_b_tmp;
-
 logic [HW-1:0] h_cnt; 
 logic [VW-1:0] v_cnt; 
 
