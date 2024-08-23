@@ -5,17 +5,17 @@ module cfa#(
     parameter HW = 11   ,
     parameter VW = 10
 )(
-    input                   clk                   ,
-    input                   rstn                  ,
-    input                   cfa_en                ,
-    input        [2:0]      bayer_pattern         ,  
-    input        [DW-1:0]   pixel_data_in         ,
-    input                   pixel_data_in_vld     ,
-    output logic [DW-1:0]   pixel_data_out_r      ,
-    output logic [DW-1:0]   pixel_data_out_g      ,
-    output logic [DW-1:0]   pixel_data_out_b      ,
-    output logic            pixel_data_out_vld    ,
-    output logic            cfa_done        
+    input                       clk                   ,
+    input                       rstn                  ,
+    input                       cfa_en                ,
+    input        [2:0]          bayer_pattern         ,  
+    input        [DW-1:0]       pixel_data_in         ,
+    input                       pixel_data_in_vld     ,
+    output logic [(DW-1)/3:0]   pixel_data_out_r      ,
+    output logic [(DW-1)/3:0]   pixel_data_out_g      ,
+    output logic [(DW-1)/3:0]   pixel_data_out_b      ,
+    output logic                pixel_data_out_vld    ,
+    output logic                cfa_done        
 );
 // 原方案：padding时停顿，shift入0；舍弃原因：串行输入是连续的
 logic [DW-1:0] shift_reg[0:4*H+4];

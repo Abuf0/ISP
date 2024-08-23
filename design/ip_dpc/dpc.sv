@@ -5,11 +5,13 @@ module dpc#(
     parameter CLIP = 100        ,
     parameter H = 1280  
 )(
-    input               clk             ,
-    input               rstn            ,
-    input               dpc_en          ,
-    input        [23:0] pixel_data_in   ,
-    output logic [23:0] pixel_data_out
+    input               clk                 ,
+    input               rstn                ,
+    input               dpc_en              ,
+    input               pixel_data_in_vld   ,
+    input        [23:0] pixel_data_in       ,
+    output logic [23:0] pixel_data_out      ,
+    output logic        pixel_data_out_vld
 );
 logic [23:0] shift_reg [0:4*H+4-1];
 logic [7:0] shift_r [0:4*H+4-1];
@@ -19,6 +21,8 @@ logic correct_flag_r;
 logic correct_flag_g;
 logic correct_flag_b;
 logic [23:0] pixel_data_dpc;
+logic [23:0] pixel_data_out_pre;
+logic pixel_data_in_vld_ff1;
 logic [7:0] dpc_r;
 logic [7:0] dpc_g;
 logic [7:0] dpc_b;
@@ -31,7 +35,7 @@ generate
             always_ff @( posedge clk or negedge rstn ) begin
                 if(~rstn)
                     shift_reg[i] <= 'd0;
-                else if(dpc_en)
+                else if(dpc_en && pixel_data_in_vld)
                     shift_reg[i] <= pixel_data_in;
             end
         end
@@ -39,13 +43,13 @@ generate
             always_ff @( posedge clk or negedge rstn ) begin
                 if(~rstn)
                     shift_reg[i] <= 'd0;
-                else if(dpc_en)
+                else if(dpc_en && pixel_data_in_vld)
                     shift_reg[i] <= (pixel_data_dpc > CLIP)?    CLIP : pixel_data_dpc;  // clip
             end
         end
         else begin
             always_ff @( posedge clk or negedge rstn ) begin
-                if(~rstn)
+                if(~rstn && pixel_data_in_vld)
                     shift_reg[i] <= 'd0;
                 else if(dpc_en)
                     shift_reg[i] <= shift_reg[i-1];
@@ -57,7 +61,32 @@ generate
     end
 endgenerate
 
-assign pixel_data_out = shift_reg[4*H+3];
+assign pixel_data_out_pre = shift_reg[4*H+3];
+
+always_ff@(posedge clk or negedge rstn) begin
+    if(~rstn)
+        pixel_data_out <= 'd0;
+    else if(dpc_en)
+        pixel_data_out <= pixel_data_out_pre;
+    else 
+        pixel_data_out <= pixel_data_in;
+end
+
+always_ff@(posedge clk or negedge rstn) begin
+    if(~rstn)
+        pixel_data_out_vld <= 1'b0;
+    else if(dpc_en)
+        pixel_data_out_vld <= pixel_data_in_vld_ff1;
+    else 
+        pixel_data_out_vld <= pixel_data_in_vld;
+end
+
+always_ff@(posedge clk or negedge rstn) begin
+    if(~rstn)
+        pixel_data_in_vld_ff1 <= 1'b0;
+    else if(dpc_en)
+        pixel_data_in_vld_ff1 <= pixel_data_in_vld;
+end
 
 assign correct_flag_r = dpc_en?  (abs(shift_r[0]-shift_r[2*H+1]    ) > THRES && abs(shift_r[2]-shift_r[2*H+1]    ) > THRES && abs(shift_r[4]-shift_r[2*H+1]) > THRES &&
                                  abs(shift_r[2*H-1]-shift_r[2*H+1]) > THRES && abs(shift_r[2*H+3]-shift_r[2*H+1]) > THRES &&

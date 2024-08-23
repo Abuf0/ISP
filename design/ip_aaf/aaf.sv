@@ -17,7 +17,8 @@ module aaf#(
 // 原方案：padding时停顿，shift入0；舍弃原因：串行输入是连续的
 logic [DW-1:0] shift_reg[0:4*H+4];
 logic [DW-1:0] mac_arr[0:8];
-logic [DW-1:0] pixel_data_out_tmp;
+logic [DW-1:0] pixel_data_out_pre;
+logic pixel_data_out_vld_pre;
 logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt;
 logic flag;
@@ -52,7 +53,7 @@ assign mac_arr[6] = (v_cnt < V-2 && h_cnt > 'd1)? shift_reg[4*H]          : 'd0 
 assign mac_arr[7] = (v_cnt < V-2)?                shift_reg[4*H+2]        : 'd0 ;
 assign mac_arr[8] = (v_cnt < V-2 && h_cnt < H-2)? shift_reg[4*H+4]        : 'd0 ;
 
-assign pixel_data_out_tmp = (mac_arr[0]+mac_arr[1]+mac_arr[2]+mac_arr[3]+(mac_arr[4] << 3)+mac_arr[5]+mac_arr[6]+mac_arr[7]+mac_arr[8]) >> 4 ;
+assign pixel_data_out_pre = (mac_arr[0]+mac_arr[1]+mac_arr[2]+mac_arr[3]+(mac_arr[4] << 3)+mac_arr[5]+mac_arr[6]+mac_arr[7]+mac_arr[8]) >> 4 ;
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
@@ -75,24 +76,40 @@ end
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
-        pixel_data_out_vld <= 1'b0;
+        pixel_data_out_vld_pre <= 1'b0;
     else if(~flag) begin
         if(v_cnt == 'd2 && h_cnt >= 'd2 && pixel_data_in_vld)  
-            pixel_data_out_vld <= 1'b1;
+            pixel_data_out_vld_pre <= 1'b1;
         else if(v_cnt > 'd2 && pixel_data_in_vld)
-            pixel_data_out_vld <= 1'b1;
+            pixel_data_out_vld_pre <= 1'b1;
         else 
-            pixel_data_out_vld <= 1'b0;
+            pixel_data_out_vld_pre <= 1'b0;
     end
     else if(flag) begin
         if(v_cnt == 'd2 && h_cnt > 'd2)
-            pixel_data_out_vld <= 1'b0;
+            pixel_data_out_vld_pre <= 1'b0;
         else 
-            pixel_data_out_vld <= 1'b1;
+            pixel_data_out_vld_pre <= 1'b1;
     end
 end
 
-assign pixel_data_out = pixel_data_out_tmp;
+always_ff@(posedge clk or negedge rstn) begin
+    if(~rstn)
+        pixel_data_out_vld <= 1'b0;
+    else if(aaf_en)
+        pixel_data_out_vld <= pixel_data_out_vld_pre;
+    else
+        pixel_data_out_vld <= pixel_data_in_vld;
+end
+
+always_ff@(posedge clk or negedge rstn) begin
+    if(~rstn)
+        pixel_data_out <= 'd0;
+    else if(aaf_en)
+        pixel_data_out <= pixel_data_out_pre;
+    else
+        pixel_data_out <= pixel_data_in;
+end
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)

@@ -14,7 +14,7 @@ module cnf#(
     input        [DW-1:0]   pixel_data_in         ,
     input                   pixel_data_in_vld     ,
     output logic [DW-1:0]   pixel_data_out        ,
-    output logic            pixel_data_out_vld    ,
+    output logic            pixel_data_out_vld_pre    ,
     output logic            cnf_done        
 );
 // 原方案：padding时停顿，shift入0；舍弃原因：串行输入是连续的
@@ -53,7 +53,8 @@ logic [DW-1:0] fadetot;
 logic [DW-1:0] center_out;
 
 // ********************************
-logic [DW-1:0] pixel_data_out_tmp;
+logic [DW-1:0] pixel_data_out_pre;
+logic pixel_data_out_vld_pre_pre;
 logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt;
 logic flag;
@@ -254,7 +255,7 @@ end
 assign fadetot = fade1 * fade2;
 assign center_out = (1-fadetot)*center + fadetot * chroma_corr;
 
-assign pixel_data_out_tmp = (bayer_arr[bayer_index]==R || bayer_arr[bayer_index]==B) && is_noise?   center_out : center;
+assign pixel_data_out_pre = (bayer_arr[bayer_index]==R || bayer_arr[bayer_index]==B) && is_noise?   center_out : center;
 //assign mac_arr[1] = (v_cnt > 'd1)?                shift_reg[2]            : 'd0 ;
 //assign mac_arr[2] = (v_cnt > 'd1 && h_cnt < H-2)? shift_reg[4]            : 'd0 ;
 //assign mac_arr[3] = (h_cnt > 'd1)?                shift_reg[2*H]          : 'd0 ;
@@ -264,7 +265,7 @@ assign pixel_data_out_tmp = (bayer_arr[bayer_index]==R || bayer_arr[bayer_index]
 //assign mac_arr[7] = (v_cnt < V-2)?                shift_reg[4*H+2]        : 'd0 ;
 //assign mac_arr[8] = (v_cnt < V-2 && h_cnt < H-2)? shift_reg[4*H+4]        : 'd0 ;
 
-//assign pixel_data_out_tmp = (mac_arr[0]+mac_arr[1]+mac_arr[2]+mac_arr[3]+(mac_arr[4] << 3)+mac_arr[5]+mac_arr[6]+mac_arr[7]+mac_arr[8]) >> 4 ;
+//assign pixel_data_out_pre = (mac_arr[0]+mac_arr[1]+mac_arr[2]+mac_arr[3]+(mac_arr[4] << 3)+mac_arr[5]+mac_arr[6]+mac_arr[7]+mac_arr[8]) >> 4 ;
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
@@ -287,24 +288,40 @@ end
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
-        pixel_data_out_vld <= 1'b0;
+        pixel_data_out_vld_pre <= 1'b0;
     else if(~flag) begin
         if(v_cnt == 'd4 && h_cnt >= 'd4 && pixel_data_in_vld)  
-            pixel_data_out_vld <= 1'b1;
+            pixel_data_out_vld_pre <= 1'b1;
         else if(v_cnt > 'd4 && pixel_data_in_vld)
-            pixel_data_out_vld <= 1'b1;
+            pixel_data_out_vld_pre <= 1'b1;
         else 
-            pixel_data_out_vld <= 1'b0;
+            pixel_data_out_vld_pre <= 1'b0;
     end
     else if(flag) begin
         if(v_cnt == 'd4 && h_cnt > 'd4)
-            pixel_data_out_vld <= 1'b0;
+            pixel_data_out_vld_pre <= 1'b0;
         else 
-            pixel_data_out_vld <= 1'b1;
+            pixel_data_out_vld_pre <= 1'b1;
     end
 end
 
-assign pixel_data_out = (pixel_data_out_tmp > cnf_clip)?    cnf_clip : pixel_data_out_tmp;
+always_ff@(posedge clk or negedge rstn) begin
+    if(~rstn)
+        pixel_data_out_vld <= 1'b0;
+    else if(cnf_en)
+        pixel_data_out_vld <= pixel_data_out_vld_pre;
+    else 
+        pixel_data_out_vld <= pixel_data_in_vld;
+end
+
+always_ff@(posedge clk or negedge rstn) begin
+    if(~rstn)
+        pixel_data_out <= 'd0;
+    else if(cnf_en)
+        pixel_data_out <= (pixel_data_out_pre > cnf_clip)?    cnf_clip : pixel_data_out_pre;
+    else 
+        pixel_data_out <= pixel_data_in;
+end
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
