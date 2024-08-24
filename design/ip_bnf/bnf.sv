@@ -117,6 +117,8 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_out <= 'd0;
     else if(bnf_en)
         pixel_data_out <= (pixel_data_out_pre > bnf_clip)?  bnf_clip : pixel_data_out_pre;
+    else
+        pixel_data_out <= pixel_data_in;
 end
 
 always_ff@(posedge clk or negedge rstn) begin
@@ -124,6 +126,8 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_out_vld <= 'd0;
     else if(bnf_en)
         pixel_data_out_vld <= pixel_data_out_vld_pre;
+    else
+        pixel_data_out_vld <= pixel_data_in_vld;
 end
 
 always_ff@(posedge clk or negedge rstn) begin

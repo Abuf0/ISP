@@ -64,18 +64,25 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_out_cr <= 'd0 ;
         pixel_data_out_cb <= 'd0 ;
     end
-    else if(pixel_data_out_vld_pre) begin
+    else if(fcs_en && pixel_data_out_vld_pre) begin
         pixel_data_out_y  <= pixel_data_out_pre[0] ;
         pixel_data_out_cr <= pixel_data_out_pre[1] ;
         pixel_data_out_cb <= pixel_data_out_pre[2] ;
+    end
+    else if(~fcs_en && pixel_data_in_vld) begin
+        pixel_data_out_y  <= buffer_data_in_ccs_y ;
+        pixel_data_out_cr <= buffer_data_in_ccs_cr;
+        pixel_data_out_cb <= buffer_data_in_ccs_cb;
     end
 end
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         {pixel_data_out_vld_pre,pixel_data_out_vld} <= 2'd0;
-    else
+    else if(fcs_en)
         {pixel_data_out_vld_pre,pixel_data_out_vld} <= {pixel_data_in_vld,pixel_data_out_vld_pre};
+    else 
+        {pixel_data_out_vld_pre,pixel_data_out_vld} <= {pixel_data_in_vld,pixel_data_in_vld};
 end
 
 always_ff@(posedge clk or negedge rstn) begin

@@ -97,11 +97,16 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_out_g <= flag?   lut_1[pixel_data_in_g] : lut_0[pixel_data_in_g];
         pixel_data_out_b <= flag?   lut_1[pixel_data_in_b] : lut_0[pixel_data_in_b];
     end
+    else if(~gac_en && pixel_data_in_vld) begin
+        pixel_data_out_r <= pixel_data_in_r;
+        pixel_data_out_g <= pixel_data_in_g;
+        pixel_data_out_b <= pixel_data_in_b;
+    end
 end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         pixel_data_out_vld <= 1'b0;
-    else if(gac_en)
+    else
         pixel_data_out_vld <= pixel_data_in_vld;
 end
 

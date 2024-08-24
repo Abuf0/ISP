@@ -40,7 +40,7 @@ logic flag;
 
 genvar i;
 generate 
-    for(i=0;i<5*H+5;i=i+1) begin: SFT_REG
+    for(i=0;i<3*H+5;i=i+1) begin: SFT_REG
         if(i==0) begin
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
@@ -66,7 +66,7 @@ generate
     for(x=0;x<3;x=x+1) begin
         for(y=0;y<5;y=y+1) begin    // pad((1,1),(2,2))
             assign array[x][y] = ( (v_cnt < (1-x)) || (v_cnt > V+1-x) || (h_cnt < (2-y)) || (h_cnt > (H+2-y)))?   shift_reg[x*H+y]    : 'd0;
-            assign ee_img_wght[x][y] = edge_filter[1]?  -array[x][y] : array[x][y];
+            assign em_img_wght[x][y] = edge_filter[1]?  -array[x][y] : array[x][y];
         end 
     end
 endgenerate
@@ -117,6 +117,8 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_out_ee <= 'd0;
     else if(eeh_en)
         pixel_data_out_ee <= pixel_data_out_ee_pre;
+    else
+        pixel_data_out_ee <= pixel_data_in;
 end
 
 always_ff@(posedge clk or negedge rstn) begin
@@ -124,6 +126,8 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_out_em <= 'd0;
     else if(eeh_en)
         pixel_data_out_em <= pixel_data_out_em_pre;
+    else
+        pixel_data_out_em <= pixel_data_in;
 end
 
 always_ff@(posedge clk or negedge rstn) begin
@@ -131,6 +135,8 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_out_vld <= 'd0;
     else if(eeh_en)
         pixel_data_out_vld <= pixel_data_out_vld_pre;
+    else 
+        pixel_data_out_vld <= pixel_data_in_vld;
 end
 
 always_ff@(posedge clk or negedge rstn) begin

@@ -72,8 +72,10 @@ end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         {pixel_data_out_vld_pre,pixel_data_out_vld} <= 2'd0;
-    else
+    else if(csc_en)
         {pixel_data_out_vld_pre,pixel_data_out_vld} <= {pixel_data_in_vld,pixel_data_out_vld_pre};
+    else
+        {pixel_data_out_vld_pre,pixel_data_out_vld} <= {pixel_data_in_vld,pixel_data_in_vld};
 end
 
 always_ff@(posedge clk or negedge rstn) begin

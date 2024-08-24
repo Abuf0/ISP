@@ -34,7 +34,6 @@ logic flag;
 logic [DW-1:0] pixel_data_out_pre;
 logic [DW-1:0] pixel_average;
 logic [DW-1:0] pixel_wsum;
-logic [DW-1:0] pixel_data_out_pre;
 
 genvar i;
 generate 
@@ -129,8 +128,10 @@ assign pixel_data_out_pre = pixel_average / pixel_wsum;
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         pixel_data_out <= 'd0;
-    else  if(calout_vld_ff1)
+    else  if(nlm_en && calout_vld_ff1)
         pixel_data_out <= pixel_data_out_pre;
+    else if(~nlm_en && pixel_data_in_vld)
+        pixel_data_out <= pixel_data_in;
 end
 
 always_ff@(posedge clk or negedge rstn) begin
@@ -138,6 +139,8 @@ always_ff@(posedge clk or negedge rstn) begin
         {pixel_data_out_vld, calout_vld_ff1} <= 2'd0;
     else if(nlm_en)
         {pixel_data_out_vld, calout_vld_ff1} <= {calout_vld_ff1,calout_vld};
+    else 
+        {pixel_data_out_vld, calout_vld_ff1} <= {pixel_data_in_vld,1'b0};
 end
 
 always_ff@(posedge clk or negedge rstn) begin
