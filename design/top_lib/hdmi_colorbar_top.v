@@ -22,11 +22,12 @@
 //****************************************************************************************//
 
 module  hdmi_colorbar_top(
-    input        sys_clk,
-    input        sys_rst_n, 
-    output       tmds_clk_p,    // TMDS ʱ��ͨ��
-    output       tmds_clk_n,
-    output [2:0] tmds_data_p,   // TMDS ����ͨ��
+    input        sys_clk        ,
+    input        sys_rst_n      , 
+    input  [15:0]isp_enable     ,
+    output       tmds_clk_p     ,    // TMDS ʱ��ͨ��
+    output       tmds_clk_n     ,
+    output [2:0] tmds_data_p    ,   // TMDS ����ͨ��
     output [2:0] tmds_data_n
    
 );
@@ -75,7 +76,7 @@ parameter FCS = 12  ;
 parameter HSC = 13  ;
 parameter BBC = 14  ;
 
-assign isp_enable = 16'h0000;
+//assign isp_enable = 16'h0000;
 //*****************************************************
 //**                    main code
 //*****************************************************

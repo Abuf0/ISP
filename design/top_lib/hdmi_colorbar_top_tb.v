@@ -8,6 +8,8 @@ parameter PERIOD  = 10;
 reg   sys_clk                              = 0 ;
 reg   sys_rst_n                            = 0 ;
 
+reg [15:0] isp_enable = 16'h0;
+
 // hdmi_colorbar_top Outputs
 wire  tmds_clk_p                           ;
 wire  tmds_clk_n                           ;
@@ -20,23 +22,20 @@ begin
     forever #(PERIOD/2)  sys_clk=~sys_clk;
 end
 
-initial
-begin
-    #(PERIOD*2) sys_rst_n  =  1;
-end
-
 hdmi_colorbar_top  u_hdmi_colorbar_top (
     .sys_clk                 ( sys_clk            ),
     .sys_rst_n               ( sys_rst_n          ),
-
+    .isp_enable              ( isp_enable         ),
     .tmds_clk_p              ( tmds_clk_p         ),
     .tmds_clk_n              ( tmds_clk_n         ),
-    .tmds_data_p             ( tmds_data_p   ),
-    .tmds_data_n             ( tmds_data_n   )
+    .tmds_data_p             ( tmds_data_p        ),
+    .tmds_data_n             ( tmds_data_n        )
 );
 
 initial
 begin
+    #(PERIOD*2) sys_rst_n  =  1;
+    #(PERIOD*2) isp_enable = 16'h0001;
     repeat(1000) @(posedge sys_clk);
     $finish(2);
 end
