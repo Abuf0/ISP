@@ -66,7 +66,7 @@ generate
     for(x=0;x<3;x=x+1) begin
         for(y=0;y<5;y=y+1) begin    // pad((1,1),(2,2))
             assign array[x][y] = ( (v_cnt < (1-x)) || (v_cnt > V+1-x) || (h_cnt < (2-y)) || (h_cnt > (H+2-y)))?   shift_reg[x*H+y]    : 'd0;
-            assign em_img_wght[x][y] = edge_filter[1]?  -array[x][y] : array[x][y];
+            assign em_img_wght[x][y] = edge_filter[x][y][1]?  -array[x][y] : array[x][y];
         end 
     end
 endgenerate

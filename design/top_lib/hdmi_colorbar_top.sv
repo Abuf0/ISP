@@ -304,8 +304,8 @@ awb #(
     .HW  (11    ),
     .VW  (10    )
 ) awb_inst(
-    .clk                 (clk                    ),
-    .rstn                (rstn                   ),
+    .clk                 (pixel_clk              ),
+    .rstn                (rst_pix_n              ),
     .awb_en              (isp_enable[AWB]        ), // TODO
     .bayer_pattern       (bayer_pattern          ), // TODO
     .awb_clip            (awb_clip               ), // TODO
@@ -324,8 +324,8 @@ cnf #(
     .HW  (11    ),
     .VW  (10    )
 ) cnf_inst(
-    .clk                 (clk                    ),
-    .rstn                (rstn                   ),
+    .clk                 (pixel_clk              ),
+    .rstn                (rst_pix_n              ),
     .cnf_en              (isp_enable[CNF]        ), // TODO
     .thres               (cnf_thres              ), // TODO
     .bayer_pattern       (bayer_pattern          ), // TODO
@@ -346,8 +346,8 @@ cfa #(
     .HW  (11    ),
     .VW  (10    )
 ) cfa_inst(
-    .clk                 (clk                    ),
-    .rstn                (rstn                   ),
+    .clk                 (pixel_clk              ),
+    .rstn                (rst_pix_n              ),
     .cfa_en              (isp_enable[CFA]        ), // TODO
     .bayer_pattern       (bayer_pattern          ), // TODO
     //.cfa_clip            (cfa_clip               ), // TODO
@@ -369,8 +369,8 @@ ccm #(
     .HW  (11    ),
     .VW  (10    )
 ) ccm_inst(
-   .clk                (clk                                    ),
-   .rstn               (rstn                                   ),
+    .clk               (pixel_clk                              ),
+    .rstn              (rst_pix_n                              ),
    .ccm_en             (isp_enable[CCM]                        ),
    .ccm_coef_r         (ccm_coef_r [0:3]                       ),
    .ccm_coef_g         (ccm_coef_g [0:3]                       ),
@@ -395,21 +395,21 @@ gac #(
     .HW  (11    ),
     .VW  (10    )
 ) gac_inst(
-clk                 (clk                 ),
-rstn                (rstn                ),
-gac_en              (isp_enable[GAC]     ),
-pixel_data_in_vld   (pixel_data_vld[GAC]              ),
-pixel_data_in_r     (pixel_data_rgb[GAC][DW-1:DW-8]      ),
-pixel_data_in_g     (pixel_data_rgb[GAC][DW-9:DW-16]     ),
-pixel_data_in_b     (pixel_data_rgb[GAC][DW-17:DW-24]    ),
-pixel_data_out_vld  (pixel_data_vld[GAC+1]             ),
-pixel_data_out_r    (pixel_data_rgb[GAC+1][DW-1:DW-8]    ),
-pixel_data_out_g    (pixel_data_rgb[GAC+1][DW-9:DW-16]   ),
-pixel_data_out_b    (pixel_data_rgb[GAC+1][DW-17:DW-24]  ),
-gac_done            (                    ),
-lut_din_vld         (1'b0                ),
-lut_din             (0                   ),           
-lut_dout            (                    )    
+    .clk                 (pixel_clk              ),
+    .rstn                (rst_pix_n              ),
+    .gac_en              (isp_enable[GAC]     ),
+    .pixel_data_in_vld   (pixel_data_vld[GAC]              ),
+    .pixel_data_in_r     (pixel_data_rgb[GAC][DW-1:DW-8]      ),
+    .pixel_data_in_g     (pixel_data_rgb[GAC][DW-9:DW-16]     ),
+    .pixel_data_in_b     (pixel_data_rgb[GAC][DW-17:DW-24]    ),
+    .pixel_data_out_vld  (pixel_data_vld[GAC+1]             ),
+    .pixel_data_out_r    (pixel_data_rgb[GAC+1][DW-1:DW-8]    ),
+    .pixel_data_out_g    (pixel_data_rgb[GAC+1][DW-9:DW-16]   ),
+    .pixel_data_out_b    (pixel_data_rgb[GAC+1][DW-17:DW-24]  ),
+    .gac_done            (                    ),
+    .lut_din_vld         (1'b0                ),
+    .lut_din             (0                   ),           
+    .lut_dout            (                    )    
 );
 
 // CSC module
@@ -421,8 +421,8 @@ csc #(
     .HW  (11    ),
     .VW  (10    )
 ) csc_inst(
-   .clk                (clk                                    ),
-   .rstn               (rstn                                   ),
+    .clk                 (pixel_clk              ),
+    .rstn                (rst_pix_n              ),
    .csc_en             (isp_enable[CSC]                        ),
    .csc_coef_r         (csc_coef_r [0:3]                       ),
    .csc_coef_g         (csc_coef_g [0:3]                       ),
