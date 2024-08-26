@@ -90,6 +90,10 @@ logic [DW-1:0] fcs_edge [0:1] ;
 logic [DW-1:0] fcs_gain       ;
 logic [DW-1:0] fcs_intercept  ;
 logic [DW-1:0] fcs_slop       ;
+logic [DW-1:0] hue_cos          ;
+logic [DW-1:0] hue_sin          ;
+logic [DW-1:0] hsc_saturation   ;
+logic [DW-1:0] hsc_clip         ;
 
 assign bayer_pattern = 2'd0;
 assign awb_clip = 1023;
@@ -187,6 +191,11 @@ assign fcs_edge[1] = 32     ;
 assign fcs_gain = 32        ;
 assign fcs_intercept = 2    ;
 assign fcs_slop = 3         ;
+
+assign hue_cos        = 128;
+assign hue_sin        = 180;
+assign hsc_saturation = 256 ;
+assign hsc_clip       = 255 ;
 
 parameter DPC = 0   ;
 parameter BLC = 1   ;
@@ -597,16 +606,21 @@ hsc #(
     .clk                    (pixel_clk               ),
     .rstn                   (rst_pix_n               ),
     .hsc_en                 (isp_enable[HSC]         ), // TODO
+    .hue_cos                (hue_cos                 ), // TODO
+    .hue_sin                (hue_sin                 ), // TODO
+    .saturation             (hsc_saturation          ), // TODO
+    .clip                   (hsc_clip                ), // TODO
     .pixel_data_in_vld      (pixel_data_vld[HSC]     ),
     .buffer_data_in_ccs_cr  (pixel_data_rgb[HSC][DW-9:DW-16] ),  // TODO
     .buffer_data_in_ccs_cb  (pixel_data_rgb[HSC][DW-17:DW-24]),  // TODO
     .pixel_data_out_vld     (pixel_data_vld[HSC+1]   ),
-    .pixel_data_out         (pixel_data_rgb[HSC+1][DW-9:0]   ),
+    //.pixel_data_out         (pixel_data_rgb[HSC+1][DW-9:0]   ),
+    .pixel_data_out_cr      (pixel_data_rgb[HSC+1][DW-9:DW-16] ),
+    .pixel_data_out_cb      (pixel_data_rgb[HSC+1][DW-17:DW-24]),
     .hsc_done               (                        )  // TODO
 );
 
-
-//����HDMI����ģ��
+`ifdef  FPGA
 dvi_transmitter_top u_rgb2dvi_0(
     .pclk           (pixel_clk),
     .pclk_x5        (pixel_clk_5x),
@@ -625,5 +639,8 @@ dvi_transmitter_top u_rgb2dvi_0(
     .tmds_data_p    (tmds_data_p),
     .tmds_data_n    (tmds_data_n)
     );
+`elsif 
+
+`endif
 
 endmodule 

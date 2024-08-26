@@ -1,5 +1,5 @@
 // To match speed, one cycle output one  calweight
-module calweight #(
+module calweights #(
     parameter DW = 8    ,
     parameter DS = 4    ,   // search window size-1 /2
     parameter KS = 1        // neighbour window size-1 /2
@@ -54,7 +54,7 @@ generate
                 assign weight[i][j] = 'd0;
             end
             else begin
-                assign weight[i][j] = LUT_EXP[sigma];
+                assign weight[i][j] = LUT_EXP[sigma[i][j]];
             end
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
