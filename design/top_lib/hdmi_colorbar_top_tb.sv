@@ -5,16 +5,16 @@ parameter PERIOD  = 10;
 
 
 // hdmi_colorbar_top Inputs
-reg   sys_clk                              = 0 ;
-reg   sys_rst_n                            = 0 ;
+logic   sys_clk                              = 0 ;
+logic   sys_rst_n                            = 0 ;
 
-reg [15:0] isp_enable = 16'h0;
+logic [15:0] isp_enable = 16'h0;
 
 // hdmi_colorbar_top Outputs
-wire  tmds_clk_p                           ;
-wire  tmds_clk_n                           ;
-wire  [2:0]  tmds_data_p                   ;
-wire  [2:0]  tmds_data_n                   ;
+logic  tmds_clk_p                           ;
+logic  tmds_clk_n                           ;
+logic  [2:0]  tmds_data_p                   ;
+logic  [2:0]  tmds_data_n                   ;
 
 
 initial

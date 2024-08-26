@@ -8,7 +8,7 @@ module awb#(
     input                 clk               ,
     input                 rstn              ,
     input                 awb_en            ,
-    input        [2:0]    bayer_pattern     ,  
+    input        [1:0]    bayer_pattern     ,  
     input        [DW-1:0] awb_clip          , 
     input        [DW-1:0] pixel_data_in     ,
     input                 pixel_data_in_vld ,

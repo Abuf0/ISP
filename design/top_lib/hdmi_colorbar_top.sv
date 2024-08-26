@@ -33,32 +33,133 @@ module  hdmi_colorbar_top(
 );
 
 //wire define
-wire          pixel_clk;
-wire          pixel_clk_5x;
-wire          clk_locked;
+logic          pixel_clk;
+logic          pixel_clk_5x;
+logic          clk_locked;
+logic          rst_pix_n;
+logic
+logic  [10:0]  pixel_xpos_w;
+logic  [10:0]  pixel_ypos_w;
+logic  [23:0]  pixel_data_rgb[0:15];
+logic          pixel_data_vld[0:15];
+logic  [23:0]  buffer_data_rgb_csc;
+logic  [23:0]  pixel_data_w;
+logic  [15:0]  isp_enable;
+logic
+logic [23:0]   pixel_data_out;
+logic
+logic [23:0]   pixel_data_load   ;
+logic [23:0]   pixel_data_update ;
+logic          rd_rst            ;
+logic          rd_en             ;
+logic          wt_rst            ;
+logic          wt_en             ;
+logic
+logic          video_hs;
+logic          video_vs;
+logic          video_de;
+logic  [23:0]  video_rgb;
+logic
+logic [1:0] bayer_pattern;
+logic [DW-1:0] awb_clip;
+logic [DW-1:0] cnf_clip;
+logic [DW-1:0] cnf_thres;
+logic [DW-1:0] cfa_clip;
+logic [DW-1:0] ccm_coef_r [0:3];
+logic [DW-1:0] ccm_coef_g [0:3];
+logic [DW-1:0] ccm_coef_b [0:3];
+logic signed [DW-1:0] csc_coef_r [0:3];
+logic signed [DW-1:0] csc_coef_g [0:3];
+logic signed [DW-1:0] csc_coef_b [0:3];
+logic [DW-1:0] bnf_dw [0:4][0:4];   
+logic [DW-1:0] bnf_rw [0:3]     ;     
+logic [DW-1:0] bnf_rthres [0:2]   ;   
+logic [DW-1:0] bnf_clip     ;         
+logic signed [DW-1:0] edge_filter [0:2][0:4] ;
+logic [DW-1:0] eeh_clip [0:1]     ;    
+logic [DW-1:0] eeh_rthres [0:1] ;      
+logic [DW-1:0] eeh_gain [0:1]  ;       
+logic [DW-1:0] bcc_brightness;
+logic [DW-1:0] bcc_constrast ;
+logic [DW-1:0] bcc_clip      ;
+logic [DW-1:0] fcs_edge [0:1] ;
+logic [DW-1:0] fcs_gain       ;
+logic [DW-1:0] fcs_intercept  ;
+logic [DW-1:0] fcs_slop       ;
 
-wire  [10:0]  pixel_xpos_w;
-wire  [10:0]  pixel_ypos_w;
-wire  [23:0]  pixel_data_rgb[0:15];
-wire          pixel_data_vld[0:15];
-wire  [23:0]  buffer_data_rgb_csc;
-wire  [23:0]  pixel_data_w;
-wire  [15:0]  isp_enable;
-
-wire [23:0]   pixel_data_out;
-
-wire [23:0]   pixel_data_load   ;
-wire [23:0]   pixel_data_update ;
-wire          rd_rst            ;
-wire          rd_en             ;
-wire          wt_rst            ;
-wire          wt_en             ;
-
-wire          video_hs;
-wire          video_vs;
-wire          video_de;
-wire  [23:0]  video_rgb;
-
+assign bayer_pattern = 2'd0;
+assign awb_clip = DW'd1023;
+assign cnf_clip = DW'd1023;
+assign cnf_thres = DW'd0;
+assign cfa_clip = DW'd1023;
+assign {ccm_coef_r[0],ccm_coef_r[1],ccm_coef_r[2],ccm_coef_r[3]} = {1024,0,0, 0};
+assign {ccm_coef_g[0],ccm_coef_g[1],ccm_coef_g[2],ccm_coef_g[3]} = {0, 1024, 0, 0};
+assign {ccm_coef_b[0],ccm_coef_b[1],ccm_coef_b[2],ccm_coef_b[3]} = {0, 0, 1024, 0};
+assign {csc_coef_r[0],csc_coef_r[1],csc_coef_r[2],csc_coef_r[3]} = {263, 516, 100, 16384};
+assign {csc_coef_g[0],csc_coef_g[1],csc_coef_g[2],csc_coef_g[3]} = {-152,-298,450,32768};
+assign {csc_coef_b[0],csc_coef_b[1],csc_coef_b[2],csc_coef_b[3]} = {450,-377,73,DW'd32768};
+assign bnf_dw[0][0] = 8	    ;
+assign bnf_dw[0][1] = 12    ;	
+assign bnf_dw[0][2] = 32    ;	
+assign bnf_dw[0][3] = 12    ;	
+assign bnf_dw[0][4] = 8	    ;
+assign bnf_dw[1][0] = 12    ;	
+assign bnf_dw[1][1] = 64    ;	
+assign bnf_dw[1][2] = 128	;    
+assign bnf_dw[1][3] = 64	;    
+assign bnf_dw[1][4] = 12	;    
+assign bnf_dw[2][0] = 32	;    
+assign bnf_dw[2][1] = 128	;    
+assign bnf_dw[2][2] = 1024  ;
+assign bnf_dw[2][3] = 128	;
+assign bnf_dw[2][4] = 32	;
+assign bnf_dw[3][0] = 12	;
+assign bnf_dw[3][1] = 64	;
+assign bnf_dw[3][2] = 128	;
+assign bnf_dw[3][3] = 64	;
+assign bnf_dw[3][4] = 12	;
+assign bnf_dw[4][0] = 8	    ;
+assign bnf_dw[4][1] = 12	;
+assign bnf_dw[4][2] = 32	;
+assign bnf_dw[4][3] = 12	;
+assign bnf_dw[4][4] = 8	    ;
+assign bnf_rw[0] =0	        ;
+assign bnf_rw[1] =8	        ;
+assign bnf_rw[2] =16	    ;  
+assign bnf_rw[3] =32	    ; 
+assign bnf_rthres[0] = 128  ;
+assign bnf_rthres[1] = 32   ;
+assign bnf_rthres[2] = 8	;    
+assign bnf_clip = 255	    ; 
+assign edge_filter[0][0] = -1;
+assign edge_filter[0][1] = 0 ; 	    
+assign edge_filter[0][2] = -1;
+assign edge_filter[0][3] = 0 ; 	    
+assign edge_filter[0][4] = -1;
+assign edge_filter[1][0] = -1;
+assign edge_filter[1][1] = 0 ; 	
+assign edge_filter[1][2] = 8 ;
+assign edge_filter[1][3] = 0 ; 	
+assign edge_filter[1][4] = -1;
+assign edge_filter[2][0] = -1;
+assign edge_filter[2][1] = 0 ; 	
+assign edge_filter[2][2] = -1;
+assign edge_filter[2][3] = 0 ; 	
+assign edge_filter[2][4] = -1;
+assign ee_gain[0] = 32	    ;     
+assign ee_gain[1] = 128	    ; 
+assign ee_thres[0] = 32	    ; 
+assign ee_thres[1] = 64	    ; 
+assign ee_emclip[0] = -64	;   
+assign ee_emclip[1] = 64	;   
+assign brightness = 10      ;
+assign contrast = 10        ;
+assign bcc_clip = 255       ;
+assign fcs_edge[0] = 64     ;
+assign fcs_edge[1] = 32     ;
+assign fcs_gain = 32        ;
+assign fcs_intercept = 2    ;
+assign fcs_slop = 3         ;
 
 parameter DPC = 0   ;
 parameter BLC = 1   ;
@@ -81,6 +182,7 @@ parameter BBC = 14  ;
 //**                    main code
 //*****************************************************
 
+`ifdef FPGA
 //����MMCM/PLL IP��
 clk_wiz_0  clk_wiz_0(
     .clk_in1        (sys_clk),
@@ -90,11 +192,21 @@ clk_wiz_0  clk_wiz_0(
     .reset          (~sys_rst_n), 
     .locked         (clk_locked)
 );
+assign rst_pix_n = sys_rst_n;
+`else
+crgu crgu_inst(
+    .clk_in     (sys_clk        ),
+    .rstn_in    (sys_rst_n      ),
+    .clk_out1   (pixel_clk      ),
+    .clk_out2   (pixel_clk_5x   ),
+    .rstn_out1  (rst_pix_n      )
+);
+`endif
 
 //������Ƶ��ʾ����ģ��
 video_driver u_video_driver(
     .pixel_clk      (pixel_clk),
-    .sys_rst_n      (sys_rst_n),
+    .sys_rst_n      (rst_pix_n),
 
     .video_hs       (video_hs),
     .video_vs       (video_vs),
@@ -112,7 +224,7 @@ video_driver u_video_driver(
 //������Ƶ��ʾģ��
 video_display  u_video_display(
     .pixel_clk          (pixel_clk          ),
-    .sys_rst_n          (sys_rst_n          ),
+    .sys_rst_n          (rst_pix_n          ),
 
     .pixel_xpos         (pixel_xpos_w       ),
     .pixel_ypos         (pixel_ypos_w       ),
@@ -141,7 +253,7 @@ dpc #(
     .H          (720)
 ) dpc_inst(
     .clk                (pixel_clk               ),
-    .rstn               (sys_rst_n               ),
+    .rstn               (rst_pix_n               ),
     .dpc_en             (isp_enable[DPC]         ), // TODO
     .pixel_data_in_vld  (pixel_data_vld[DPC]     ), // TODO
     .pixel_data_in      (pixel_data_rgb[DPC]     ),
@@ -171,7 +283,7 @@ aaf #(
     .VW  (10    )
 ) aaf_inst(
     .clk                (pixel_clk               ),
-    .rstn               (sys_rst_n               ),
+    .rstn               (rst_pix_n               ),
     .aaf_en             (isp_enable[AAF]         ), // TODO
     .pixel_data_in_vld  (pixel_data_vld[AAF]     ), 
     .pixel_data_in      (pixel_data_rgb[AAF]     ),
@@ -332,7 +444,7 @@ nlm #(
     .VW  (10    )
 ) nlm_inst(
     .clk                (pixel_clk               ),
-    .rstn               (sys_rst_n               ),
+    .rstn               (rst_pix_n               ),
     .nlm_en             (isp_enable[NLM]         ), // TODO
     .pixel_data_in_vld  (pixel_data_vld[NLM]     ), 
     .pixel_data_in      (pixel_data_rgb[NLM]     ),
@@ -351,7 +463,7 @@ bnf #(
     .VW  (10    )
 ) bnf_inst(
     .clk                (pixel_clk               ),
-    .rstn               (sys_rst_n               ),
+    .rstn               (rst_pix_n               ),
     .bnf_en             (isp_enable[BNF]         ), // TODO
     .dw                 (bnf_dw [0:4][0:4]       ), // TODO
     .rw                 (bnf_rw [0:3]            ), // TODO
@@ -374,7 +486,7 @@ eeh #(
     .VW  (10    )
 ) eeh_inst(
     .clk                (pixel_clk               ),
-    .rstn               (sys_rst_n               ),
+    .rstn               (rst_pix_n               ),
     .eeh_en             (isp_enable[EEH]         ), // TODO
     .edge_filter        (edge_filter [0:2][0:4]  ), // TODO
     .eeh_clip           (eeh_clip [0:1]          ), // TODO 
@@ -399,7 +511,7 @@ bcc #(
     .VW  (10    )
 ) bcc_inst(
     .clk                (pixel_clk               ),
-    .rstn               (sys_rst_n               ),
+    .rstn               (rst_pix_n               ),
     .bcc_en             (isp_enable[BCC]         ), // TODO
     .brightness         (bcc_brightness          ), // TODO
     .constrast          (bcc_constrast           ), // TODO
@@ -421,7 +533,7 @@ fcs #(
     .VW  (10    )
 ) fcs_inst(
     .clk                    (pixel_clk               ),
-    .rstn                   (sys_rst_n               ),
+    .rstn                   (rst_pix_n               ),
     .fcs_en                 (isp_enable[FCS]         ), // TODO
     .fcs_edge               (fcs_edge [0:1]          ), // TODO
     .gain                   (fcs_gain                ), // TODO
@@ -449,7 +561,7 @@ hsc #(
     .VW  (10    )
 ) hsc_inst(
     .clk                    (pixel_clk               ),
-    .rstn                   (sys_rst_n               ),
+    .rstn                   (rst_pix_n               ),
     .hsc_en                 (isp_enable[HSC]         ), // TODO
     .pixel_data_in_vld      (pixel_data_vld[HSC]     ),
     .pixel_data_in_cr       (pixel_data_rgb[HSC][DW-9:DW-16] ),  // TODO
@@ -464,8 +576,11 @@ hsc #(
 dvi_transmitter_top u_rgb2dvi_0(
     .pclk           (pixel_clk),
     .pclk_x5        (pixel_clk_5x),
-    .reset_n        (sys_rst_n & clk_locked),
-                
+`ifdef FPGA
+    .reset_n        (rst_pix_n & clk_locked),
+`else
+    .reset_n        (rst_pix_n).
+`endif         
     .video_din      (video_rgb),
     .video_hsync    (video_hs), 
     .video_vsync    (video_vs),

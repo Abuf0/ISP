@@ -37,7 +37,8 @@ def int_to_bin8(number):
     binary_string = bin(number & 0xFF)[2:]  # & 0xFF 确保只取低 8 位
     return binary_string.zfill(8)  # 使用 zfill 方法补齐到 8 位
 
-f = open('./img_rgb888.txt','w')
+f = open('./img_rgb888_bin.txt','w')
+f1 = open('./img_rgb888.txt','w')
 for x in range(0,img_array.shape[0]):
     for y in range(0,img_array.shape[1]):
         for z in range(0,img_array.shape[2]):
@@ -46,7 +47,9 @@ for x in range(0,img_array.shape[0]):
                 print(img_array[x,y,z])
                 print(rgb888_bin)
             f.write(rgb888_bin)
+            f1.write(str(img_array[x,y,z]))
         f.write('\n')
-
+        f1.write('\n')
 
 f.close()
+f1.close()

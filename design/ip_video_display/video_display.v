@@ -51,7 +51,7 @@ localparam BLUE   = 24'b00000000_00000000_11111111;  //RGB888 ��ɫ
 //*****************************************************
 reg [23:0] mem [0:9215];
 initial begin
-    $readmemb("D:/Learn/2-DESIGN/ISP/ISP/model/img_rgb888.txt",mem);
+    $readmemb("D:/Learn/2-DESIGN/ISP/ISP/model/img_rgb888_bin.txt",mem);
 end
 //���ݵ�ǰ���ص�����ָ����ǰ���ص���ɫ���ݣ�����Ļ����ʾ����
 always @(posedge pixel_clk ) begin
