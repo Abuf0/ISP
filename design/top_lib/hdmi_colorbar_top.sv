@@ -598,8 +598,8 @@ hsc #(
     .rstn                   (rst_pix_n               ),
     .hsc_en                 (isp_enable[HSC]         ), // TODO
     .pixel_data_in_vld      (pixel_data_vld[HSC]     ),
-    .pixel_data_in_cr       (pixel_data_rgb[HSC][DW-9:DW-16] ),  // TODO
-    .pixel_data_in_cb       (pixel_data_rgb[HSC][DW-17:DW-24]),  // TODO
+    .buffer_data_in_ccs_cr  (pixel_data_rgb[HSC][DW-9:DW-16] ),  // TODO
+    .buffer_data_in_ccs_cb  (pixel_data_rgb[HSC][DW-17:DW-24]),  // TODO
     .pixel_data_out_vld     (pixel_data_vld[HSC+1]   ),
     .pixel_data_out         (pixel_data_rgb[HSC+1][DW-9:0]   ),
     .hsc_done               (                        )  // TODO

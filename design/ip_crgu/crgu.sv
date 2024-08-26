@@ -14,7 +14,8 @@ logic clk_n;
 `ifdef FPGA
     assign clk_in_inv = ~clk_in;
 `else
-    CLKINV4M dtc_clkinvd4_inst(.A(clk_in),  .Y(clk_in_inv)  );
+    //CLKINV4M dtc_clkinvd4_inst(.A(clk_in),  .Y(clk_in_inv)  );
+    assign clk_in_inv = ~clk_in;
 `endif
 
 always_ff@(posedge clk_in or negedge rstn_out1) begin

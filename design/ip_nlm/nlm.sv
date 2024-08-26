@@ -93,7 +93,7 @@ always_ff@(posedge clk or negedge rstn) begin
         data_vld <= (pixel_data_in_vld || flag) ;
 end
 
-calweight #(
+calweights #(
    .DW(DW)    ,
    .DS(DS)    ,   // search window size-1 /2
    .KS(1)        // neighbour window size-1 /2

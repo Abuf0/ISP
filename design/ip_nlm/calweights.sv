@@ -88,7 +88,7 @@ endgenerate
 // TODO
 genvar k;
 logic [DW-1:0] wmax_tmp [0:4][0:1];
-logic [DW-1:0] wmax [0:4];
+logic [DW-1:0] wmax_mux [0:4];
 logic [DW-1:0] wmax_012;
 assign wsum_pre =  wght_buff[0][0] + wght_buff[0][1] + wght_buff[0][2] + wght_buff[0][3] + wght_buff[0][4] +
                    wght_buff[1][0] + wght_buff[1][1] + wght_buff[1][2] + wght_buff[1][3] + wght_buff[1][4] +
@@ -106,17 +106,17 @@ generate
     for(k=0;k<DS;k=k+1) begin
         assign wmax_tmp [k][0] = (wght_buff[k][0] > wght_buff[k][1])?   ((wght_buff[k][0] > wght_buff[k][2])?    wght_buff[k][0] : wght_buff[k][2]) :
                                                                         ((wght_buff[k][1] > wght_buff[k][2])?    wght_buff[k][1] : wght_buff[k][2]) ;
-        assign wmax_tmp [k][1] = (wmax[k][0] > wght_buff[k][3])?        ((wmax[k][0] > wght_buff[k][4])?    wmax[k][0] : wght_buff[k][4]) :
-                                                                        ((wght_buff[k][3] > wght_buff[k][4])?    wght_buff[k][3] : wght_buff[k][4]) ;
-        assign wmax [k] = (wmax[k][0] >  wmax[k][1])?    wmax[k][0] : wmax[k][1];
+        assign wmax_tmp [k][1] = (wght_buff[k][3] > wght_buff[k][4])?   wght_buff[k][3] : wght_buff[k][4];
+                                                                        
+        assign wmax_mux [k] = (wmax_tmp[k][0] >  wmax_tmp[k][1])?    wmax_tmp[k][0] : wmax_tmp[k][1];
     end
 endgenerate
 
-assign wmax_012 = (wmax[0] > wmax[1])?  ((wmax[0] > wmax[2])?    wmax[0] : wmax[2]) :
-                  ((wmax[1] > wmax[2])?    wmax[1] : wmax[2]) ;
+assign wmax_012 = (wmax_mux[0] > wmax_mux[1])?     ((wmax_mux[0] > wmax_mux[2])?    wmax_mux[0] : wmax_mux[2]) :
+                  ((wmax_mux[1] > wmax_mux[2])?    wmax_mux[1] : wmax_mux[2]) ;
 
-assign wmax_pre = (wmax_012 > wmax[3])?  ((wmax_012 > wmax[4])?    wmax_012 : wmax[4]) :
-                                         ((wmax[3]  > wmax[4])?    wmax[3]  : wmax[4]) ;
+assign wmax_pre = (wmax_012 > wmax_mux[3])?  ((wmax_012 > wmax_mux[4])?       wmax_012 : wmax_mux[4]) :
+                                             ((wmax_mux[3] > wmax_mux[4])?    wmax_mux[3]  : wmax_mux[4]) ;
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)

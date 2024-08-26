@@ -68,11 +68,11 @@ generate
     for(x=0;x<5;x=x+1) begin
         for(y=0;y<5;y=y+1) begin
             logic [DW-1:0] rdiff_rw;
-            assgin rdiff[x][y] = (array[x][y] > array[2][2])?  array[x][y]-array[2][2] : array[2][2]-array[x][y];
+            assign rdiff[x][y] = (array[x][y] > array[2][2])?  array[x][y]-array[2][2] : array[2][2]-array[x][y];
             assign rdiff_rw = (rdiff[x][y] >= rthres[0])?    rw[0] :
                               (rdiff[x][y] < rthres[0] && rdiff[x][y] > rthres[1])?     rw[1] :
                               (rdiff[x][y] < rthres[1] && rdiff[x][y] > rthres[2])?     rw[2] :
-                              (rdiff[x][y] < rthres[2])?     rw[3] :
+                              (rdiff[x][y] < rthres[2])?     rw[3] : ((array[x][y]>array[2][2])?    array[x][y] : array[2][2]);
             assign weight[x][y] = rdiff_rw * dw[x][y];
             assign img_wgt[x][y] = array[x][y] * weight[x][y];
         end 

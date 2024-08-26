@@ -14,8 +14,8 @@ module hsc#(
     input           [DW-1:0]   saturation            , // real constrast * 2^5
     input           [DW-1:0]   clip                  ,
     input                      pixel_data_in_vld     , 
-    input           [DW-1:0]   pixel_data_in_cr      ,
-    input           [DW-1:0]   pixel_data_in_cb      ,
+    input           [DW-1:0]   buffer_data_in_ccs_cr ,
+    input           [DW-1:0]   buffer_data_in_ccs_cb ,
     output logic               pixel_data_out_vld    ,
     output logic    [DW-1:0]   pixel_data_out_cr     ,
     output logic    [DW-1:0]   pixel_data_out_cb     ,
@@ -40,7 +40,7 @@ always_ff@(posedge clk or negedge rstn) begin
     end
     else if(hsc_en && pixel_data_in_vld) begin
         pixel_data[0] <= buffer_data_in_ccs_cr  ;
-        pixel_data[1] <= buffer_data_in_ccs_ccb  ;
+        pixel_data[1] <= buffer_data_in_ccs_cb  ;
     end
 end
 

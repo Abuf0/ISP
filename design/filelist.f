@@ -13,6 +13,7 @@
 ../../ISP/design/ip_gac/gac.sv
 ../../ISP/design/ip_csc/csc.sv
 ../../ISP/design/ip_nlm/nlm.sv
+../../ISP/design/ip_nlm/calweights.sv
 ../../ISP/design/ip_bnf/bnf.sv
 ../../ISP/design/ip_eeh/eeh.sv
 ../../ISP/design/ip_fcs/fcs.sv
