@@ -96,12 +96,35 @@ assign awb_clip = 1023;
 assign cnf_clip = 1023;
 assign cnf_thres = 0;
 assign cfa_clip = 1023;
-assign {ccm_coef_r[0],ccm_coef_r[1],ccm_coef_r[2],ccm_coef_r[3]} = {1024,0,0, 0};
-assign {ccm_coef_g[0],ccm_coef_g[1],ccm_coef_g[2],ccm_coef_g[3]} = {0, 1024, 0, 0};
-assign {ccm_coef_b[0],ccm_coef_b[1],ccm_coef_b[2],ccm_coef_b[3]} = {0, 0, 1024, 0};
-assign {csc_coef_r[0],csc_coef_r[1],csc_coef_r[2],csc_coef_r[3]} = {263, 516, 100, 16384};
-assign {csc_coef_g[0],csc_coef_g[1],csc_coef_g[2],csc_coef_g[3]} = {-152,-298,450,32768};
-assign {csc_coef_b[0],csc_coef_b[1],csc_coef_b[2],csc_coef_b[3]} = {450,-377,73,32768};
+
+assign ccm_coef_r[0] = 1024 ;
+assign ccm_coef_g[0] = 0    ;
+assign ccm_coef_b[0] = 0    ;
+assign csc_coef_r[0] = 263  ;
+assign csc_coef_g[0] = -152 ;
+assign csc_coef_b[0] = 450  ;
+
+assign ccm_coef_r[1] = 0        ;
+assign ccm_coef_g[1] =  1024    ;
+assign ccm_coef_b[1] =  0       ;
+assign csc_coef_r[1] =  516     ;
+assign csc_coef_g[1] = -298     ;
+assign csc_coef_b[1] = -377     ;
+
+assign ccm_coef_r[2] = 0        ;
+assign ccm_coef_g[2] =  0       ;
+assign ccm_coef_b[2] =  1024    ;
+assign csc_coef_r[2] =  100     ;
+assign csc_coef_g[2] = 450      ;
+assign csc_coef_b[2] = 73       ;
+
+assign ccm_coef_r[3] =  0       ;
+assign ccm_coef_g[3] =  0       ;
+assign ccm_coef_b[3] =  0       ;
+assign csc_coef_r[3] =  16384   ;
+assign csc_coef_g[3] = 32768    ;
+assign csc_coef_b[3] = 32768    ;
+
 assign bnf_dw[0][0] = 8	    ;
 assign bnf_dw[0][1] = 12    ;	
 assign bnf_dw[0][2] = 32    ;	
@@ -506,11 +529,11 @@ eeh #(
     .pixel_data_in_vld  (pixel_data_vld[EEH]     ), 
     .pixel_data_in      (pixel_data_rgb[EEH]     ),
     .pixel_data_out_vld (pixel_data_vld[EEH+1]   ),
-    .pixel_data_out_em  (pixel_data_rgb[BBC]    ),
+    .pixel_data_out_em  (pixel_data_rgb[BCC]    ),
     .pixel_data_out_ee  (pixel_data_rgb[EEH]    ),
     .eeh_done           (                        )  // TODO
 );
-assign pixel_data_vld[BBC] = pixel_data_vld[EEH+1];
+assign pixel_data_vld[BCC] = pixel_data_vld[EEH+1];
 
 // BCC module
 
