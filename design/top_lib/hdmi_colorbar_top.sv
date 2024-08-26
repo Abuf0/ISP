@@ -21,7 +21,13 @@
 //----------------------------------------------------------------------------------------
 //****************************************************************************************//
 
-module  hdmi_colorbar_top(
+module  hdmi_colorbar_top# (
+    parameter DW = 24   ,
+    parameter H  = 1280 ,
+    parameter V  = 720  ,
+    parameter HW = 11   ,
+    parameter VW = 10   
+)(
     input        sys_clk        ,
     input        sys_rst_n      , 
     input  [15:0]isp_enable     ,
@@ -37,29 +43,26 @@ logic          pixel_clk;
 logic          pixel_clk_5x;
 logic          clk_locked;
 logic          rst_pix_n;
-logic
 logic  [10:0]  pixel_xpos_w;
 logic  [10:0]  pixel_ypos_w;
 logic  [23:0]  pixel_data_rgb[0:15];
 logic          pixel_data_vld[0:15];
 logic  [23:0]  buffer_data_rgb_csc;
 logic  [23:0]  pixel_data_w;
-logic  [15:0]  isp_enable;
-logic
+//logic  [15:0]  isp_enable;
 logic [23:0]   pixel_data_out;
-logic
 logic [23:0]   pixel_data_load   ;
 logic [23:0]   pixel_data_update ;
 logic          rd_rst            ;
 logic          rd_en             ;
 logic          wt_rst            ;
 logic          wt_en             ;
-logic
+
 logic          video_hs;
 logic          video_vs;
 logic          video_de;
 logic  [23:0]  video_rgb;
-logic
+
 logic [1:0] bayer_pattern;
 logic [DW-1:0] awb_clip;
 logic [DW-1:0] cnf_clip;
@@ -78,7 +81,8 @@ logic [DW-1:0] bnf_clip     ;
 logic signed [DW-1:0] edge_filter [0:2][0:4] ;
 logic [DW-1:0] eeh_clip [0:1]     ;    
 logic [DW-1:0] eeh_rthres [0:1] ;      
-logic [DW-1:0] eeh_gain [0:1]  ;       
+logic [DW-1:0] eeh_gain [0:1]  ; 
+logic signed [DW-1:0] eeh_emclip [0:1];      
 logic [DW-1:0] bcc_brightness;
 logic [DW-1:0] bcc_constrast ;
 logic [DW-1:0] bcc_clip      ;
@@ -88,16 +92,16 @@ logic [DW-1:0] fcs_intercept  ;
 logic [DW-1:0] fcs_slop       ;
 
 assign bayer_pattern = 2'd0;
-assign awb_clip = DW'd1023;
-assign cnf_clip = DW'd1023;
-assign cnf_thres = DW'd0;
-assign cfa_clip = DW'd1023;
+assign awb_clip = 1023;
+assign cnf_clip = 1023;
+assign cnf_thres = 0;
+assign cfa_clip = 1023;
 assign {ccm_coef_r[0],ccm_coef_r[1],ccm_coef_r[2],ccm_coef_r[3]} = {1024,0,0, 0};
 assign {ccm_coef_g[0],ccm_coef_g[1],ccm_coef_g[2],ccm_coef_g[3]} = {0, 1024, 0, 0};
 assign {ccm_coef_b[0],ccm_coef_b[1],ccm_coef_b[2],ccm_coef_b[3]} = {0, 0, 1024, 0};
 assign {csc_coef_r[0],csc_coef_r[1],csc_coef_r[2],csc_coef_r[3]} = {263, 516, 100, 16384};
 assign {csc_coef_g[0],csc_coef_g[1],csc_coef_g[2],csc_coef_g[3]} = {-152,-298,450,32768};
-assign {csc_coef_b[0],csc_coef_b[1],csc_coef_b[2],csc_coef_b[3]} = {450,-377,73,DW'd32768};
+assign {csc_coef_b[0],csc_coef_b[1],csc_coef_b[2],csc_coef_b[3]} = {450,-377,73,32768};
 assign bnf_dw[0][0] = 8	    ;
 assign bnf_dw[0][1] = 12    ;	
 assign bnf_dw[0][2] = 32    ;	
@@ -146,12 +150,12 @@ assign edge_filter[2][1] = 0 ;
 assign edge_filter[2][2] = -1;
 assign edge_filter[2][3] = 0 ; 	
 assign edge_filter[2][4] = -1;
-assign ee_gain[0] = 32	    ;     
-assign ee_gain[1] = 128	    ; 
-assign ee_thres[0] = 32	    ; 
-assign ee_thres[1] = 64	    ; 
-assign ee_emclip[0] = -64	;   
-assign ee_emclip[1] = 64	;   
+assign eeh_gain[0] = 32	    ;     
+assign eeh_gain[1] = 128	    ; 
+assign eeh_rthres[0] = 32	    ; 
+assign eeh_rthres[1] = 64	    ; 
+assign eeh_emclip[0] = -64	;   
+assign eeh_emclip[1] = 64	;   
 assign brightness = 10      ;
 assign contrast = 10        ;
 assign bcc_clip = 255       ;
@@ -175,7 +179,7 @@ parameter BNF = 10  ;
 parameter EEH = 11  ;
 parameter FCS = 12  ;
 parameter HSC = 13  ;
-parameter BBC = 14  ;
+parameter BCC = 14  ;
 
 //assign isp_enable = 16'h0000;
 //*****************************************************
@@ -371,11 +375,11 @@ ccm #(
    .ccm_coef_r         (ccm_coef_r [0:3]                       ),
    .ccm_coef_g         (ccm_coef_g [0:3]                       ),
    .ccm_coef_b         (ccm_coef_b [0:3]                       ),
-   .pixel_data_in_vld  (pixel_data_in_vld[CCM]                 ), 
+   .pixel_data_in_vld  (pixel_data_vld[CCM]                 ), 
    .pixel_data_in_r    (pixel_data_rgb[CCM][DW-1:DW-8]         ),
    .pixel_data_in_g    (pixel_data_rgb[CCM][DW-9:DW-16]        ),
    .pixel_data_in_b    (pixel_data_rgb[CCM][DW-17:DW-24]       ),
-   .pixel_data_out_vld (pixel_data_out_vld[CCM]                ),
+   .pixel_data_out_vld (pixel_data_vld[CCM+1]                ),
    .pixel_data_out_r   (pixel_data_rgb[CCM+1][DW-1:DW-8]       ),
    .pixel_data_out_g   (pixel_data_rgb[CCM+1][DW-9:DW-16]      ),
    .pixel_data_out_b   (pixel_data_rgb[CCM+1][DW-17:DW-24]     ),
@@ -394,11 +398,11 @@ gac #(
 clk                 (clk                 ),
 rstn                (rstn                ),
 gac_en              (isp_enable[GAC]     ),
-pixel_data_in_vld   (pixel_data_in_vld[GAC]              ),
+pixel_data_in_vld   (pixel_data_vld[GAC]              ),
 pixel_data_in_r     (pixel_data_rgb[GAC][DW-1:DW-8]      ),
 pixel_data_in_g     (pixel_data_rgb[GAC][DW-9:DW-16]     ),
 pixel_data_in_b     (pixel_data_rgb[GAC][DW-17:DW-24]    ),
-pixel_data_out_vld  (pixel_data_out_vld[GAC]             ),
+pixel_data_out_vld  (pixel_data_vld[GAC+1]             ),
 pixel_data_out_r    (pixel_data_rgb[GAC+1][DW-1:DW-8]    ),
 pixel_data_out_g    (pixel_data_rgb[GAC+1][DW-9:DW-16]   ),
 pixel_data_out_b    (pixel_data_rgb[GAC+1][DW-17:DW-24]  ),
@@ -423,11 +427,11 @@ csc #(
    .csc_coef_r         (csc_coef_r [0:3]                       ),
    .csc_coef_g         (csc_coef_g [0:3]                       ),
    .csc_coef_b         (csc_coef_b [0:3]                       ),
-   .pixel_data_in_vld  (pixel_data_in_vld[CSC]                 ), 
+   .pixel_data_in_vld  (pixel_data_vld[CSC]                 ), 
    .pixel_data_in_r    (pixel_data_rgb[CSC][DW-1:DW-8]         ),
    .pixel_data_in_g    (pixel_data_rgb[CSC][DW-9:DW-16]        ),
    .pixel_data_in_b    (pixel_data_rgb[CSC][DW-17:DW-24]       ),
-   .pixel_data_out_vld (pixel_data_out_vld[CSC]                ),
+   .pixel_data_out_vld (pixel_data_vld[CSC+1]                ),
    .pixel_data_out_r   (pixel_data_rgb[CSC+1][DW-1:DW-8]       ),
    .pixel_data_out_g   (pixel_data_rgb[CSC+1][DW-9:DW-16]      ),
    .pixel_data_out_b   (pixel_data_rgb[CSC+1][DW-17:DW-24]     ),
@@ -465,9 +469,12 @@ bnf #(
     .clk                (pixel_clk               ),
     .rstn               (rst_pix_n               ),
     .bnf_en             (isp_enable[BNF]         ), // TODO
-    .dw                 (bnf_dw [0:4][0:4]       ), // TODO
-    .rw                 (bnf_rw [0:3]            ), // TODO
-    .rthres             (bnf_rthres [0:2]        ), // TODO
+    //.dw                 (bnf_dw [0:4][0:4]       ), // TODO
+    //.rw                 (bnf_rw [0:3]            ), // TODO
+    //.rthres             (bnf_rthres [0:2]        ), // TODO
+    .dw                 (bnf_dw                  ), // TODO
+    .rw                 (bnf_rw                  ), // TODO
+    .rthres             (bnf_rthres              ), // TODO
     .bnf_clip           (bnf_clip                ), // TODO
     .pixel_data_in_vld  (pixel_data_vld[BNF]     ), 
     .pixel_data_in      (pixel_data_rgb[BNF]     ),
@@ -488,10 +495,14 @@ eeh #(
     .clk                (pixel_clk               ),
     .rstn               (rst_pix_n               ),
     .eeh_en             (isp_enable[EEH]         ), // TODO
-    .edge_filter        (edge_filter [0:2][0:4]  ), // TODO
-    .eeh_clip           (eeh_clip [0:1]          ), // TODO 
-    .eeh_rthres         (eeh_rthres [0:1]        ), // TODO
-    .eeh_gain           (eeh_gain [0:1]          ), // TODO 
+    //.edge_filter        (edge_filter [0:2][0:4]  ), // TODO
+    //.eeh_clip           (eeh_clip [0:1]          ), // TODO 
+    //.eeh_rthres         (eeh_rthres [0:1]        ), // TODO
+    //.eeh_gain           (eeh_gain [0:1]          ), // TODO
+    .edge_filter        (edge_filter              ), // TODO
+    .eeh_clip           (eeh_clip                 ), // TODO
+    .eeh_rthres         (eeh_rthres               ), // TODO
+    .eeh_gain           (eeh_gain                ), // TODO 
     .pixel_data_in_vld  (pixel_data_vld[EEH]     ), 
     .pixel_data_in      (pixel_data_rgb[EEH]     ),
     .pixel_data_out_vld (pixel_data_vld[EEH+1]   ),
@@ -579,7 +590,7 @@ dvi_transmitter_top u_rgb2dvi_0(
 `ifdef FPGA
     .reset_n        (rst_pix_n & clk_locked),
 `else
-    .reset_n        (rst_pix_n).
+    .reset_n        (rst_pix_n),
 `endif         
     .video_din      (video_rgb),
     .video_hsync    (video_hs), 

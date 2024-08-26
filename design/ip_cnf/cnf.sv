@@ -14,7 +14,7 @@ module cnf#(
     input        [DW-1:0]   pixel_data_in         ,
     input                   pixel_data_in_vld     ,
     output logic [DW-1:0]   pixel_data_out        ,
-    output logic            pixel_data_out_vld_pre    ,
+    output logic            pixel_data_out_vld    ,
     output logic            cnf_done        
 );
 // 原方案：padding时停顿，shift入0；舍弃原因：串行输入是连续的
@@ -54,7 +54,7 @@ logic [DW-1:0] center_out;
 
 // ********************************
 logic [DW-1:0] pixel_data_out_pre;
-logic pixel_data_out_vld_pre_pre;
+logic pixel_data_out_vld_pre;
 logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt;
 logic flag;

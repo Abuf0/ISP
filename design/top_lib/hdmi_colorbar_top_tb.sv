@@ -22,7 +22,13 @@ begin
     forever #(PERIOD/2)  sys_clk=~sys_clk;
 end
 
-hdmi_colorbar_top  u_hdmi_colorbar_top (
+hdmi_colorbar_top #(
+    .DW  (24    ),
+    .H   (1280  ),
+    .V   (720   ),
+    .HW  (11    ),
+    .VW  (10    )    
+) u_hdmi_colorbar_top (
     .sys_clk                 ( sys_clk            ),
     .sys_rst_n               ( sys_rst_n          ),
     .isp_enable              ( isp_enable         ),

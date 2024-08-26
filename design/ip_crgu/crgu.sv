@@ -17,15 +17,15 @@ logic clk_n;
     CLKINV4M dtc_clkinvd4_inst(.A(clk_in),  .Y(clk_in_inv)  );
 `endif
 
-always_ff@(posedge clk_in or negedge rstn) begin
-    if(~rstn)
+always_ff@(posedge clk_in or negedge rstn_out1) begin
+    if(~rstn_out1)
         cnt_p <= 'd0;
     else
         cnt_p <= (cnt_p==3'd4)?  3'd0 : (cnt_p+1'b1);
 end
 
-always_ff@(posedge clk_in or negedge rstn) begin
-    if(~rstn)
+always_ff@(posedge clk_in or negedge rstn_out1) begin
+    if(~rstn_out1)
         clk_p <= 1'b0;
     else if(cnt_p[2:1]==2'd0)
         clk_p <= 1'b1;
@@ -33,15 +33,15 @@ always_ff@(posedge clk_in or negedge rstn) begin
         clk_p <= 1'b0;
 end
 
-always_ff@(posedge clk_in_inv or negedge rstn) begin
-    if(~rstn)
+always_ff@(posedge clk_in_inv or negedge rstn_out1) begin
+    if(~rstn_out1)
         cnt_n <= 'd0;
     else
         cnt_n <= (cnt_n==3'd4)?  3'd0 : (cnt_n+1'b1);
 end
 
-always_ff@(posedge clk_in_inv or negedge rstn) begin
-    if(~rstn)
+always_ff@(posedge clk_in_inv or negedge rstn_out1) begin
+    if(~rstn_out1)
         clk_n <= 1'b0;
     else if(cnt_n[2:1]==2'd0)
         clk_n <= 1'b1;

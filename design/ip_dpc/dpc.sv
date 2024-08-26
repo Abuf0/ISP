@@ -55,9 +55,9 @@ generate
                     shift_reg[i] <= shift_reg[i-1];
             end
         end
-        assign shift_r[i] = shift_reg[23:16][i];
-        assign shift_g[i] = shift_reg[15:8][i];
-        assign shift_b[i] = shift_reg[7:0][i];
+        assign shift_r[i] = shift_reg[i][23:16];
+        assign shift_g[i] = shift_reg[i][15:8] ;
+        assign shift_b[i] = shift_reg[i][7:0]  ;
     end
 endgenerate
 

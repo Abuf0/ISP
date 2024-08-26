@@ -1,8 +1,8 @@
-../../ISP/design/top_lib/hdmi_colorbar_top_tb.v
+../../ISP/design/top_lib/hdmi_colorbar_top_tb.sv
 
-../../ISP/design/top_lib/hdmi_colorbar_top.v
+../../ISP/design/top_lib/hdmi_colorbar_top.sv
 ../../ISP/design/ip_video_driver/video_driver.v
-../../ISP/design/ip_video_display/video_display.sv
+../../ISP/design/ip_video_display/video_display.v
 ../../ISP/design/ip_dpc/dpc.sv
 ../../ISP/design/ip_blc/blc.sv
 ../../ISP/design/ip_aaf/aaf.sv
@@ -20,4 +20,4 @@
 ../../ISP/design/ip_bcc/bcc.sv
 
 ../../ISP/design/ip_crgu/crgu.sv
-../../ISP/design/ip_common_lib/asyn_rst_syn.sv
+../../ISP/design/ip_common_lib/sync/asyn_rst_syn.sv

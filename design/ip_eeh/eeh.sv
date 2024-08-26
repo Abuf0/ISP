@@ -77,11 +77,11 @@ assign em_img_sum = em_img_wght[0][0] + em_img_wght[0][1] + em_img_wght[0][2] + 
 
 assign em_img = em_img_sum >> 3 ;
 
-assign em_lut = (em_img <= -thres[1])?   gain[1]*em_img :
-                (em_img > -thres[1] && em_img < -thres[0])?   'sd0 :
-                (em_img <= thres[0] && em_img >= -thres[1])?   gain[0]*em_img :
-                (em_img > thres[0] && em_img < thres[1])?   'sd0 :
-                (em_img >= thres[1])?   gain[1]*em_img :    'sd0;
+assign em_lut = (em_img <= -eeh_rthres[1])?   eeh_gain[1]*em_img :
+                (em_img > -eeh_rthres[1] && em_img < -eeh_rthres[0])?   'sd0 :
+                (em_img <= eeh_rthres[0] && em_img >= -eeh_rthres[1])?   eeh_gain[0]*em_img :
+                (em_img > eeh_rthres[0] && em_img < eeh_rthres[1])?   'sd0 :
+                (em_img >= eeh_rthres[1])?   eeh_gain[1]*em_img :    'sd0;
 
 assign em_lut_clip_pre = ((em_lut>>8) > eeh_clip[1])?   eeh_clip[1] : (em_lut>>8);
 assign em_lut_clip = (eeh_clip[0] > em_lut_clip_pre)?   eeh_clip[0] : em_lut_clip_pre;
