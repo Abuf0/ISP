@@ -33,7 +33,8 @@ module  video_display(
     input                rd_en,
     input                wt_rst,
     input                wt_en,
-    output  reg  [23:0]  pixel_data   //���ص�����
+    output  reg  [23:0]  pixel_data,
+    output  reg          pixel_data_vld   
 );
 
 //parameter define
@@ -51,7 +52,11 @@ localparam BLUE   = 24'b00000000_00000000_11111111;  //RGB888 ��ɫ
 //*****************************************************
 reg [23:0] mem [0:9215];
 initial begin
+`ifdef FPGA
     $readmemb("D:/Learn/2-DESIGN/ISP/ISP/model/img_rgb888_bin.txt",mem);
+`else
+    $readmemb("/ext3/home/wangyufei/Projects/6-ISP/model/img_rgb888_bin.txt",mem);
+`endif
 end
 //���ݵ�ǰ���ص�����ָ����ǰ���ص���ɫ���ݣ�����Ļ����ʾ����
 always @(posedge pixel_clk ) begin
@@ -74,6 +79,18 @@ always @(posedge pixel_clk ) begin
             pixel_data <= BLUE;
     end
 end
+
+always @(posedge pixel_clk ) begin
+    if (!sys_rst_n)
+        pixel_data_vld <= 1'b0;
+    else begin
+        if((pixel_xpos/10)+(pixel_ypos/10)*H_DISP < 9215)
+            pixel_data_vld <= 1'b1;
+        else 
+            pixel_data_vld <= 1'b0;
+    end
+end
+
 // TODO
 reg [13:0] rd_addr;
 reg [13:0] wt_addr;

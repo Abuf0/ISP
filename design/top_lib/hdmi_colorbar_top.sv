@@ -45,8 +45,8 @@ logic          clk_locked;
 logic          rst_pix_n;
 logic  [10:0]  pixel_xpos_w;
 logic  [10:0]  pixel_ypos_w;
-logic  [23:0]  pixel_data_rgb[0:15];
-logic          pixel_data_vld[0:15];
+logic  [23:0]  pixel_data_rgb[0:16];
+logic          pixel_data_vld[0:16];
 logic  [23:0]  buffer_data_rgb_csc;
 logic  [23:0]  pixel_data_w;
 //logic  [15:0]  isp_enable;
@@ -63,6 +63,8 @@ logic          video_vs;
 logic          video_de;
 logic  [23:0]  video_rgb;
 
+logic [7:0] dpc_thres;
+logic [7:0] dpc_clip;
 logic [1:0] bayer_pattern;
 logic [DW-1:0] awb_clip;
 logic [DW-1:0] cnf_clip;
@@ -78,7 +80,7 @@ logic [DW-1:0] bnf_dw [0:4][0:4];
 logic [DW-1:0] bnf_rw [0:3]     ;     
 logic [DW-1:0] bnf_rthres [0:2]   ;   
 logic [DW-1:0] bnf_clip     ;         
-logic signed [DW-1:0] edge_filter [0:2][0:4] ;
+logic [1:0] edge_filter [0:2][0:4] ;
 logic [DW-1:0] eeh_clip [0:1]     ;    
 logic [DW-1:0] eeh_rthres [0:1] ;      
 logic [DW-1:0] eeh_gain [0:1]  ; 
@@ -95,6 +97,8 @@ logic [DW-1:0] hue_sin          ;
 logic [DW-1:0] hsc_saturation   ;
 logic [DW-1:0] hsc_clip         ;
 
+assign dpc_thres = 30;
+assign dpc_clip  = 250;
 assign bayer_pattern = 2'd0;
 assign awb_clip = 1023;
 assign cnf_clip = 1023;
@@ -211,7 +215,7 @@ parameter BNF = 10  ;
 parameter EEH = 11  ;
 parameter FCS = 12  ;
 parameter HSC = 13  ;
-parameter BCC = 14  ;
+parameter BCC = 15  ;
 
 //assign isp_enable = 16'h0000;
 //*****************************************************
@@ -270,7 +274,8 @@ video_display  u_video_display(
     .rd_en              (rd_en              ),
     .wt_rst             (wt_rst             ),
     .wt_en              (wt_en              ),
-    .pixel_data         (pixel_data_rgb[0]  )
+    .pixel_data         (pixel_data_rgb[0]  ),
+    .pixel_data_vld     (pixel_data_vld[0]  )
     );
 
 // TODO
@@ -278,19 +283,18 @@ assign rd_rst = 0;
 assign wt_rst = 0;
 assign rd_en = 0;
 assign wt_en = 0;
-assign pixel_data_load = 'd0;
-assign pisel_data_updaate = 'd0;
+assign pixel_data_update = 'd0;
 
 // DPC module
 dpc #(
-    .THRES      (30 ),
-    .DPC_MODE   (0  ),
-    .CLIP       (100),
+    .DPC_MODE   (0  ), 
     .H          (720)
 ) dpc_inst(
     .clk                (pixel_clk               ),
     .rstn               (rst_pix_n               ),
     .dpc_en             (isp_enable[DPC]         ), // TODO
+    .thres              (dpc_thres               ),
+    .clip               (dpc_clip                ),
     .pixel_data_in_vld  (pixel_data_vld[DPC]     ), // TODO
     .pixel_data_in      (pixel_data_rgb[DPC]     ),
     .pixel_data_out_vld (pixel_data_vld[DPC+1]   ),
@@ -404,9 +408,9 @@ ccm #(
     .clk               (pixel_clk                              ),
     .rstn              (rst_pix_n                              ),
    .ccm_en             (isp_enable[CCM]                        ),
-   .ccm_coef_r         (ccm_coef_r [0:3]                       ),
-   .ccm_coef_g         (ccm_coef_g [0:3]                       ),
-   .ccm_coef_b         (ccm_coef_b [0:3]                       ),
+   .ccm_coef_r         (ccm_coef_r                             ),
+   .ccm_coef_g         (ccm_coef_g                             ),
+   .ccm_coef_b         (ccm_coef_b                             ),
    .pixel_data_in_vld  (pixel_data_vld[CCM]                 ), 
    .pixel_data_in_r    (pixel_data_rgb[CCM][DW-1:DW-8]         ),
    .pixel_data_in_g    (pixel_data_rgb[CCM][DW-9:DW-16]        ),
@@ -456,9 +460,9 @@ csc #(
     .clk                 (pixel_clk              ),
     .rstn                (rst_pix_n              ),
    .csc_en             (isp_enable[CSC]                        ),
-   .csc_coef_r         (csc_coef_r [0:3]                       ),
-   .csc_coef_g         (csc_coef_g [0:3]                       ),
-   .csc_coef_b         (csc_coef_b [0:3]                       ),
+   .csc_coef_r         (csc_coef_r                             ),
+   .csc_coef_g         (csc_coef_g                             ),
+   .csc_coef_b         (csc_coef_b                             ),
    .pixel_data_in_vld  (pixel_data_vld[CSC]                 ), 
    .pixel_data_in_r    (pixel_data_rgb[CSC][DW-1:DW-8]         ),
    .pixel_data_in_g    (pixel_data_rgb[CSC][DW-9:DW-16]        ),
@@ -624,11 +628,7 @@ hsc #(
 dvi_transmitter_top u_rgb2dvi_0(
     .pclk           (pixel_clk),
     .pclk_x5        (pixel_clk_5x),
-`ifdef FPGA
     .reset_n        (rst_pix_n & clk_locked),
-`else
-    .reset_n        (rst_pix_n),
-`endif         
     .video_din      (video_rgb),
     .video_hsync    (video_hs), 
     .video_vsync    (video_vs),
@@ -639,8 +639,6 @@ dvi_transmitter_top u_rgb2dvi_0(
     .tmds_data_p    (tmds_data_p),
     .tmds_data_n    (tmds_data_n)
     );
-`elsif 
-
 `endif
 
 endmodule 

@@ -42,7 +42,13 @@ initial
 begin
     #(PERIOD*2) sys_rst_n  =  1;
     #(PERIOD*2) isp_enable = 16'h0001;
-    repeat(1000) @(posedge sys_clk);
+    repeat(100000) @(posedge sys_clk);
     $finish(2);
+end
+
+initial begin
+    $fsdbDumpfile("hdmi_colorbar_top_tb.fsdb");
+    $fsdbDumpvars(0,u_hdmi_colorbar_top);
+    $fsdbDumpMDA();
 end
 endmodule

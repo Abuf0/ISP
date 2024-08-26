@@ -16,7 +16,7 @@ module fcs#(
     input           [DW-1:0]   buffer_data_in_ccs_y  ,
     input           [DW-1:0]   buffer_data_in_ccs_cr ,
     input           [DW-1:0]   buffer_data_in_ccs_cb ,
-    input  signed   [DW:0]     pixel_data_in_edgemap ,
+    input           [DW-1:0]   pixel_data_in_edgemap ,
     output logic               pixel_data_out_vld    ,
     output logic    [DW-1:0]   pixel_data_out_y      ,
     output logic    [DW-1:0]   pixel_data_out_cr     ,

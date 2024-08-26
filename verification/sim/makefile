@@ -1,10 +1,10 @@
 all: compile wave verdi1
-TOP_MODULE =TOP_MODULE
-fsdb_name =${TOP_MODULE}.fsdb_name
+TOP_MODULE =hdmi_colorbar_top_tb
+fsdb_name =${TOP_MODULE}.fsdb
 path_name = /ext/home/wangyufei/Projects/ISP/design
 
 INIT_COMPILE = $(shell if [ ! -e irun ];then mkdir -p irun; fi;)
-INIT_VERDI = $(shell if [ ! -e irun ];then mkdir -p verdi; fi;)
+INIT_VERDI = $(shell if [ ! -e verdi ];then mkdir -p verdi; fi;)
 
 compile:
 	@echo $(INIT_COMPILE) create irun dir successfully!

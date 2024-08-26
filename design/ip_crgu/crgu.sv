@@ -53,6 +53,6 @@ end
 assign clk_out1 = clk_in;
 assign clk_out2 = clk_p | clk_n;
 
-asyn_rst_syn rst_pix_n_inst(.clk(clk_in),  .reset_n(rstn_in),  .syn_reset(rstn_out1));
+sync_reset_n rst_pix_n_inst(.clk(clk_in),  .async_rst_n(rstn_in),  .sync_rst_n(rstn_out1));
 
 endmodule

@@ -1,19 +1,19 @@
 // Dead Pixel Correction //
 module dpc#(
-    parameter THRES = 30        ,
     parameter DPC_MODE = 0      , // 0: mean  1: gradient
-    parameter CLIP = 100        ,
     parameter H = 1280  
 )(
     input               clk                 ,
     input               rstn                ,
     input               dpc_en              ,
+    input [7:0]         thres               ,
+    input [7:0]         clip                ,
     input               pixel_data_in_vld   ,
     input        [23:0] pixel_data_in       ,
     output logic [23:0] pixel_data_out      ,
     output logic        pixel_data_out_vld
 );
-logic [23:0] shift_reg [0:4*H+4-1];
+logic [23:0]shift_reg [0:4*H+4-1];
 logic [7:0] shift_r [0:4*H+4-1];
 logic [7:0] shift_g [0:4*H+4-1];
 logic [7:0] shift_b [0:4*H+4-1];
@@ -43,8 +43,12 @@ generate
             always_ff @( posedge clk or negedge rstn ) begin
                 if(~rstn)
                     shift_reg[i] <= 'd0;
-                else if(dpc_en && pixel_data_in_vld)
-                    shift_reg[i] <= (pixel_data_dpc > CLIP)?    CLIP : pixel_data_dpc;  // clip
+                else if(dpc_en && pixel_data_in_vld) begin
+                    //shift_reg[i] <= (pixel_data_dpc > CLIP)?    CLIP : pixel_data_dpc;  // clip
+                    shift_reg[i][23:16] <= (pixel_data_dpc[23:16] > clip)?    clip : pixel_data_dpc[23:16];  // clip
+                    shift_reg[i][15:8]  <= (pixel_data_dpc[15:8]  > clip)?    clip : pixel_data_dpc[15:8] ;  // clip
+                    shift_reg[i][7:0]   <= (pixel_data_dpc[7:0]   > clip)?    clip : pixel_data_dpc[7:0]  ;  // clip
+                end
             end
         end
         else begin
@@ -88,17 +92,17 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_in_vld_ff1 <= pixel_data_in_vld;
 end
 
-assign correct_flag_r = dpc_en?  (abs(shift_r[0]-shift_r[2*H+1]    ) > THRES && abs(shift_r[2]-shift_r[2*H+1]    ) > THRES && abs(shift_r[4]-shift_r[2*H+1]) > THRES &&
-                                 abs(shift_r[2*H-1]-shift_r[2*H+1]) > THRES && abs(shift_r[2*H+3]-shift_r[2*H+1]) > THRES &&
-                                 abs(shift_r[4*H-1]-shift_r[2*H+1]) > THRES && abs(shift_r[4*H+1]-shift_r[2*H+1]) > THRES && abs(shift_r[4*H+3]-shift_r[2*H+1]) > THRES) : 0;
+assign correct_flag_r = dpc_en?  ($abs(shift_r[0]-shift_r[2*H+1]    ) > thres && $abs(shift_r[2]-shift_r[2*H+1]    ) > thres && $abs(shift_r[4]-shift_r[2*H+1]) > thres &&
+                                 $abs(shift_r[2*H-1]-shift_r[2*H+1]) > thres && $abs(shift_r[2*H+3]-shift_r[2*H+1]) > thres &&
+                                 $abs(shift_r[4*H-1]-shift_r[2*H+1]) > thres && $abs(shift_r[4*H+1]-shift_r[2*H+1]) > thres && $abs(shift_r[4*H+3]-shift_r[2*H+1]) > thres) : 0;
 
-assign correct_flag_g = dpc_en?  (abs(shift_g[0]-shift_g[2*H+1]    ) > abs(THRES && shift_g[2]-shift_g[2*H+1]    ) > THRES && abs(shift_g[4]-shift_g[2*H+1]) > THRES &&
-                                 abs(shift_g[2*H-1]-shift_g[2*H+1]) > abs(THRES && shift_g[2*H+3]-shift_g[2*H+1]) > THRES &&
-                                 abs(shift_g[4*H-1]-shift_g[2*H+1]) > abs(THRES && shift_g[4*H+1]-shift_g[2*H+1]) > THRES && abs(shift_g[4*H+3]-shift_g[2*H+1]) > THRES) : 0;
+assign correct_flag_g = dpc_en?  ($abs(shift_g[0]-shift_g[2*H+1]    ) > $abs(thres && shift_g[2]-shift_g[2*H+1]    ) > thres && $abs(shift_g[4]-shift_g[2*H+1]) > thres &&
+                                 $abs(shift_g[2*H-1]-shift_g[2*H+1]) > $abs(thres && shift_g[2*H+3]-shift_g[2*H+1]) > thres &&
+                                 $abs(shift_g[4*H-1]-shift_g[2*H+1]) > $abs(thres && shift_g[4*H+1]-shift_g[2*H+1]) > thres && $abs(shift_g[4*H+3]-shift_g[2*H+1]) > thres) : 0;
 
-assign correct_flag_b = dpc_en?  (abs(shift_b[0]-shift_b[2*H+1]    ) > abs(THRES && shift_b[2]-shift_b[2*H+1]    ) > THRES && abs(shift_b[4]-shift_b[2*H+1]) > THRES &&
-                                 abs(shift_b[2*H-1]-shift_b[2*H+1]) > abs(THRES && shift_b[2*H+3]-shift_b[2*H+1]) > THRES &&
-                                 abs(shift_b[4*H-1]-shift_b[2*H+1]) > abs(THRES && shift_b[4*H+1]-shift_b[2*H+1]) > THRES && abs(shift_b[4*H+3]-shift_b[2*H+1]) > THRES) : 0;
+assign correct_flag_b = dpc_en?  ($abs(shift_b[0]-shift_b[2*H+1]    ) > $abs(thres && shift_b[2]-shift_b[2*H+1]    ) > thres && $abs(shift_b[4]-shift_b[2*H+1]) > thres &&
+                                 $abs(shift_b[2*H-1]-shift_b[2*H+1]) > $abs(thres && shift_b[2*H+3]-shift_b[2*H+1]) > thres &&
+                                 $abs(shift_b[4*H-1]-shift_b[2*H+1]) > $abs(thres && shift_b[4*H+1]-shift_b[2*H+1]) > thres && $abs(shift_b[4*H+3]-shift_b[2*H+1]) > thres) : 0;
 
 assign dpc_r = correct_flag_r?   ((shift_r[2] + shift_r[2*H-1] + shift_r[2*H+3] + shift_r[4*H+1])<<2) : shift_r[2*H+1];
 assign dpc_g = correct_flag_g?   ((shift_g[2] + shift_g[2*H-1] + shift_g[2*H+3] + shift_g[4*H+1])<<2) : shift_g[2*H+1];

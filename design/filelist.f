@@ -22,3 +22,5 @@
 
 ../../ISP/design/ip_crgu/crgu.sv
 ../../ISP/design/ip_common_lib/sync/asyn_rst_syn.sv
+../../ISP/design/ip_common_lib/sync/sync_reset_n.sv
+
