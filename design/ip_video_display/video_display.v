@@ -38,8 +38,10 @@ module  video_display(
 );
 
 //parameter define
-parameter  H_DISP = 11'd1280;                       //�ֱ��ʡ�����
-parameter  V_DISP = 11'd720;                        //�ֱ��ʡ�����
+//parameter  H_DISP = 11'd1280;                       //�ֱ��ʡ�����
+//parameter  V_DISP = 11'd720;                        //�ֱ��ʡ�����
+parameter  H_DISP = 11'd128;    
+parameter  V_DISP = 11'd72;     
 
 localparam WHITE  = 24'b11111111_11111111_11111111;  //RGB888 ��ɫ
 localparam BLACK  = 24'b00000000_00000000_00000000;  //RGB888 ��ɫ
@@ -51,6 +53,10 @@ localparam BLUE   = 24'b00000000_00000000_11111111;  //RGB888 ��ɫ
 //**                    main code
 //*****************************************************
 reg [15:0] mem [0:9215];
+reg [12:0] mem_addr;
+reg [12:0] mem_addr_ff1;
+
+assign mem_addr = (pixel_ypos==0)?  pixel_xpos : (pixel_xpos)+(pixel_ypos-1)*H_DISP;
 initial begin
 `ifdef FPGA
     $readmemb("D:/Learn/2-DESIGN/ISP/ISP/model/img_bayer_bin.txt",mem);
@@ -59,7 +65,7 @@ initial begin
 `endif
 end
 //���ݵ�ǰ���ص�����ָ����ǰ���ص���ɫ���ݣ�����Ļ����ʾ����
-always @(posedge pixel_clk ) begin
+always @(posedge pixel_clk or negedge sys_rst_n) begin
     if (!sys_rst_n)
         pixel_data <= 24'd0;
     else begin
@@ -73,22 +79,29 @@ always @(posedge pixel_clk ) begin
         //    pixel_data <= GREEN;
         //else 
         //    pixel_data <= BLUE;
-        if((pixel_xpos/10)+(pixel_ypos/10)*H_DISP < 9215)
-            pixel_data <= {8'd0,mem[(pixel_xpos/10)+(pixel_ypos/10)*H_DISP]};
+        if(mem_addr < 9215 && (mem_addr_ff1 != mem_addr))
+            pixel_data <= {8'd0,mem[mem_addr_ff1]};
         else 
             pixel_data <= BLACK;
     end
 end
 
-always @(posedge pixel_clk ) begin
+always @(posedge pixel_clk or negedge sys_rst_n) begin
     if (!sys_rst_n)
         pixel_data_vld <= 1'b0;
     else begin
-        if((pixel_xpos/10)+(pixel_ypos/10)*H_DISP < 9215)
+        if(mem_addr < 9215 && (mem_addr_ff1 != mem_addr) && (mem_addr!=0))
             pixel_data_vld <= 1'b1;
         else 
             pixel_data_vld <= 1'b0;
     end
+end
+
+always @(posedge pixel_clk or negedge sys_rst_n) begin
+    if (!sys_rst_n)
+        mem_addr_ff1 <= 'd0;
+    else
+        mem_addr_ff1 <= mem_addr;
 end
 
 // TODO

@@ -16,7 +16,7 @@ class DPC:
 
     def padding(self):
         #在四周放两个0 从(1080,1920) --->(1084,1924)
-        img_pad = np.pad(self.img, (2, 2), 'reflect')
+        img_pad = np.pad(self.img, (2, 2), 'constant')
         return img_pad
 
     def clipping(self):
@@ -44,13 +44,14 @@ class DPC:
                 p6 = img_pad[y + 4, x]
                 p7 = img_pad[y + 4, x + 2]
                 p8 = img_pad[y + 4, x + 4]
-                arr_p = np.array([((p1 - p0) > self.thres),((p2 - p0) > self.thres),((p3 - p0) > self.thres),((p4 - p0) > self.thres),((p5 - p0) > self.thres),((p6 - p0) > self.thres),((p7 - p0) > self.thres),((p8 - p0) > self.thres)])
-                arr_n = np.array([(-(p1 - p0) > self.thres),(-(p2 - p0) > self.thres),(-(p3 - p0) > self.thres),(-(p4 - p0) > self.thres),(-(p5 - p0) > self.thres),(-(p6 - p0) > self.thres),(-(p7 - p0) > self.thres),(-(p8 - p0) > self.thres)])
+                f.write("%d,%d : %d, %d, %d, %d, %d, %d, %d, %d, %d\n"%(y,x,p1,p2,p3,p4,p0,p5,p6,p7,p8))
+                arr = np.array([(abs(p1 - p0) > self.thres),(abs(p2 - p0) > self.thres),(abs(p3 - p0) > self.thres),(abs(p4 - p0) > self.thres),(abs(p5 - p0) > self.thres),(abs(p6 - p0) > self.thres),(abs(p7 - p0) > self.thres),(abs(p8 - p0) > self.thres)])
+                #arr_n = np.array([(-(p1 - p0) > self.thres),(-(p2 - p0) > self.thres),(-(p3 - p0) > self.thres),(-(p4 - p0) > self.thres),(-(p5 - p0) > self.thres),(-(p6 - p0) > self.thres),(-(p7 - p0) > self.thres),(-(p8 - p0) > self.thres)])
 
                 #if (abs(p1 - p0) > self.thres) and (abs(p2 - p0) > self.thres) and (abs(p3 - p0) > self.thres) \
                 #        and (abs(p4 - p0) > self.thres) and (abs(p5 - p0) > self.thres) and (abs(p6 - p0) > self.thres) \
                 #        and (abs(p7 - p0) > self.thres) and (abs(p8 - p0) > self.thres):
-                if(arr_p.all() or arr_n.all()):
+                if(arr.all()):
                     #print("go")
                     if self.mode == 'mean':
                         p0 = (p2 + p4 + p5 + p7) / 4
@@ -68,8 +69,6 @@ class DPC:
                         else:
                             p0 = (p3 + p6 + 1) / 2
                 dpc_img[y, x] = p0
-                f.write(str(dpc_img[y, x]))
-                f.write("\n")
         self.img = dpc_img
         return self.clipping()
 # 打开图像文件
@@ -78,7 +77,8 @@ class DPC:
 # 获取原始像素数据
 
 # 读取图像
-raw_data = cv2.imread('bayer_img.jpg',cv2.IMREAD_UNCHANGED)
+#raw_data = cv2.imread('bayer_img.jpg',cv2.IMREAD_UNCHANGED)
+raw_data = cv2.imread('img_bayer_resize.jpg',cv2.IMREAD_UNCHANGED)
 # b, g, r = cv2.split(raw_data)
 #plt.show()
 print(50*'-' + '\nLoading RAW Image Done......')
@@ -97,6 +97,12 @@ obj = DPC(raw_data,thres,'mean',clip)
 dpc_data = obj.execute()
 #dpc_data = cv2.merge([dpc_b, dpc_g, dpc_r])
 
+raw_h = dpc_data.shape[0]
+raw_w = dpc_data.shape[1]
+for y in range(raw_h):
+    for x in range(raw_w):
+        f.write(str(dpc_data[y,x]))
+        f.write("\n")
 print(50*'-' + '\nDead Pixel Correction Done......')
 
 cv2.imwrite('bayer_img_dpc.jpg', dpc_data)

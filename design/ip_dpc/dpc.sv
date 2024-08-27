@@ -17,7 +17,7 @@ module dpc#(
     output logic [DW-1:0]   pixel_data_out      ,
     output logic            pixel_data_out_vld
 );
-logic [DW-1:0]shift_reg [0:4*H+4-1];
+logic [DW-1:0]shift_reg [0:4*H+4];
 logic [DW-1:0] mac_arr[0:8];
 logic correct_flag;
 logic [DW-1:0] pixel_data_dpc;
@@ -28,9 +28,11 @@ logic [VW-1:0] v_cnt;
 
 logic mask;
 
+logic init;
+
 genvar i;
 generate
-    for(i=0;i<4*H+4;i=i+1) begin: SFT_ARRAY
+    for(i=0;i<4*H+5;i=i+1) begin: SFT_ARRAY
         if(i==0) begin
             always_ff @( posedge clk or negedge rstn ) begin
                 if(~rstn)
@@ -38,28 +40,16 @@ generate
                 else if(dpc_en && pixel_data_in_vld)
                     shift_reg[i] <= pixel_data_in;
             end
-            //always_ff@(posedge clk or negedge rstn) begin
-            //    if(~rstn)
-            //        pixel_data_in_vld_ff[i] <= 1'b0;
-            //    else if(dpc_en)
-            //        pixel_data_in_vld_ff[i] <= pixel_data_in_vld;
-            //end
         end
-        else if(i==2*H+2) begin  // replace dead pixel
-            always_ff @( posedge clk or negedge rstn ) begin
-                if(~rstn)
-                    shift_reg[i] <= 'd0;
-                else if(dpc_en && pixel_data_in_vld) begin
-                    shift_reg[i] <= (pixel_data_dpc > clip)?    clip : pixel_data_dpc;  // clip
-                end
-            end
-            //always_ff@(posedge clk or negedge rstn) begin
-            //    if(~rstn)
-            //        pixel_data_in_vld_ff[i] <= 1'b0;
-            //    else if(dpc_en)
-            //        pixel_data_in_vld_ff[i] <= pixel_data_in_vld_ff[i-1];
-            //end            
-        end
+        //else if(i==2*H+3) begin  // replace dead pixel
+        //    always_ff @( posedge clk or negedge rstn ) begin
+        //        if(~rstn)
+        //            shift_reg[i] <= 'd0;
+        //        else if(dpc_en && pixel_data_in_vld) begin
+        //            shift_reg[i] <= (pixel_data_dpc > clip)?    clip : pixel_data_dpc;  // clip
+        //        end
+        //    end
+        //end
         else begin
             always_ff @( posedge clk or negedge rstn ) begin
                 if(~rstn)
@@ -67,17 +57,11 @@ generate
                 else if(dpc_en && pixel_data_in_vld)
                     shift_reg[i] <= shift_reg[i-1];
             end
-            //always_ff@(posedge clk or negedge rstn) begin
-            //    if(~rstn)
-            //        pixel_data_in_vld_ff[i] <= 1'b0;
-            //    else if(dpc_en)
-            //        pixel_data_in_vld_ff[i] <= pixel_data_in_vld;
-            //end
         end
     end
 endgenerate
 
-assign pixel_data_out_pre = shift_reg[4*H+3];
+assign pixel_data_out_pre = (pixel_data_dpc > clip)?    clip : pixel_data_dpc; ;
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
@@ -93,21 +77,17 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_out_vld <= 1'b0;
     else if(dpc_en)
         //pixel_data_out_vld <= pixel_data_in_vld_ff[4*H+3];
-        pixel_data_out_vld <= mask;
+        pixel_data_out_vld <= ~init;
     else 
         pixel_data_out_vld <= pixel_data_in_vld;
 end
 
 // assuming pixel_data_in_vld always = 1
-always_ff@(posedge clk or negedge rstn) begin
-    if(~rstn)
-        mask <= 1'b0;
-    else if(v_cnt==4 && h_cnt==3)
-        mask <= 1'b1;
-end
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
+        h_cnt <= 'd0;
+    else if(init && v_cnt==2 && h_cnt==2)
         h_cnt <= 'd0;
     else if(dpc_en && pixel_data_in_vld)
         h_cnt <= (h_cnt==H-1)?  'd0:(h_cnt+1'b1);
@@ -115,25 +95,35 @@ end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         v_cnt <= 'd0;
+    else if(init && v_cnt==2 && h_cnt==2)
+        v_cnt <= 'd0;
     else if(dpc_en && pixel_data_in_vld && h_cnt==H-1)
         v_cnt <= (v_cnt==V-1)?  'd0:(v_cnt+1'b1);
 end
 
-assign mac_arr[0] = (v_cnt > 'd1 && h_cnt > 'd1)? shift_reg[0]            : 'd0 ;
-assign mac_arr[1] = (v_cnt > 'd1)?                shift_reg[2]            : 'd0 ;
-assign mac_arr[2] = (v_cnt > 'd1 && h_cnt < H-2)? shift_reg[4]            : 'd0 ;
-assign mac_arr[3] = (h_cnt > 'd1)?                shift_reg[2*H]          : 'd0 ;
-assign mac_arr[4] =                               shift_reg[2*H+2]              ;
-assign mac_arr[5] = (h_cnt < H-2)?                shift_reg[2*H+4]        : 'd0 ;
-assign mac_arr[6] = (v_cnt < V-2 && h_cnt > 'd1)? shift_reg[4*H]          : 'd0 ;
-assign mac_arr[7] = (v_cnt < V-2)?                shift_reg[4*H+2]        : 'd0 ;
-assign mac_arr[8] = (v_cnt < V-2 && h_cnt < H-2)? shift_reg[4*H+4]        : 'd0 ;
+always_ff@(posedge clk or negedge rstn) begin
+    if(~rstn)   
+        init <= 1'b1;
+    else if(init && v_cnt==2 && h_cnt==2)
+        init <= 1'b0;
+end
+
+
+assign mac_arr[0] = (v_cnt > 'd1 && h_cnt > 'd1)? shift_reg[4*H+4]          : 'd0 ;
+assign mac_arr[1] = (v_cnt > 'd1)?                shift_reg[4*H+2]          : 'd0 ;
+assign mac_arr[2] = (v_cnt > 'd1 && h_cnt < H-2)? shift_reg[4*H]            : 'd0 ;
+assign mac_arr[3] = (h_cnt > 'd1)?                shift_reg[2*H+4]          : 'd0 ;
+assign mac_arr[4] =                               shift_reg[2*H+2]                ;
+assign mac_arr[5] = (h_cnt < H-2)?                shift_reg[2*H]            : 'd0 ;
+assign mac_arr[6] = (v_cnt < V-2 && h_cnt > 'd1)? shift_reg[4]              : 'd0 ;
+assign mac_arr[7] = (v_cnt < V-2)?                shift_reg[2]              : 'd0 ;
+assign mac_arr[8] = (v_cnt < V-2 && h_cnt < H-2)? shift_reg[0]              : 'd0 ;
 
 assign correct_flag = dpc_en?  ($abs(mac_arr[0]-mac_arr[4]) > thres && $abs(mac_arr[1]-mac_arr[4]) > thres && $abs(mac_arr[2]-mac_arr[4]) > thres &&
                                 $abs(mac_arr[3]-mac_arr[4]) > thres && $abs(shift_reg[5]-shift_reg[4]) > thres &&
                                 $abs(mac_arr[6]-mac_arr[4]) > thres && $abs(shift_reg[7]-shift_reg[4]) > thres && $abs(shift_reg[8]-shift_reg[4]) > thres) : 0;
 
-assign pixel_data_dpc = correct_flag?   ((mac_arr[2] + mac_arr[4] + mac_arr[5] + mac_arr[7])<<2) : mac_arr[4];
+assign pixel_data_dpc = correct_flag?   ((mac_arr[1] + mac_arr[7] + mac_arr[3] + mac_arr[5])<<2) : mac_arr[4];
 
 
 `ifdef SIM
@@ -144,7 +134,7 @@ initial begin
 end
 
 always @(posedge clk) begin
-    if (pixel_data_out_vld && count==0) begin
+    if (pixel_data_out_vld) begin
         $fwrite(file,"%d\n", pixel_data_out);
     end
 //     else begin
@@ -152,12 +142,12 @@ always @(posedge clk) begin
 //         $fclose(file);   // 这里一定要写，关闭文件读写
 //     end
 end
-always_ff@(posedge clk or negedge rstn) begin
-    if(~rstn)
-        count <= 'd0;
-    else if(pixel_data_out_vld)
-        count <= (count==4'd9)?     'd0 : count+1'b1;
-end
+//always_ff@(posedge clk or negedge rstn) begin
+//    if(~rstn)
+//        count <= 'd0;
+//    else if(pixel_data_out_vld)
+//        count <= (count==4'd9)?     'd0 : count+1'b1;
+//end
 
 `endif
 

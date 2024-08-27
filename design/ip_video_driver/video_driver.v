@@ -1,19 +1,19 @@
 //****************************************Copyright (c)***********************************//
-//Ô­×Ó¸çÔÚÏß½ÌÑ§Æ½Ì¨£ºwww.yuanzige.com
-//¼¼ÊõÖ§³Ö£ºwww.openedv.com
-//ÌÔ±¦µêÆÌ£ºhttp://openedv.taobao.com
-//¹Ø×¢Î¢ÐÅ¹«ÖÚÆ½Ì¨Î¢ÐÅºÅ£º"ÕýµãÔ­×Ó"£¬Ãâ·Ñ»ñÈ¡ZYNQ & FPGA & STM32 & LINUX×ÊÁÏ¡£
-//°æÈ¨ËùÓÐ£¬µÁ°æ±Ø¾¿¡£
-//Copyright(C) ÕýµãÔ­×Ó 2018-2028
+//Ô­ï¿½Ó¸ï¿½ï¿½ï¿½ï¿½ß½ï¿½Ñ§Æ½Ì¨ï¿½ï¿½www.yuanzige.com
+//ï¿½ï¿½ï¿½ï¿½Ö§ï¿½Ö£ï¿½www.openedv.com
+//ï¿½Ô±ï¿½ï¿½ï¿½ï¿½Ì£ï¿½http://openedv.taobao.com
+//ï¿½ï¿½×¢Î¢ï¿½Å¹ï¿½ï¿½ï¿½Æ½Ì¨Î¢ï¿½ÅºÅ£ï¿½"ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½"ï¿½ï¿½ï¿½ï¿½Ñ»ï¿½È¡ZYNQ & FPGA & STM32 & LINUXï¿½ï¿½ï¿½Ï¡ï¿½
+//ï¿½ï¿½È¨ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ï¿½ï¿½
+//Copyright(C) ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ 2018-2028
 //All rights reserved
 //----------------------------------------------------------------------------------------
 // File name:           video_driver
 // Last modified Date:  2020/05/28 20:28:08
 // Last Version:        V1.0
-// Descriptions:        ÊÓÆµÏÔÊ¾Çý¶¯Ä£¿é
+// Descriptions:        ï¿½ï¿½Æµï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½
 //                      
 //----------------------------------------------------------------------------------------
-// Created by:          ÕýµãÔ­×Ó
+// Created by:          ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½
 // Created date:        2020/05/28 20:28:08
 // Version:             V1.0
 // Descriptions:        The original version
@@ -25,31 +25,43 @@ module video_driver(
     input           pixel_clk,
     input           sys_rst_n,
     
-    //RGB½Ó¿Ú
-    output          video_hs,     //ÐÐÍ¬²½ÐÅºÅ
-    output          video_vs,     //³¡Í¬²½ÐÅºÅ
-    output          video_de,     //Êý¾ÝÊ¹ÄÜ
-    output  [23:0]  video_rgb,    //RGB888ÑÕÉ«Êý¾Ý
+    //RGBï¿½Ó¿ï¿½
+    output          video_hs,     //ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Åºï¿½
+    output          video_vs,     //ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Åºï¿½
+    output          video_de,     //ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½
+    output  [23:0]  video_rgb,    //RGB888ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½
     
-    input   [23:0]  pixel_data,   //ÏñËØµãÊý¾Ý
-    output  [10:0]  pixel_xpos,   //ÏñËØµãºá×ø±ê
-    output  [10:0]  pixel_ypos    //ÏñËØµã×Ý×ø±ê
+    input   [23:0]  pixel_data,   //ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
+    output  [10:0]  pixel_xpos,   //ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    output  [10:0]  pixel_ypos    //ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 );
 
 //parameter define
 
-//1280*720 ·Ö±æÂÊÊ±Ðò²ÎÊý
-parameter  H_SYNC   =  11'd40;   //ÐÐÍ¬²½
-parameter  H_BACK   =  11'd220;  //ÐÐÏÔÊ¾ºóÑØ
-parameter  H_DISP   =  11'd1280; //ÐÐÓÐÐ§Êý¾Ý
-parameter  H_FRONT  =  11'd110;  //ÐÐÏÔÊ¾Ç°ÑØ
-parameter  H_TOTAL  =  11'd1650; //ÐÐÉ¨ÃèÖÜÆÚ
+//1280*720 ï¿½Ö±ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½
+//parameter  H_SYNC   =  11'd40;   //ï¿½ï¿½Í¬ï¿½ï¿½
+//parameter  H_BACK   =  11'd220;  //ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
+//parameter  H_DISP   =  11'd1280; //ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½
+//parameter  H_FRONT  =  11'd110;  //ï¿½ï¿½ï¿½ï¿½Ê¾Ç°ï¿½ï¿½
+//parameter  H_TOTAL  =  11'd1650; //ï¿½ï¿½É¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//
+//parameter  V_SYNC   =  11'd5;    //ï¿½ï¿½Í¬ï¿½ï¿½
+//parameter  V_BACK   =  11'd20;   //ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
+//parameter  V_DISP   =  11'd720;  //ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½
+//parameter  V_FRONT  =  11'd5;    //ï¿½ï¿½ï¿½ï¿½Ê¾Ç°ï¿½ï¿½
+//parameter  V_TOTAL  =  11'd750;  //ï¿½ï¿½É¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-parameter  V_SYNC   =  11'd5;    //³¡Í¬²½
-parameter  V_BACK   =  11'd20;   //³¡ÏÔÊ¾ºóÑØ
-parameter  V_DISP   =  11'd720;  //³¡ÓÐÐ§Êý¾Ý
-parameter  V_FRONT  =  11'd5;    //³¡ÏÔÊ¾Ç°ÑØ
-parameter  V_TOTAL  =  11'd750;  //³¡É¨ÃèÖÜÆÚ
+parameter  H_SYNC   =  11'd4;   //ï¿½ï¿½Í¬ï¿½ï¿½
+parameter  H_BACK   =  11'd22;  //ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
+parameter  H_DISP   =  11'd128; //ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½
+parameter  H_FRONT  =  11'd11;  //ï¿½ï¿½ï¿½ï¿½Ê¾Ç°ï¿½ï¿½
+parameter  H_TOTAL  =  11'd165; //ï¿½ï¿½É¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+parameter  V_SYNC   =  11'd5;    //ï¿½ï¿½Í¬ï¿½ï¿½
+parameter  V_BACK   =  11'd2;   //ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
+parameter  V_DISP   =  11'd72;  //ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½
+parameter  V_FRONT  =  11'd5;    //ï¿½ï¿½ï¿½ï¿½Ê¾Ç°ï¿½ï¿½
+parameter  V_TOTAL  =  11'd84;  //ï¿½ï¿½É¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 //reg define
 reg  [10:0] cnt_h;
@@ -65,29 +77,29 @@ wire       data_req;
 
 assign video_de  = video_en;
 
-assign video_hs  = ( cnt_h < H_SYNC ) ? 1'b0 : 1'b1;  //ÐÐÍ¬²½ÐÅºÅ¸³Öµ
-assign video_vs  = ( cnt_v < V_SYNC ) ? 1'b0 : 1'b1;  //³¡Í¬²½ÐÅºÅ¸³Öµ
+assign video_hs  = ( cnt_h < H_SYNC ) ? 1'b0 : 1'b1;  //ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ÅºÅ¸ï¿½Öµ
+assign video_vs  = ( cnt_v < V_SYNC ) ? 1'b0 : 1'b1;  //ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ÅºÅ¸ï¿½Öµ
 
-//Ê¹ÄÜRGBÊý¾ÝÊä³ö
+//Ê¹ï¿½ï¿½RGBï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 assign video_en  = (((cnt_h >= H_SYNC+H_BACK) && (cnt_h < H_SYNC+H_BACK+H_DISP))
                  &&((cnt_v >= V_SYNC+V_BACK) && (cnt_v < V_SYNC+V_BACK+V_DISP)))
                  ?  1'b1 : 1'b0;
 
-//RGB888Êý¾ÝÊä³ö
+//RGB888ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 assign video_rgb = video_en ? pixel_data : 24'd0;
 
-//ÇëÇóÏñËØµãÑÕÉ«Êý¾ÝÊäÈë
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 assign data_req = (((cnt_h >= H_SYNC+H_BACK-1'b1) && 
                     (cnt_h < H_SYNC+H_BACK+H_DISP-1'b1))
                   && ((cnt_v >= V_SYNC+V_BACK) && (cnt_v < V_SYNC+V_BACK+V_DISP)))
                   ?  1'b1 : 1'b0;
 
-//ÏñËØµã×ø±ê
+//ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
 assign pixel_xpos = data_req ? (cnt_h - (H_SYNC + H_BACK - 1'b1)) : 11'd0;
 assign pixel_ypos = data_req ? (cnt_v - (V_SYNC + V_BACK - 1'b1)) : 11'd0;
 
-//ÐÐ¼ÆÊýÆ÷¶ÔÏñËØÊ±ÖÓ¼ÆÊý
-always @(posedge pixel_clk ) begin
+//ï¿½Ð¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ó¼ï¿½ï¿½ï¿½
+always @(posedge pixel_clk or negedge sys_rst_n) begin
     if (!sys_rst_n)
         cnt_h <= 11'd0;
     else begin
@@ -98,8 +110,8 @@ always @(posedge pixel_clk ) begin
     end
 end
 
-//³¡¼ÆÊýÆ÷¶ÔÐÐ¼ÆÊý
-always @(posedge pixel_clk ) begin
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ï¿½
+always @(posedge pixel_clk or negedge sys_rst_n) begin
     if (!sys_rst_n)
         cnt_v <= 11'd0;
     else if(cnt_h == H_TOTAL - 1'b1) begin
