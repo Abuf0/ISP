@@ -32,7 +32,7 @@ class DPC:
         raw_w = self.img.shape[1]
         print(raw_h)
         print(raw_w)
-        dpc_img = np.empty((raw_h, raw_w), np.uint16)
+        dpc_img = np.empty((raw_h, raw_w), np.uint8)
         for y in range(img_pad.shape[0] - 4):
             for x in range(img_pad.shape[1] - 4):
                 p0 = img_pad[y + 2, x + 2]
@@ -68,6 +68,8 @@ class DPC:
                         else:
                             p0 = (p3 + p6 + 1) / 2
                 dpc_img[y, x] = p0
+                f.write(str(dpc_img[y, x]))
+                f.write("\n")
         self.img = dpc_img
         return self.clipping()
 # 打开图像文件
@@ -82,14 +84,15 @@ raw_data = cv2.imread('bayer_img.jpg',cv2.IMREAD_UNCHANGED)
 print(50*'-' + '\nLoading RAW Image Done......')
 
 # dead pixel correction
-thres = 180
-clip = 1000
+thres = 30
+clip = 250
 # obj_b = DPC(b,thres,'mean',clip)
 # obj_g = DPC(g,thres,'mean',clip)
 # obj_r = DPC(r,thres,'mean',clip)
 # dpc_b = obj_b.execute()
 # dpc_g = obj_g.execute()
 # dpc_r = obj_r.execute()
+f = open("./dpc_data.csv","w+")
 obj = DPC(raw_data,thres,'mean',clip)
 dpc_data = obj.execute()
 #dpc_data = cv2.merge([dpc_b, dpc_g, dpc_r])
@@ -97,7 +100,6 @@ dpc_data = obj.execute()
 print(50*'-' + '\nDead Pixel Correction Done......')
 
 cv2.imwrite('bayer_img_dpc.jpg', dpc_data)
-
 ## CV2(BGR) --> PLT(RGB)
 
 raw_data_rgb = cv2.cvtColor(raw_data, cv2.COLOR_BayerRGGB2BGR)
@@ -107,7 +109,7 @@ raw_data_rgb = cv2.cvtColor(raw_data, cv2.COLOR_BayerRGGB2BGR)
 dpc_data_rgb = cv2.cvtColor(dpc_data, cv2.COLOR_BayerRGGB2BGR)
 
 cv2.imwrite('img_dpc.jpg',dpc_data_rgb)
-
+f.close()
 # plt.figure()
 # plt.subplot(2,3,1)
 # plt.imshow(raw_data_rgb)

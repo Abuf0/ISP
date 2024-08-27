@@ -37,7 +37,7 @@ module  hdmi_colorbar_top# (
     output [2:0] tmds_data_n
    
 );
-
+parameter BW = 16;
 //wire define
 logic          pixel_clk;
 logic          pixel_clk_5x;
@@ -49,6 +49,7 @@ logic  [23:0]  pixel_data_rgb[0:16];
 logic          pixel_data_vld[0:16];
 logic  [23:0]  buffer_data_rgb_csc;
 logic  [23:0]  pixel_data_w;
+logic  [BW-1:0]  pixel_data_bayer[0:16];
 //logic  [15:0]  isp_enable;
 logic [23:0]   pixel_data_out;
 logic [23:0]   pixel_data_load   ;
@@ -217,6 +218,7 @@ parameter FCS = 12  ;
 parameter HSC = 13  ;
 parameter BCC = 15  ;
 
+
 //assign isp_enable = 16'h0000;
 //*****************************************************
 //**                    main code
@@ -288,7 +290,7 @@ assign pixel_data_update = 'd0;
 // DPC module
 dpc #(
     .DPC_MODE   (0   ), 
-    .DW         (DW   ),
+    .DW         (BW   ),
     .H          (H    ),
     .V          (V    ),
     .HW         (HW   ),
@@ -300,21 +302,22 @@ dpc #(
     .thres              (dpc_thres               ),
     .clip               (dpc_clip                ),
     .pixel_data_in_vld  (pixel_data_vld[DPC]     ), // TODO
-    .pixel_data_in      (pixel_data_rgb[DPC]     ),
+    .pixel_data_in      (pixel_data_bayer[DPC]   ),
     .pixel_data_out_vld (pixel_data_vld[DPC+1]   ),
-    .pixel_data_out     (pixel_data_rgb[DPC+1]   )
+    .pixel_data_out     (pixel_data_bayer[DPC+1] )
 );
+assign pixel_data_bayer[DPC] = pixel_data_rgb[DPC][BW-1:0];
 
 // BLC module
 blc #(
     .BIAS    (10  ),
     .COEF    (1   ),
     .BLC_MODE(0   ),
-    .DW      (DW  )  
+    .DW      (BW  )  
 ) blc_inst(
-    .blc_en         (isp_enable[BLC]       ),   // TODO
-    .pixel_data_in  (pixel_data_rgb[BLC]   ),
-    .pixel_data_out (pixel_data_rgb[BLC+1] )
+    .blc_en         (isp_enable[BLC]        ),   // TODO
+    .pixel_data_in  (pixel_data_bayer[BLC]  ),
+    .pixel_data_out (pixel_data_bayer[BLC+1])
 );
 assign pixel_data_vld[BLC+1] = pixel_data_vld[BLC];
 
@@ -330,9 +333,9 @@ aaf #(
     .rstn               (rst_pix_n               ),
     .aaf_en             (isp_enable[AAF]         ), // TODO
     .pixel_data_in_vld  (pixel_data_vld[AAF]     ), 
-    .pixel_data_in      (pixel_data_rgb[AAF]     ),
+    .pixel_data_in      (pixel_data_bayer[AAF]   ),
     .pixel_data_out_vld (pixel_data_vld[AAF+1]   ),
-    .pixel_data_out     (pixel_data_rgb[AAF+1]   ),
+    .pixel_data_out     (pixel_data_bayer[AAF+1] ),
     .aaf_done           (                        )  // TODO
 );
 
@@ -349,14 +352,14 @@ awb #(
     .awb_en              (isp_enable[AWB]        ), // TODO
     .bayer_pattern       (bayer_pattern          ), // TODO
     .awb_clip            (awb_clip               ), // TODO
-    .pixel_data_in       (pixel_data_rgb[AWB]    ),
+    .pixel_data_in       (pixel_data_bayer[AWB]  ),
     .pixel_data_in_vld   (pixel_data_vld[AWB]    ),
-    .pixel_data_out      (pixel_data_rgb[AWB+1]  ),
+    .pixel_data_out      (pixel_data_bayer[AWB+1]),
     .pixel_data_out_vld  (pixel_data_vld[AWB+1]  ),
     .awb_done            (                       )  // TODO
 );
 
-// CNF module
+// CNF module -- RGB
 cnf #(
     .DW  (DW   ),
     .H   (H    ),

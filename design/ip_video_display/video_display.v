@@ -50,12 +50,12 @@ localparam BLUE   = 24'b00000000_00000000_11111111;  //RGB888 ��ɫ
 //*****************************************************
 //**                    main code
 //*****************************************************
-reg [23:0] mem [0:9215];
+reg [15:0] mem [0:9215];
 initial begin
 `ifdef FPGA
-    $readmemb("D:/Learn/2-DESIGN/ISP/ISP/model/img_rgb888_bin.txt",mem);
+    $readmemb("D:/Learn/2-DESIGN/ISP/ISP/model/img_bayer_bin.txt",mem);
 `else
-    $readmemb("/ext3/home/wangyufei/Projects/6-ISP/model/img_rgb888_bin.txt",mem);
+    $readmemb("/ext3/home/wangyufei/Projects/6-ISP/model/img_bayer_bin.txt",mem);
 `endif
 end
 //���ݵ�ǰ���ص�����ָ����ǰ���ص���ɫ���ݣ�����Ļ����ʾ����
@@ -74,7 +74,7 @@ always @(posedge pixel_clk ) begin
         //else 
         //    pixel_data <= BLUE;
         if((pixel_xpos/10)+(pixel_ypos/10)*H_DISP < 9215)
-            pixel_data <= mem[(pixel_xpos/10)+(pixel_ypos/10)*H_DISP];
+            pixel_data <= {8'd0,mem[(pixel_xpos/10)+(pixel_ypos/10)*H_DISP]};
         else 
             pixel_data <= BLACK;
     end

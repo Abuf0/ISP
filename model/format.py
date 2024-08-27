@@ -7,7 +7,7 @@ img = cv2.imread("./img.jpg")
 (height, width) = img.shape[:2]
 (B,G,R) = cv2.split(img)
 
-bayer = np.empty((height, width), np.uint8)
+bayer = np.empty((height, width), np.uint16)
 
 # strided slicing for this pattern:
 #   G R
