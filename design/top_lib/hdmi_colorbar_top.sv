@@ -287,8 +287,12 @@ assign pixel_data_update = 'd0;
 
 // DPC module
 dpc #(
-    .DPC_MODE   (0  ), 
-    .H          (720)
+    .DPC_MODE   (0   ), 
+    .DW         (DW   ),
+    .H          (H    ),
+    .V          (V    ),
+    .HW         (HW   ),
+    .VW         (VW   )
 ) dpc_inst(
     .clk                (pixel_clk               ),
     .rstn               (rst_pix_n               ),
@@ -306,7 +310,7 @@ blc #(
     .BIAS    (10  ),
     .COEF    (1   ),
     .BLC_MODE(0   ),
-    .DW      ( 24 )  
+    .DW      (DW  )  
 ) blc_inst(
     .blc_en         (isp_enable[BLC]       ),   // TODO
     .pixel_data_in  (pixel_data_rgb[BLC]   ),
@@ -316,11 +320,11 @@ assign pixel_data_vld[BLC+1] = pixel_data_vld[BLC];
 
 // AAF module
 aaf #(
-    .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
-    .HW  (11    ),
-    .VW  (10    )
+    .DW  (DW   ),
+    .H   (H    ),
+    .V   (V    ),
+    .HW  (HW   ),
+    .VW  (VW   )
 ) aaf_inst(
     .clk                (pixel_clk               ),
     .rstn               (rst_pix_n               ),
@@ -334,11 +338,11 @@ aaf #(
 
 // AWB module
 awb #(
-    .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
-    .HW  (11    ),
-    .VW  (10    )
+    .DW  (DW   ),
+    .H   (H    ),
+    .V   (V    ),
+    .HW  (HW   ),
+    .VW  (VW   )
 ) awb_inst(
     .clk                 (pixel_clk              ),
     .rstn                (rst_pix_n              ),
@@ -354,11 +358,11 @@ awb #(
 
 // CNF module
 cnf #(
-    .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
-    .HW  (11    ),
-    .VW  (10    )
+    .DW  (DW   ),
+    .H   (H    ),
+    .V   (V    ),
+    .HW  (HW   ),
+    .VW  (VW   )
 ) cnf_inst(
     .clk                 (pixel_clk              ),
     .rstn                (rst_pix_n              ),
@@ -376,11 +380,11 @@ cnf #(
 // CFA module
 
 cfa #(
-    .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
-    .HW  (11    ),
-    .VW  (10    )
+    .DW  (DW   ),
+    .H   (H    ),
+    .V   (V    ),
+    .HW  (HW   ),
+    .VW  (VW   )
 ) cfa_inst(
     .clk                 (pixel_clk              ),
     .rstn                (rst_pix_n              ),
@@ -399,11 +403,11 @@ cfa #(
 // CCM module
 
 ccm #(
-    .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
-    .HW  (11    ),
-    .VW  (10    )
+    .DW  (DW   ),
+    .H   (H    ),
+    .V   (V    ),
+    .HW  (HW   ),
+    .VW  (VW   )
 ) ccm_inst(
     .clk               (pixel_clk                              ),
     .rstn              (rst_pix_n                              ),
@@ -425,11 +429,11 @@ ccm #(
 // GAC module
 
 gac #(
-    .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
-    .HW  (11    ),
-    .VW  (10    )
+    .DW  (DW   ),
+    .H   (H    ),
+    .V   (V    ),
+    .HW  (HW   ),
+    .VW  (VW   )
 ) gac_inst(
     .clk                 (pixel_clk              ),
     .rstn                (rst_pix_n              ),
@@ -451,11 +455,11 @@ gac #(
 // CSC module
 
 csc #(
-    .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
-    .HW  (11    ),
-    .VW  (10    )
+    .DW  (DW   ),
+    .H   (H    ),
+    .V   (V    ),
+    .HW  (HW   ),
+    .VW  (VW   )
 ) csc_inst(
     .clk                 (pixel_clk              ),
     .rstn                (rst_pix_n              ),
@@ -477,11 +481,11 @@ csc #(
 // NLM module
 
 nlm #(
-    .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
-    .HW  (11    ),
-    .VW  (10    )
+    .DW  (DW   ),
+    .H   (H    ),
+    .V   (V    ),
+    .HW  (HW   ),
+    .VW  (VW   )
 ) nlm_inst(
     .clk                (pixel_clk               ),
     .rstn               (rst_pix_n               ),
@@ -496,11 +500,11 @@ nlm #(
 // BNF module
 
 bnf #(
-    .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
-    .HW  (11    ),
-    .VW  (10    )
+    .DW  (DW  ),
+    .H   (H   ),
+    .V   (V   ),
+    .HW  (HW  ),
+    .VW  (VW  )
 ) bnf_inst(
     .clk                (pixel_clk               ),
     .rstn               (rst_pix_n               ),
@@ -522,11 +526,11 @@ bnf #(
 // EEH module
 
 eeh #(
-    .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
-    .HW  (11    ),
-    .VW  (10    )
+    .DW  (DW   ),
+    .H   (H    ),
+    .V   (V    ),
+    .HW  (HW   ),
+    .VW  (VW   )
 ) eeh_inst(
     .clk                (pixel_clk               ),
     .rstn               (rst_pix_n               ),
@@ -551,11 +555,11 @@ assign pixel_data_vld[BCC] = pixel_data_vld[EEH+1];
 // BCC module
 
 bcc #(
-    .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
-    .HW  (11    ),
-    .VW  (10    )
+    .DW  (DW   ),
+    .H   (H    ),
+    .V   (V    ),
+    .HW  (HW   ),
+    .VW  (VW   )
 ) bcc_inst(
     .clk                (pixel_clk               ),
     .rstn               (rst_pix_n               ),
@@ -573,11 +577,11 @@ bcc #(
 // FCS module
 
 fcs #(
-    .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
-    .HW  (11    ),
-    .VW  (10    )
+    .DW  (DW   ),
+    .H   (H    ),
+    .V   (V    ),
+    .HW  (HW   ),
+    .VW  (VW   )
 ) fcs_inst(
     .clk                    (pixel_clk               ),
     .rstn                   (rst_pix_n               ),
@@ -601,11 +605,11 @@ fcs #(
 // HSC module
 
 hsc #(
-    .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
-    .HW  (11    ),
-    .VW  (10    )
+    .DW  (DW   ),
+    .H   (H    ),
+    .V   (V    ),
+    .HW  (HW   ),
+    .VW  (VW   )
 ) hsc_inst(
     .clk                    (pixel_clk               ),
     .rstn                   (rst_pix_n               ),

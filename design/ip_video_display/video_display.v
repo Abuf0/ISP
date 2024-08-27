@@ -76,7 +76,7 @@ always @(posedge pixel_clk ) begin
         if((pixel_xpos/10)+(pixel_ypos/10)*H_DISP < 9215)
             pixel_data <= mem[(pixel_xpos/10)+(pixel_ypos/10)*H_DISP];
         else 
-            pixel_data <= BLUE;
+            pixel_data <= BLACK;
     end
 end
 

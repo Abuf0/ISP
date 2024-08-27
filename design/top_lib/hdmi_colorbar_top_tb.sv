@@ -3,6 +3,7 @@ module hdmi_colorbar_top_tb();
 // hdmi_colorbar_top Parameters
 parameter PERIOD  = 10;
 
+`define SIM
 
 // hdmi_colorbar_top Inputs
 logic   sys_clk                              = 0 ;
@@ -24,8 +25,8 @@ end
 
 hdmi_colorbar_top #(
     .DW  (24    ),
-    .H   (1280  ),
-    .V   (720   ),
+    .H   (128   ),
+    .V   (72    ),
     .HW  (11    ),
     .VW  (10    )    
 ) u_hdmi_colorbar_top (
