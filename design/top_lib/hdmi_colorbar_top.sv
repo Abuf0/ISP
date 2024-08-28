@@ -64,9 +64,11 @@ logic          video_vs;
 logic          video_de;
 logic  [23:0]  video_rgb;
 
-logic [7:0] dpc_thres;
-logic [7:0] dpc_clip;
+logic [DW-1:0] dpc_thres;
+logic [DW-1:0] dpc_clip;
 logic [1:0] bayer_pattern;
+logic [DW-1:0] blc_bias [0:3];
+logic [DW-1:0] blc_clip;
 logic [DW-1:0] awb_clip;
 logic [DW-1:0] cnf_clip;
 logic [DW-1:0] cnf_thres;
@@ -101,6 +103,13 @@ logic [DW-1:0] hsc_clip         ;
 assign dpc_thres = 30;
 assign dpc_clip  = 250;
 assign bayer_pattern = 2'd0;
+
+assign blc_bias[0] = 'd0;
+assign blc_bias[1] = 'd0;
+assign blc_bias[2] = 'd0;
+assign blc_bias[3] = 'd0;
+assign blc_clip = 250;
+
 assign awb_clip = 1023;
 assign cnf_clip = 1023;
 assign cnf_thres = 0;
@@ -310,16 +319,25 @@ assign pixel_data_bayer[DPC] = pixel_data_rgb[DPC][BW-1:0];
 
 // BLC module
 blc #(
-    .BIAS    (10  ),
-    .COEF    (1   ),
-    .BLC_MODE(0   ),
-    .DW      (BW  )  
+    .DW  (DW   ),
+    .H   (H    ),
+    .V   (V    ),
+    .HW  (HW   ),
+    .VW  (VW   )
 ) blc_inst(
-    .blc_en         (isp_enable[BLC]        ),   // TODO
-    .pixel_data_in  (pixel_data_bayer[BLC]  ),
-    .pixel_data_out (pixel_data_bayer[BLC+1])
+    .clk                (pixel_clk              ),
+    .rstn               (rst_pix_n              ),
+    .blc_en             (isp_enable[BLC]        ),   // TODO
+    .bayer_pattern      (bayer_pattern          ), // TODO
+    .bias               (blc_bias               ),
+    .alpha              ( 0                     ),
+    .beta               ( 0                     ),
+    .blc_clip           (blc_clip               ),
+    .pixel_data_in_vld  (pixel_data_vld[BLC]    ), 
+    .pixel_data_in      (pixel_data_bayer[BLC]  ),
+    .pixel_data_out_vld (pixel_data_vld[BLC+1]  ),
+    .pixel_data_out     (pixel_data_bayer[BLC+1])
 );
-assign pixel_data_vld[BLC+1] = pixel_data_vld[BLC];
 
 // AAF module
 aaf #(
