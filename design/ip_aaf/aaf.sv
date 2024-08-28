@@ -24,7 +24,7 @@ logic [VW-1:0] v_cnt;
 logic init;
 genvar i;
 generate 
-    for(i=0;i<4*H+4;i=i+1) begin: SFT_REG
+    for(i=0;i<4*H+5;i=i+1) begin: SFT_REG
         if(i==0) begin
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
@@ -116,7 +116,7 @@ end
 
 always @(posedge clk) begin
     if (pixel_data_out_vld) begin
-        $fwrite(file,"(%d\n",pixel_data_out);
+        $fwrite(file_aaf,"%d\n",pixel_data_out);
     end
 //     else begin
 //         $fclose(file);   // 这里一定要写，关闭文件读写

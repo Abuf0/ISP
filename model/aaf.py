@@ -12,7 +12,7 @@ class AAF:
         self.img = img
 
     def padding(self):
-        img_pad = np.pad(self.img, (2, 2), 'reflect')
+        img_pad = np.pad(self.img, (2, 2), 'constant')
         return img_pad
     
     def execute(self):

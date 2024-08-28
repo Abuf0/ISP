@@ -24,4 +24,5 @@
         - fix python runtime error: overflow
         - fixed pen slip
     - fixed blc bug
+    - fixed aaf
     - <TODO: building isp_pipeline.py>
