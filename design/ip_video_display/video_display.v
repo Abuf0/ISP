@@ -79,7 +79,7 @@ always @(posedge pixel_clk or negedge sys_rst_n) begin
         //    pixel_data <= GREEN;
         //else 
         //    pixel_data <= BLUE;
-        if(mem_addr < 9215 && (mem_addr_ff1 != mem_addr))
+        if(mem_addr < 9215 && (mem_addr_ff1 != mem_addr) && ~(mem_addr!=1 && mem_addr_ff1==0))
             pixel_data <= {8'd0,mem[mem_addr_ff1]};
         else 
             pixel_data <= BLACK;
@@ -90,7 +90,7 @@ always @(posedge pixel_clk or negedge sys_rst_n) begin
     if (!sys_rst_n)
         pixel_data_vld <= 1'b0;
     else begin
-        if(mem_addr < 9215 && (mem_addr_ff1 != mem_addr) && (mem_addr!=0))
+        if(mem_addr < 9215 && (mem_addr_ff1 != mem_addr) && ~(mem_addr!=1 && mem_addr_ff1==0))
             pixel_data_vld <= 1'b1;
         else 
             pixel_data_vld <= 1'b0;

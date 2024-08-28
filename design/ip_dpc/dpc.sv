@@ -61,7 +61,7 @@ generate
     end
 endgenerate
 
-assign pixel_data_out_pre = (pixel_data_dpc > clip)?    clip : pixel_data_dpc; ;
+assign pixel_data_out_pre = (pixel_data_dpc > clip)?    clip : pixel_data_dpc; 
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
@@ -77,7 +77,7 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_out_vld <= 1'b0;
     else if(dpc_en)
         //pixel_data_out_vld <= pixel_data_in_vld_ff[4*H+3];
-        pixel_data_out_vld <= ~init;
+        pixel_data_out_vld <= ~init && pixel_data_in_vld;
     else 
         pixel_data_out_vld <= pixel_data_in_vld;
 end
@@ -128,27 +128,32 @@ assign pixel_data_dpc = correct_flag?   ((mac_arr[1] + mac_arr[7] + mac_arr[3] +
 
 `ifdef SIM
 integer file;
-logic [3:0] count;
+integer file_p;
+integer file_in;
 initial begin
    file = $fopen("./dpc_result.csv","w+");  // 初始化文件
+   file_p = $fopen("./dpc_p_data.csv","w+"); 
+   file_in = $fopen("./raw_data.csv","w+"); 
 end
 
 always @(posedge clk) begin
     if (pixel_data_out_vld) begin
-        $fwrite(file,"%d\n", pixel_data_out);
+        $fwrite(file,"(%d,%d):%d\n",v_cnt,h_cnt, pixel_data_out);
     end
 //     else begin
-//         count <= 16‘d0;
 //         $fclose(file);   // 这里一定要写，关闭文件读写
 //     end
 end
-//always_ff@(posedge clk or negedge rstn) begin
-//    if(~rstn)
-//        count <= 'd0;
-//    else if(pixel_data_out_vld)
-//        count <= (count==4'd9)?     'd0 : count+1'b1;
-//end
-
+always @(posedge clk) begin
+    if (pixel_data_in_vld) begin
+        $fwrite(file_in,"%d\n",pixel_data_in);
+    end
+end
+always @(negedge clk) begin
+    if (pixel_data_in_vld && ~init) begin
+        $fwrite(filep,"(%d,%d):%d\t%d,%d\n",v_cnt,h_cnt,,pixel_data_dpc,correct_flag,mac_arr[4]);
+    end
+end
 `endif
 
 endmodule
