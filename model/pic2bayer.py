@@ -14,13 +14,16 @@ cv2.imwrite('img_bayer_resize.jpg', resized_image)
 
 
 # 将图像转换为 RGB 模式（如果不是的话）
-img = resized_image
+#img = resized_image
 
 # 将图像转换为 NumPy 数组
-img_array = np.array(img)
+#img_array = np.array(img)
 
 
 # 确保图像的数据类型是 uint8（即每个通道使用 8 位，即 0-255 的整数）
+#img_array = img_array.astype(np.uint16)
+
+img_array = cv2.imread('img_bayer_resize.jpg',cv2.IMREAD_UNCHANGED)
 img_array = img_array.astype(np.uint16)
 
 # 打印图像数组的形状和数据类型，以确保它符合 RGB888 的要求
@@ -36,8 +39,8 @@ def int_to_bin16(number):
     binary_string = bin(number & 0xFFFF)[2:]  # & 0xFF 确保只取低 8 位
     return binary_string.zfill(16)  # 使用 zfill 方法补齐到 8 位
 
-f = open('./img_bayer_bin.txt','w')
-f1 = open('./img_bayer.txt','w')
+f = open('./img_bayer_bin.txt','w+')
+f1 = open('./img_bayer.txt','w+')
 for x in range(0,img_array.shape[0]):
     for y in range(0,img_array.shape[1]):
         bayer_bin = int_to_bin16(img_array[x,y])
@@ -45,7 +48,7 @@ for x in range(0,img_array.shape[0]):
             print(img_array[x,y])
             print(bayer_bin)
         f.write(str(bayer_bin))
-        f1.write(str(img_array[x,y]))
+        f1.write("(%d,%d):%d"%(x,y,img_array[x,y]))
         f.write('\n')
         f1.write('\n')
 

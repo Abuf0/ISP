@@ -100,7 +100,7 @@ always_ff@(posedge clk or negedge rstn) begin
     else if(dpc_en && pixel_data_in_vld && h_cnt==H-1)
         v_cnt <= (v_cnt==V-1)?  'd0:(v_cnt+1'b1);
 end
-
+   
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)   
         init <= 1'b1;

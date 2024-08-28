@@ -44,7 +44,8 @@ class DPC:
                 p6 = img_pad[y + 4, x]
                 p7 = img_pad[y + 4, x + 2]
                 p8 = img_pad[y + 4, x + 4]
-                f.write("%d,%d : %d, %d, %d, %d, %d, %d, %d, %d, %d\n"%(y,x,p1,p2,p3,p4,p0,p5,p6,p7,p8))
+                #f.write("center(%d,%d): %d\n"%(y,x,p0))
+                f.write("left:(%d,%d): %d, %d, %d, %d, %d, %d, %d, %d, %d\n"%(y,x,p1,p2,p3,p4,p0,p5,p6,p7,p8))
                 arr = np.array([(abs(p1 - p0) > self.thres),(abs(p2 - p0) > self.thres),(abs(p3 - p0) > self.thres),(abs(p4 - p0) > self.thres),(abs(p5 - p0) > self.thres),(abs(p6 - p0) > self.thres),(abs(p7 - p0) > self.thres),(abs(p8 - p0) > self.thres)])
                 #arr_n = np.array([(-(p1 - p0) > self.thres),(-(p2 - p0) > self.thres),(-(p3 - p0) > self.thres),(-(p4 - p0) > self.thres),(-(p5 - p0) > self.thres),(-(p6 - p0) > self.thres),(-(p7 - p0) > self.thres),(-(p8 - p0) > self.thres)])
 
