@@ -120,10 +120,10 @@ assign mac_arr[7] = (v_cnt < V-2)?                shift_reg[2]              : 'd
 assign mac_arr[8] = (v_cnt < V-2 && h_cnt < H-2)? shift_reg[0]              : 'd0 ;
 
 assign correct_flag = dpc_en?  ($abs(mac_arr[0]-mac_arr[4]) > thres && $abs(mac_arr[1]-mac_arr[4]) > thres && $abs(mac_arr[2]-mac_arr[4]) > thres &&
-                                $abs(mac_arr[3]-mac_arr[4]) > thres && $abs(shift_reg[5]-shift_reg[4]) > thres &&
-                                $abs(mac_arr[6]-mac_arr[4]) > thres && $abs(shift_reg[7]-shift_reg[4]) > thres && $abs(shift_reg[8]-shift_reg[4]) > thres) : 0;
+                                $abs(mac_arr[3]-mac_arr[4]) > thres && $abs(mac_arr[5]-mac_arr[4]) > thres &&
+                                $abs(mac_arr[6]-mac_arr[4]) > thres && $abs(mac_arr[7]-mac_arr[4]) > thres && $abs(mac_arr[8]-mac_arr[4]) > thres) : 0;
 
-assign pixel_data_dpc = correct_flag?   ((mac_arr[1] + mac_arr[7] + mac_arr[3] + mac_arr[5])<<2) : mac_arr[4];
+assign pixel_data_dpc = correct_flag?   ((mac_arr[1] + mac_arr[7] + mac_arr[3] + mac_arr[5])>>2) : mac_arr[4];
 
 
 `ifdef SIM

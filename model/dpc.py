@@ -45,7 +45,7 @@ class DPC:
                 p7 = img_pad[y + 4, x + 2]
                 p8 = img_pad[y + 4, x + 4]
                 #f.write("center(%d,%d): %d\n"%(y,x,p0))
-                f.write("left:(%d,%d): %d, %d, %d, %d, %d, %d, %d, %d, %d\n"%(y,x,p1,p2,p3,p4,p0,p5,p6,p7,p8))
+                #f.write("left:(%d,%d): %d, %d, %d, %d, %d, %d, %d, %d, %d\n"%(y,x,p1,p2,p3,p4,p0,p5,p6,p7,p8))
                 arr = np.array([(abs(p1 - p0) > self.thres),(abs(p2 - p0) > self.thres),(abs(p3 - p0) > self.thres),(abs(p4 - p0) > self.thres),(abs(p5 - p0) > self.thres),(abs(p6 - p0) > self.thres),(abs(p7 - p0) > self.thres),(abs(p8 - p0) > self.thres)])
                 #arr_n = np.array([(-(p1 - p0) > self.thres),(-(p2 - p0) > self.thres),(-(p3 - p0) > self.thres),(-(p4 - p0) > self.thres),(-(p5 - p0) > self.thres),(-(p6 - p0) > self.thres),(-(p7 - p0) > self.thres),(-(p8 - p0) > self.thres)])
 
@@ -55,7 +55,7 @@ class DPC:
                 if(arr.all()):
                     #print("go")
                     if self.mode == 'mean':
-                        p0 = (p2 + p4 + p5 + p7) / 4
+                        p0 = (int(p2) + int(p4) + int(p5) + int(p7)) / 4
                     elif self.mode == 'gradient':
                         dv = abs(2 * p0 - p2 - p7)
                         dh = abs(2 * p0 - p4 - p5)
@@ -70,6 +70,7 @@ class DPC:
                         else:
                             p0 = (p3 + p6 + 1) / 2
                 dpc_img[y, x] = p0
+                #f.write("center(%d,%d): %d[(%d+%d+%d+%d)/4=%d], %d, %d\n"%(y,x,dpc_img[y, x],p2,p4,p5,p7,(int(p2) + int(p4) + int(p5) + int(p7)) / 4,arr.all(),img_pad[y + 2, x + 2]))
         self.img = dpc_img
         return self.clipping()
 # 打开图像文件
