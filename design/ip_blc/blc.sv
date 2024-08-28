@@ -13,7 +13,7 @@ module blc#(
     input [DW-1:0]            alpha                 ,
     input [DW-1:0]            beta                  ,
     input [DW-1:0]            blc_clip              ,
-    input                     pixel_data_in         ,
+    input                     pixel_data_in_vld     ,
     input [DW-1:0]            pixel_data_in         ,
     output logic              pixel_data_out_vld    ,
     output logic [DW-1:0]     pixel_data_out  
@@ -80,4 +80,20 @@ always_ff@(posedge clk or negedge rstn) begin
     else
         pixel_data_out_vld <= pixel_data_in_vld;
 end
+
+`ifdef SIM
+integer file_blc;
+initial begin
+   file_blc = $fopen("./blc_result.csv","w+");  // 初始化文件
+end
+
+always @(posedge clk) begin
+    if (pixel_data_out_vld) begin
+        $fwrite(file_blc,"%d\n",pixel_data_out);
+    end
+//     else begin
+//         $fclose(file);   // 这里一定要写，关闭文件读写
+//     end
+end
+`endif
 endmodule

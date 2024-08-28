@@ -32,7 +32,7 @@ class DPC:
         raw_w = self.img.shape[1]
         print(raw_h)
         print(raw_w)
-        dpc_img = np.empty((raw_h, raw_w), np.uint8)
+        dpc_img = np.empty((raw_h, raw_w), np.uint16)
         for y in range(img_pad.shape[0] - 4):
             for x in range(img_pad.shape[1] - 4):
                 p0 = img_pad[y + 2, x + 2]

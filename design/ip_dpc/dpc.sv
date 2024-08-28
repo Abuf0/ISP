@@ -26,8 +26,6 @@ logic [DW-1:0] pixel_data_out_pre;
 logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt;
 
-logic mask;
-
 logic init;
 
 genvar i;
