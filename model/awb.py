@@ -42,9 +42,9 @@ class AWB:
             print("r_avg: %d\nb_avg: %d\ng_avg: %d\n"%(r_avg,b_avg,g_avg))
             print("r_gain: %f\ngr_gain: %f\ngb_gain: %f\nb_gain: %f\n"%(r_gain,gr_gain,gb_gain,b_gain))
             awb_img[::2, ::2] = r * r_gain
-            awb_img[::2, 1::2] = gr * b_gain
-            awb_img[1::2, ::2] = gb * gr_gain
-            awb_img[1::2, 1::2] = b * gb_gain
+            awb_img[::2, 1::2] = gr * gr_gain
+            awb_img[1::2, ::2] = gb * gb_gain
+            awb_img[1::2, 1::2] = b * b_gain
         elif self.bayer_pattern == 'bggr':
             b = self.img[::2, ::2] * b_gain
             r = self.img[1::2, 1::2] * r_gain

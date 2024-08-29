@@ -71,6 +71,7 @@ logic [DW-1:0] blc_bias [0:3];
 logic [DW-1:0] blc_clip;
 logic [DW-1:0] awb_gain [0:3];
 logic [DW-1:0] awb_clip;
+logic [DW-1:0] cnf_gain;
 logic [DW-1:0] cnf_clip;
 logic [DW-1:0] cnf_thres;
 logic [DW-1:0] cfa_clip;
@@ -117,6 +118,12 @@ assign awb_gain[2] = 256;  // 1.0 << 8
 assign awb_gain[3] = 128;  // 0.5 << 8
 
 assign awb_clip = 250;
+
+assign cnf_gain[0] = 384;  // 1.5 << 8
+assign cnf_gain[1] = 256;  // 1.0 << 8
+assign cnf_gain[2] = 256;  // 1.0 << 8
+assign cnf_gain[3] = 128;  // 0.5 << 8
+
 assign cnf_clip = 1023;
 assign cnf_thres = 0;
 assign cfa_clip = 1023;
@@ -380,8 +387,8 @@ awb #(
     .pixel_data_in       (pixel_data_bayer[AWB]  ),
     .pixel_data_in_vld   (pixel_data_vld[AWB]    ),
     .pixel_data_out      (pixel_data_bayer[AWB+1]),
-    .pixel_data_out_vld  (pixel_data_vld[AWB+1]  ),
-    .awb_done            (                       )  // TODO
+    .pixel_data_out_vld  (pixel_data_vld[AWB+1]  )//,
+    //.awb_done            (                       )  // TODO
 );
 
 // CNF module -- RGB
@@ -396,6 +403,7 @@ cnf #(
     .rstn                (rst_pix_n              ),
     .cnf_en              (isp_enable[CNF]        ), // TODO
     .thres               (cnf_thres              ), // TODO
+    .cnf_gain            (cnf_gain               ),
     .bayer_pattern       (bayer_pattern          ), // TODO
     .cnf_clip            (cnf_clip               ), // TODO
     .pixel_data_in       (pixel_data_rgb[CNF]    ),

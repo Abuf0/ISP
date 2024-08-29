@@ -13,7 +13,7 @@ class CNF:
         self.clip = clip
 
     def padding(self):
-        img_pad = np.pad(self.img, ((4, 4), (4, 4)), 'reflect')
+        img_pad = np.pad(self.img, ((4, 4), (4, 4)), 'constant')
         return img_pad
 
     def clipping(self):
@@ -100,6 +100,7 @@ class CNF:
         avgG = avgG / 40
         avgC1 = avgC1 / 25
         avgC2 = avgC2 / 16
+        #print("%d,%d,%d"%(avgG,avgC1,avgC2))
         center = img[y, x]
         if center > avgG + self.thres and center > avgC2 + self.thres:
             if avgC1 > avgG + self.thres and avgC1 > avgC2 + self.thres:

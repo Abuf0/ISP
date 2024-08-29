@@ -9,6 +9,7 @@ module cnf#(
     input                   rstn                  ,
     input                   cnf_en                ,
     input        [DW-1:0]   thres                 ,
+    input        [DW-1:0]   cnf_gain              ,
     input        [DW-1:0]   cnf_clip              ,
     input        [2:0]      bayer_pattern         ,  
     input        [DW-1:0]   pixel_data_in         ,
@@ -31,9 +32,10 @@ logic [DW-1:0] avg_c2;
 
 logic is_noise;
 
-parameter B = 2'd0;
-parameter G = 2'd1;
-parameter R = 2'd2;
+parameter B = 2'd3;
+parameter GB = 2'd2;
+parameter GR = 2'd1;
+parameter R = 2'd0;
 logic [1:0] bayer_arr[0:3];
 
 //************************************
@@ -54,14 +56,18 @@ logic [DW-1:0] center_out;
 
 // ********************************
 logic [DW-1:0] pixel_data_out_pre;
-logic pixel_data_out_vld_pre;
 logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt;
-logic flag;
+logic init;
+
+assign r_gain = cnf_gain[0];
+assign gr_gain = cnf_gain[1];
+assign gb_gain = cnf_gain[2];
+assign b_gain = cnf_gain[3];
 
 genvar i;
 generate 
-    for(i=0;i<8*H+8;i=i+1) begin: SFT_REG
+    for(i=0;i<8*H+9;i=i+1) begin: SFT_REG
         if(i==0) begin
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
@@ -84,37 +90,37 @@ genvar j;
 generate 
     for(j=0;j<9;j=j+1) begin
         if(j<=3) begin
-            assign mac_arr[j*9+0] = (v_cnt > (3-j) && h_cnt > 'd3)? shift_reg[j*9+0]            : 'd0 ;
-            assign mac_arr[j*9+1] = (v_cnt > (3-j) && h_cnt > 'd2)? shift_reg[j*9+1]            : 'd0 ;
-            assign mac_arr[j*9+2] = (v_cnt > (3-j) && h_cnt > 'd1)? shift_reg[j*9+2]            : 'd0 ;
-            assign mac_arr[j*9+3] = (v_cnt > (3-j) && h_cnt > 'd0)? shift_reg[j*9+3]            : 'd0 ;
-            assign mac_arr[j*9+4] = (v_cnt > (3-j))?                shift_reg[j*9+4]            : 'd0 ;
-            assign mac_arr[j*9+5] = (v_cnt > (3-j) && h_cnt < H-4)? shift_reg[j*9+5]            : 'd0 ;
-            assign mac_arr[j*9+6] = (v_cnt > (3-j) && h_cnt < H-3)? shift_reg[j*9+6]            : 'd0 ;
-            assign mac_arr[j*9+7] = (v_cnt > (3-j) && h_cnt < H-2)? shift_reg[j*9+7]            : 'd0 ;
-            assign mac_arr[j*9+8] = (v_cnt > (3-j) && h_cnt < H-1)? shift_reg[j*9+8]            : 'd0 ;
+            assign mac_arr[j*9+0] = (v_cnt > (3-j) && h_cnt > 'd3)? shift_reg[8*H+8-(j*9+0)]            : 'd0 ;
+            assign mac_arr[j*9+1] = (v_cnt > (3-j) && h_cnt > 'd2)? shift_reg[8*H+8-(j*9+1)]            : 'd0 ;
+            assign mac_arr[j*9+2] = (v_cnt > (3-j) && h_cnt > 'd1)? shift_reg[8*H+8-(j*9+2)]            : 'd0 ;
+            assign mac_arr[j*9+3] = (v_cnt > (3-j) && h_cnt > 'd0)? shift_reg[8*H+8-(j*9+3)]            : 'd0 ;
+            assign mac_arr[j*9+4] = (v_cnt > (3-j))?                shift_reg[8*H+8-(j*9+4)]            : 'd0 ;
+            assign mac_arr[j*9+5] = (v_cnt > (3-j) && h_cnt < H-4)? shift_reg[8*H+8-(j*9+5)]            : 'd0 ;
+            assign mac_arr[j*9+6] = (v_cnt > (3-j) && h_cnt < H-3)? shift_reg[8*H+8-(j*9+6)]            : 'd0 ;
+            assign mac_arr[j*9+7] = (v_cnt > (3-j) && h_cnt < H-2)? shift_reg[8*H+8-(j*9+7)]            : 'd0 ;
+            assign mac_arr[j*9+8] = (v_cnt > (3-j) && h_cnt < H-1)? shift_reg[8*H+8-(j*9+8)]            : 'd0 ;
         end
         else if(j==4) begin
-            assign mac_arr[j*9+0] = (h_cnt > 'd3)?                  shift_reg[j*9+0]            : 'd0 ;
-            assign mac_arr[j*9+1] = (h_cnt > 'd2)?                  shift_reg[j*9+1]            : 'd0 ;
-            assign mac_arr[j*9+2] = (h_cnt > 'd1)?                  shift_reg[j*9+2]            : 'd0 ;
-            assign mac_arr[j*9+3] = (h_cnt > 'd0)?                  shift_reg[j*9+3]            : 'd0 ;
-            assign mac_arr[j*9+4] =                                 shift_reg[j*9+4]                  ;
-            assign mac_arr[j*9+5] = (h_cnt < H-4)?                  shift_reg[j*9+5]            : 'd0 ;
-            assign mac_arr[j*9+6] = (h_cnt < H-3)?                  shift_reg[j*9+6]            : 'd0 ;
-            assign mac_arr[j*9+7] = (h_cnt < H-2)?                  shift_reg[j*9+7]            : 'd0 ;
-            assign mac_arr[j*9+8] = (h_cnt < H-1)?                  shift_reg[j*9+8]            : 'd0 ;            
+            assign mac_arr[j*9+0] = (h_cnt > 'd3)?                  shift_reg[8*H+8-(j*9+0)]            : 'd0 ;
+            assign mac_arr[j*9+1] = (h_cnt > 'd2)?                  shift_reg[8*H+8-(j*9+1)]            : 'd0 ;
+            assign mac_arr[j*9+2] = (h_cnt > 'd1)?                  shift_reg[8*H+8-(j*9+2)]            : 'd0 ;
+            assign mac_arr[j*9+3] = (h_cnt > 'd0)?                  shift_reg[8*H+8-(j*9+3)]            : 'd0 ;
+            assign mac_arr[j*9+4] =                                 shift_reg[8*H+8-(j*9+4)]                  ;
+            assign mac_arr[j*9+5] = (h_cnt < H-4)?                  shift_reg[8*H+8-(j*9+5)]            : 'd0 ;
+            assign mac_arr[j*9+6] = (h_cnt < H-3)?                  shift_reg[8*H+8-(j*9+6)]            : 'd0 ;
+            assign mac_arr[j*9+7] = (h_cnt < H-2)?                  shift_reg[8*H+8-(j*9+7)]            : 'd0 ;
+            assign mac_arr[j*9+8] = (h_cnt < H-1)?                  shift_reg[8*H+8-(j*9+8)]            : 'd0 ;            
         end
         else begin
-            assign mac_arr[j*9+0] = (v_cnt < V-8+j && h_cnt > 'd3)? shift_reg[j*9+0]            : 'd0 ;
-            assign mac_arr[j*9+1] = (v_cnt < V-8+j && h_cnt > 'd2)? shift_reg[j*9+1]            : 'd0 ;
-            assign mac_arr[j*9+2] = (v_cnt < V-8+j && h_cnt > 'd1)? shift_reg[j*9+2]            : 'd0 ;
-            assign mac_arr[j*9+3] = (v_cnt < V-8+j && h_cnt > 'd0)? shift_reg[j*9+3]            : 'd0 ;
-            assign mac_arr[j*9+4] = (v_cnt < V-8+j)?                shift_reg[j*9+4]            : 'd0 ;
-            assign mac_arr[j*9+5] = (v_cnt < V-8+j && h_cnt < H-4)? shift_reg[j*9+5]            : 'd0 ;
-            assign mac_arr[j*9+6] = (v_cnt < V-8+j && h_cnt < H-3)? shift_reg[j*9+6]            : 'd0 ;
-            assign mac_arr[j*9+7] = (v_cnt < V-8+j && h_cnt < H-2)? shift_reg[j*9+7]            : 'd0 ;
-            assign mac_arr[j*9+8] = (v_cnt < V-8+j && h_cnt < H-1)? shift_reg[j*9+8]            : 'd0 ;
+            assign mac_arr[j*9+0] = (v_cnt < V-8+j && h_cnt > 'd3)? shift_reg[8*H+8-(j*9+0)]            : 'd0 ;
+            assign mac_arr[j*9+1] = (v_cnt < V-8+j && h_cnt > 'd2)? shift_reg[8*H+8-(j*9+1)]            : 'd0 ;
+            assign mac_arr[j*9+2] = (v_cnt < V-8+j && h_cnt > 'd1)? shift_reg[8*H+8-(j*9+2)]            : 'd0 ;
+            assign mac_arr[j*9+3] = (v_cnt < V-8+j && h_cnt > 'd0)? shift_reg[8*H+8-(j*9+3)]            : 'd0 ;
+            assign mac_arr[j*9+4] = (v_cnt < V-8+j)?                shift_reg[8*H+8-(j*9+4)]            : 'd0 ;
+            assign mac_arr[j*9+5] = (v_cnt < V-8+j && h_cnt < H-4)? shift_reg[8*H+8-(j*9+5)]            : 'd0 ;
+            assign mac_arr[j*9+6] = (v_cnt < V-8+j && h_cnt < H-3)? shift_reg[8*H+8-(j*9+6)]            : 'd0 ;
+            assign mac_arr[j*9+7] = (v_cnt < V-8+j && h_cnt < H-2)? shift_reg[8*H+8-(j*9+7)]            : 'd0 ;
+            assign mac_arr[j*9+8] = (v_cnt < V-8+j && h_cnt < H-1)? shift_reg[8*H+8-(j*9+8)]            : 'd0 ;
         end 
     end
 endgenerate
@@ -178,11 +184,11 @@ assign is_noise = (center > avg_g+thres) && (center > avg_c2+thres) && (avg_c1 >
 assign bayer_index = {v_cnt[0],h_cnt[0]};
 
 always@(*) begin
-    {bayer_arr[0],bayer_arr[1],bayer_arr[2],bayer_arr[3]} = {R,G,G,B};
+    {bayer_arr[0],bayer_arr[1],bayer_arr[2],bayer_arr[3]} = {R,GR,GB,B};
     case(bayer_pattern) 
-        2'd0:   {bayer_arr[0],bayer_arr[1],bayer_arr[2],bayer_arr[3]} = {R,G,G,B};
-        2'd1:   {bayer_arr[0],bayer_arr[1],bayer_arr[2],bayer_arr[3]} = {B,G,G,R};
-        default:{bayer_arr[0],bayer_arr[1],bayer_arr[2],bayer_arr[3]} = {R,G,G,B};
+        2'd0:   {bayer_arr[0],bayer_arr[1],bayer_arr[2],bayer_arr[3]} = {R,GR,GB,B};
+        2'd1:   {bayer_arr[0],bayer_arr[1],bayer_arr[2],bayer_arr[3]} = {B,GR,GB,R};
+        default:{bayer_arr[0],bayer_arr[1],bayer_arr[2],bayer_arr[3]} = {R,GR,GB,B};
     endcase
 end
 
@@ -195,57 +201,57 @@ always@(*) begin
     signal_meter = 'd0;
     case(bayer_arr[bayer_index])
         R : begin 
-            damp_factor = (r_gain <= 1.0)?  1.0 :
-                          (r_gain > 1.2)?   0.3 : 0.5;
-            signal_meter = 0.299*avg_c1 + 0.587*avg_g + 0.114*avg_c2;
+            damp_factor = (r_gain <= 256)?  256 :   // x256
+                          (r_gain > 307)?   77 : 128;
+            signal_meter = (77*avg_c1 + 150*avg_g + 29*avg_c2) >> 8;
         end
         B : begin
-            damp_factor = (b_gain <= 1.0)?  1.0 :
-                          (b_gain > 1.2)?   0.3 : 0.5;
-            signal_meter = 0.299*avg_c2 + 0.587*avg_g + 0.114*avg_c1;
+            damp_factor = (b_gain <= 256)?  256 :
+                          (b_gain > 307)?   77 : 128;
+            signal_meter = (77*avg_c1 + 150*avg_g + 29*avg_c2) >> 8;
         end
         default: begin
-            damp_factor = 1.0;
+            damp_factor = 256;
             signal_meter = 'd0;
         end
     endcase
 
 end
-assign chroma_corr = (avg_g > avg_c2)?  avg_g + damp_factor*signal_gap : avg_c2 + damp_factor*signal_gap;
+assign chroma_corr = (avg_g > avg_c2)?  avg_g + (damp_factor*signal_gap) >>8 : avg_c2 + (damp_factor*signal_gap) >>8;
 
 always@(*) begin
     fade1 = 0;
     if(signal_meter <= 30) 
-        fade1 = 1.0;
+        fade1 = 256;
     else if(signal_meter > 30 && signal_meter <= 50)
-        fade1 = 0.9;
+        fade1 = 230;
     else if(signal_meter > 50 && signal_meter <= 70)
-        fade1 = 0.9;
+        fade1 = 230;
     else if(signal_meter > 70 && signal_meter <= 100)
-        fade1 = 0.9;
+        fade1 = 230;
     else if(signal_meter > 100 && signal_meter <= 150)
-        fade1 = 0.9;
+        fade1 = 230;
     else if(signal_meter > 150 && signal_meter <= 200)
-        fade1 = 0.9;
+        fade1 = 230;
     else if(signal_meter > 200 && signal_meter <= 250)
-        fade1 = 0.9;
+        fade1 = 230;
     else
         fade1 = 0;
 end
 always@(*) begin
     fade2 = 0;
     if(avg_c1 <= 30) 
-        fade2 = 1.0;
+        fade2 = 256;    // x256
     else if(avg_c1 > 30 && avg_c1 <= 50)
-        fade2 = 0.9;
+        fade2 = 230;
     else if(avg_c1 > 50 && avg_c1 <= 70)
-        fade2 = 0.8;
+        fade2 = 205;
     else if(avg_c1 > 70 && avg_c1 <= 100)
-        fade2 = 0.6;
+        fade2 = 154;
     else if(avg_c1 > 100 && avg_c1 <= 150)
-        fade2 = 0.5;
+        fade2 = 128;
     else if(avg_c1 > 150 && avg_c1 <= 200)
-        fade2 = 0.3;
+        fade2 = 77;
     else if(avg_c1 > 200)
         fade2 = 0;
     else
@@ -253,7 +259,7 @@ always@(*) begin
 end
 
 assign fadetot = fade1 * fade2;
-assign center_out = (1-fadetot)*center + fadetot * chroma_corr;
+assign center_out = ((1<<16-fadetot)*center + fadetot * chroma_corr)>>16;
 
 assign pixel_data_out_pre = (bayer_arr[bayer_index]==R || bayer_arr[bayer_index]==B) && is_noise?   center_out : center;
 //assign mac_arr[1] = (v_cnt > 'd1)?                shift_reg[2]            : 'd0 ;
@@ -266,50 +272,35 @@ assign pixel_data_out_pre = (bayer_arr[bayer_index]==R || bayer_arr[bayer_index]
 //assign mac_arr[8] = (v_cnt < V-2 && h_cnt < H-2)? shift_reg[4*H+4]        : 'd0 ;
 
 //assign pixel_data_out_pre = (mac_arr[0]+mac_arr[1]+mac_arr[2]+mac_arr[3]+(mac_arr[4] << 3)+mac_arr[5]+mac_arr[6]+mac_arr[7]+mac_arr[8]) >> 4 ;
-
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         h_cnt <= 'd0;
-    else if(cnf_en && (pixel_data_in_vld || flag))
+    else if(init && v_cnt==4 && h_cnt==4)
+        h_cnt <= 'd0;
+    else if(cnf_en && pixel_data_in_vld)
         h_cnt <= (h_cnt==H-1)?  'd0:(h_cnt+1'b1);
 end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         v_cnt <= 'd0;
-    else if(cnf_en && (pixel_data_in_vld || flag) && h_cnt==H-1)
+    else if(init && v_cnt==4 && h_cnt==4)
+        v_cnt <= 'd0;
+    else if(cnf_en && pixel_data_in_vld && h_cnt==H-1)
         v_cnt <= (v_cnt==V-1)?  'd0:(v_cnt+1'b1);
 end
+   
 always_ff@(posedge clk or negedge rstn) begin
-    if(~rstn)
-        flag <= 1'b0;
-    else if(cnf_en && v_cnt==V-1 && h_cnt==H-1)
-        flag <= 1'b1;
-end
-
-always_ff@(posedge clk or negedge rstn) begin
-    if(~rstn)
-        pixel_data_out_vld_pre <= 1'b0;
-    else if(~flag) begin
-        if(v_cnt == 'd4 && h_cnt >= 'd4 && pixel_data_in_vld)  
-            pixel_data_out_vld_pre <= 1'b1;
-        else if(v_cnt > 'd4 && pixel_data_in_vld)
-            pixel_data_out_vld_pre <= 1'b1;
-        else 
-            pixel_data_out_vld_pre <= 1'b0;
-    end
-    else if(flag) begin
-        if(v_cnt == 'd4 && h_cnt > 'd4)
-            pixel_data_out_vld_pre <= 1'b0;
-        else 
-            pixel_data_out_vld_pre <= 1'b1;
-    end
+    if(~rstn)   
+        init <= 1'b1;
+    else if(init && v_cnt==4 && h_cnt==4)
+        init <= 1'b0;
 end
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         pixel_data_out_vld <= 1'b0;
     else if(cnf_en)
-        pixel_data_out_vld <= pixel_data_out_vld_pre;
+        pixel_data_out_vld <= ~init & pixel_data_in_vld;
     else 
         pixel_data_out_vld <= pixel_data_in_vld;
 end
@@ -326,10 +317,26 @@ end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         cnf_done <= 1'b0;
-    else if(cnf_en && v_cnt==V-1 && h_cnt==H-1 && flag && ~cnf_done)
+    else if(cnf_en && v_cnt==V-1 && h_cnt==H-1 && ~init && ~cnf_done)
         cnf_done <= 1'b1;
     else if(cnf_done)
         cnf_done <= 1'b0;
 end
+
+`ifdef SIM
+integer file_cnf;
+initial begin
+   file_cnf = $fopen("./cnf_result.csv","w+");  // 初始化文件
+end
+
+always @(posedge clk) begin
+    if (pixel_data_out_vld) begin
+        $fwrite(file_cnf,"%d\n",pixel_data_out);
+    end
+//     else begin
+//         $fclose(file);   // 这里一定要写，关闭文件读写
+//     end
+end
+`endif
 
 endmodule

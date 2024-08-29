@@ -58,10 +58,10 @@ assign bayer_index = {v_cnt[0],h_cnt[0]};
 always@(*) begin
     pixel_data_gain = pixel_data_in;
     case(bayer_arr[bayer_index])
-        R:   pixel_data_gain = (pixel_data_in * gain[0]) >> 8;
-        GR:  pixel_data_gain = (pixel_data_in * gain[1]) >> 8;
-        GB:  pixel_data_gain = (pixel_data_in * gain[2]) >> 8;
-        B:   pixel_data_gain = (pixel_data_in * gain[3]) >> 8;
+        R:   pixel_data_gain = (pixel_data_in * awb_gain[0]) >> 8;
+        GR:  pixel_data_gain = (pixel_data_in * awb_gain[1]) >> 8;
+        GB:  pixel_data_gain = (pixel_data_in * awb_gain[2]) >> 8;
+        B:   pixel_data_gain = (pixel_data_in * awb_gain[3]) >> 8;
         default : pixel_data_gain = pixel_data_in;
     endcase
 end

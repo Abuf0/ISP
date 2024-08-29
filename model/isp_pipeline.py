@@ -8,6 +8,7 @@ from dpc import DPC
 from blc import BLC
 from aaf import AAF
 from awb import AWB
+from cnf import CNF
 
 raw_data = cv2.imread('img_bayer_resize.jpg',cv2.IMREAD_UNCHANGED)
 print(50*'-' + '\nLoading RAW Image Done......')
@@ -76,13 +77,31 @@ parameter = [1.5,1,1,0.5]
 clip = 250
 obj = AWB(aaf_data,parameter,'rggb',clip)  
 awb_data = obj.execute()
+raw_h = awb_data.shape[0]
+raw_w = awb_data.shape[1]
+for y in range(raw_h):
+    for x in range(raw_w):
+        f.write("(%d,%d):%d (%d)\n"%(y,x,awb_data[y,x],aaf_data[y,x]))
+
+print(50*'-' + '\nAuto White Balance Gain Control Done......')
+cv2.imwrite('./pipeline_data/bayer_img_awb.jpg', awb_data)
+f.close()
+
+# chroma noise filtering
+awb_data = awb_data.astype(np.uint16)
+
+f = open("./pipeline_data/cnf_data.csv","w+")
+thres = 0
+clip = 250
+obj = CNF(awb_data,'rggb',thres,parameter,clip)
+cnf_data = obj.execute()
 
 raw_h = awb_data.shape[0]
 raw_w = awb_data.shape[1]
 for y in range(raw_h):
     for x in range(raw_w):
-        f.write("(%d,%d):%d\n"%(y,x,awb_data[y,x]))
+        f.write("(%d,%d):%d (%d)\n"%(y,x,cnf_data[y,x],awb_data[y,x]))
 
-print(50*'-' + '\nAuto White Balance Gain Control Done......')
-cv2.imwrite('./pipeline_data/bayer_img_awb.jpg', awb_data)
+print(50*'-' + '\nchroma noise filtering Done......')
+cv2.imwrite('./pipeline_data/bayer_img_cnf.jpg', cnf_data)
 f.close()
