@@ -13,7 +13,7 @@ class CNF:
         self.clip = clip
 
     def padding(self):
-        img_pad = np.pad(self.img, ((4, 4), (4, 4)), 'constant')
+        img_pad = np.pad(self.img, (4, 4), 'constant')
         return img_pad
 
     def clipping(self):
@@ -97,11 +97,10 @@ class CNF:
                     avgC1 = avgC1 + img[i,j]    # weights are equal, could be as gaussian dist
                 elif i % 2 == 1 and j % 2 == 1:
                     avgC2 = avgC2 + img[i,j]
+        center = img[y, x]
         avgG = avgG / 40
         avgC1 = avgC1 / 25
         avgC2 = avgC2 / 16
-        #print("%d,%d,%d"%(avgG,avgC1,avgC2))
-        center = img[y, x]
         if center > avgG + self.thres and center > avgC2 + self.thres:
             if avgC1 > avgG + self.thres and avgC1 > avgC2 + self.thres:
                 is_noise = 1
@@ -109,21 +108,33 @@ class CNF:
                 is_noise = 0
         else:
             is_noise = 0
+        f1.write("(%d,%d)center:%d: %d, %d, %d, noise=%d\n"%(y-4,x-4,center,avgG, avgC1, avgC2,is_noise))
         return is_noise, avgG, avgC1, avgC2
 
     def cnf(self, is_color, y, x, img):
         is_noise, avgG, avgC1, avgC2 = self.cnd(y, x, img)
+        #f.write("%d, %d, %d\n"%(avgG, avgC1, avgC2))
         if is_noise:
             pix_out = self.cnc(is_color, img[y,x], avgG, avgC1, avgC2)
+            #pix_out = 233
         else:
             pix_out = img[y,x]
         return pix_out
 
     def execute(self):
+        print(self.img[4,4])
+        f1.write(str(self.img[4,4]))
+        print(self.img[4,4])
         img_pad = self.padding()
+        print(img_pad[4][4])
         raw_h = self.img.shape[0]
         raw_w = self.img.shape[1]
         cnf_img = np.empty((raw_h, raw_w), np.uint16)
+        for y in range(0,img_pad.shape[0] - 8 ):
+            for x in range(0,img_pad.shape[1] - 8):
+                f1.write(str(img_pad[y+4,x+4]))
+                #print(img_pad[y+4,x+4])
+                f1.write("\n")
         for y in range(0, img_pad.shape[0] - 8 - 1, 2):
             for x in range(0, img_pad.shape[1] - 8 - 1, 2):
                 if self.bayer_pattern == 'rggb':
@@ -165,6 +176,7 @@ class CNF:
         self.img = cnf_img
         return self.clipping()
     
+f1 = open("./pipeline_data/cnf_p.csv","w+")
 parameter = [1,1,1,1]
 raw_data = cv2.imread('bayer_img_awb.jpg',cv2.IMREAD_UNCHANGED)
 obj = CNF(raw_data,'rggb',0,parameter,1023)

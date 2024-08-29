@@ -406,9 +406,9 @@ cnf #(
     .cnf_gain            (cnf_gain               ),
     .bayer_pattern       (bayer_pattern          ), // TODO
     .cnf_clip            (cnf_clip               ), // TODO
-    .pixel_data_in       (pixel_data_rgb[CNF]    ),
+    .pixel_data_in       (pixel_data_bayer[CNF]    ),
     .pixel_data_in_vld   (pixel_data_vld[CNF]    ),
-    .pixel_data_out      (pixel_data_rgb[CNF+1]  ),
+    .pixel_data_out      (pixel_data_bayer[CNF+1]  ),
     .pixel_data_out_vld  (pixel_data_vld[CNF+1]  ),
     .cnf_done            (                       )  // TODO
 );
