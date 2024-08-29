@@ -29,8 +29,6 @@ logic [1:0] bayer_index;
 logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt;
 
-logic [DW-1:0] buffer_data_r;
-logic [DW-1:0] buffer_data_b;
 
 always@(*) begin
     {bayer_arr[0],bayer_arr[1],bayer_arr[2],bayer_arr[3]} = {R,GR,GB,B};

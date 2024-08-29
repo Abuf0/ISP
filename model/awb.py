@@ -5,7 +5,7 @@ import cv2
 from matplotlib import pyplot as plt
 from statistics import mean
 
-class WBGC:
+class AWB:
     'Auto White Balance Gain Control'
 
     def __init__(self, img, parameter, bayer_pattern, clip):
@@ -35,10 +35,12 @@ class WBGC:
             b_avg = np.mean(b)
             g_avg = (np.mean(gr)+np.mean(gb))/2
             k = (r_avg+b_avg+g_avg)/3
-            r_gain = k/r_avg
-            gr_gain = k/g_avg
-            gb_gain = k/g_avg
-            b_gain = k/b_avg
+            #r_gain = k/r_avg
+            #gr_gain = k/g_avg
+            #gb_gain = k/g_avg
+            #b_gain = k/b_avg
+            print("r_avg: %d\nb_avg: %d\ng_avg: %d\n"%(r_avg,b_avg,g_avg))
+            print("r_gain: %f\ngr_gain: %f\ngb_gain: %f\nb_gain: %f\n"%(r_gain,gr_gain,gb_gain,b_gain))
             awb_img[::2, ::2] = r * r_gain
             awb_img[::2, 1::2] = gr * b_gain
             awb_img[1::2, ::2] = gb * gr_gain
@@ -76,7 +78,7 @@ class WBGC:
 # 读取图像
 parameter = [1,1,1,1]
 raw_data = cv2.imread('bayer_img_aaf.jpg',cv2.IMREAD_UNCHANGED)
-obj = WBGC(raw_data,parameter,'rggb',1000)  
+obj = AWB(raw_data,parameter,'rggb',1000)  
 awb_data_bayer = obj.execute()
 cv2.imwrite('bayer_img_awb.jpg', awb_data_bayer)
 awb_data_rgb = cv2.cvtColor(awb_data_bayer, cv2.COLOR_BayerRGGB2BGR)

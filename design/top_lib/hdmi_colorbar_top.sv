@@ -69,6 +69,7 @@ logic [DW-1:0] dpc_clip;
 logic [1:0] bayer_pattern;
 logic [DW-1:0] blc_bias [0:3];
 logic [DW-1:0] blc_clip;
+logic [DW-1:0] awb_gain [0:3];
 logic [DW-1:0] awb_clip;
 logic [DW-1:0] cnf_clip;
 logic [DW-1:0] cnf_thres;
@@ -110,7 +111,12 @@ assign blc_bias[2] = 'd0;
 assign blc_bias[3] = 'd0;
 assign blc_clip = 250;
 
-assign awb_clip = 1023;
+assign awb_gain[0] = 384;  // 1.5 << 8
+assign awb_gain[1] = 256;  // 1.0 << 8
+assign awb_gain[2] = 256;  // 1.0 << 8
+assign awb_gain[3] = 128;  // 0.5 << 8
+
+assign awb_clip = 250;
 assign cnf_clip = 1023;
 assign cnf_thres = 0;
 assign cfa_clip = 1023;
@@ -369,6 +375,7 @@ awb #(
     .rstn                (rst_pix_n              ),
     .awb_en              (isp_enable[AWB]        ), // TODO
     .bayer_pattern       (bayer_pattern          ), // TODO
+    .awb_gain            (awb_gain               ),
     .awb_clip            (awb_clip               ), // TODO
     .pixel_data_in       (pixel_data_bayer[AWB]  ),
     .pixel_data_in_vld   (pixel_data_vld[AWB]    ),
