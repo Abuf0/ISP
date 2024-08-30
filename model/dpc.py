@@ -73,6 +73,8 @@ class DPC:
                 #f.write("center(%d,%d): %d[(%d+%d+%d+%d)/4=%d], %d, %d\n"%(y,x,dpc_img[y, x],p2,p4,p5,p7,(int(p2) + int(p4) + int(p5) + int(p7)) / 4,arr.all(),img_pad[y + 2, x + 2]))
         self.img = dpc_img
         return self.clipping()
+
+'''
 # 打开图像文件
 #img = Image.open('img.jpg')
 
@@ -118,15 +120,4 @@ dpc_data_rgb = cv2.cvtColor(dpc_data, cv2.COLOR_BayerRGGB2BGR)
 
 cv2.imwrite('img_dpc.jpg',dpc_data_rgb)
 f.close()
-# plt.figure()
-# plt.subplot(2,3,1)
-# plt.imshow(raw_data_rgb)
-# plt.subplot(2,3,4)
-# plt.imshow(dpc_b_rgb)
-# plt.subplot(2,3,5)
-# plt.imshow(dpc_g_rgb)
-# plt.subplot(2,3,6)
-# plt.imshow(dpc_r_rgb)
-# plt.subplot(2,3,3)
-# plt.imshow(dpc_data_rgb)
-# plt.show()
+'''

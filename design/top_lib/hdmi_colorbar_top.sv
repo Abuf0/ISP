@@ -71,7 +71,7 @@ logic [DW-1:0] blc_bias [0:3];
 logic [DW-1:0] blc_clip;
 logic [DW-1:0] awb_gain [0:3];
 logic [DW-1:0] awb_clip;
-logic [DW-1:0] cnf_gain;
+logic [DW-1:0] cnf_gain [0:3];
 logic [DW-1:0] cnf_clip;
 logic [DW-1:0] cnf_thres;
 logic [DW-1:0] cfa_clip;

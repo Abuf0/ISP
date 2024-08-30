@@ -15,7 +15,7 @@ class BLC:
         self.clip = clip
 
     def clipping(self):
-        np.clip(self.img,0,clip,out=self.img)
+        np.clip(self.img,0,self.clip,out=self.img)
         return self.img
 
     def execute(self):
@@ -41,6 +41,7 @@ class BLC:
         self.img = blc_img
         return self.clipping()
 
+'''
 # 读取图像
 raw_data = cv2.imread('bayer_img_dpc.jpg',cv2.IMREAD_UNCHANGED)
 # b, g, r = cv2.split(raw_data)
@@ -95,3 +96,4 @@ cv2.imwrite('img_blc.jpg', blc_data_rgb)
 # plt.subplot(2,3,3)
 # plt.imshow(blc_data_rgb)
 # plt.show()
+'''

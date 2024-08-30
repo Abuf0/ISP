@@ -79,6 +79,7 @@ class CNF:
             fade2 = 0
         fadeTot = fade1 * fade2
         center_out = (1 - fadeTot) * center + fadeTot * chromaCorrected
+        f1.write("signalgap=%d, dampFactor=%d,chromaCorrected=%d,sigme=%d,fade1=%d, fade2=%d\n"%(signalGap,dampFactor*256,chromaCorrected,signalMeter,fade1*256,fade2*256))
         return center_out
 
     def cnd(self, y, x, img):
@@ -86,17 +87,28 @@ class CNF:
         avgG = 0
         avgC1 = 0
         avgC2 = 0
+        mac_a=0
+        mac_b=0
+        mac_c=0
+        mac_d=0
         is_noise = 0
-        for i in range(y - 4, y + 4, 1):
-            for j in range(x - 4, x + 4, 1):
+        if(x%2==0 and y%2==0):
+            f1.write(str(img[y-4:y+4,x-4:x+4]))
+            f1.write("\n")
+        for i in range(y - 4, y + 5, 1):    # modify
+            for j in range(x - 4, x + 5, 1):    # modify
                 if i % 2 == 1 and j % 2 == 0:
                     avgG = avgG + img[i,j]
+                    mac_c = mac_c+img[i,j]
                 elif i % 2 == 0 and j % 2 == 1:
                     avgG = avgG + img[i, j]
+                    mac_b = mac_b+img[i,j]
                 elif i % 2 == 0 and j % 2 == 0:
                     avgC1 = avgC1 + img[i,j]    # weights are equal, could be as gaussian dist
+                    mac_a = mac_a+img[i,j]
                 elif i % 2 == 1 and j % 2 == 1:
                     avgC2 = avgC2 + img[i,j]
+                    mac_d = mac_d+img[i,j]
         center = img[y, x]
         avgG = avgG / 40
         avgC1 = avgC1 / 25
@@ -108,7 +120,8 @@ class CNF:
                 is_noise = 0
         else:
             is_noise = 0
-        f1.write("(%d,%d)center:%d: %d, %d, %d, noise=%d\n"%(y-4,x-4,center,avgG, avgC1, avgC2,is_noise))
+        if(x%2==0 and y%2==0):
+            f1.write("(%d,%d)center:%d: %d, %d, %d, mac=%d, %d, %d, %d, noise=%d\n"%(y-4,x-4,center,avgG, avgC1, avgC2,mac_a,mac_b,mac_c,mac_d,is_noise))
         return is_noise, avgG, avgC1, avgC2
 
     def cnf(self, is_color, y, x, img):
@@ -122,19 +135,12 @@ class CNF:
         return pix_out
 
     def execute(self):
-        print(self.img[4,4])
-        f1.write(str(self.img[4,4]))
-        print(self.img[4,4])
+        #print("cnf\n")
+        #print(self.img[4,:])
         img_pad = self.padding()
-        print(img_pad[4][4])
         raw_h = self.img.shape[0]
         raw_w = self.img.shape[1]
         cnf_img = np.empty((raw_h, raw_w), np.uint16)
-        for y in range(0,img_pad.shape[0] - 8 ):
-            for x in range(0,img_pad.shape[1] - 8):
-                f1.write(str(img_pad[y+4,x+4]))
-                #print(img_pad[y+4,x+4])
-                f1.write("\n")
         for y in range(0, img_pad.shape[0] - 8 - 1, 2):
             for x in range(0, img_pad.shape[1] - 8 - 1, 2):
                 if self.bayer_pattern == 'rggb':
@@ -175,8 +181,10 @@ class CNF:
                     cnf_img[y + 1, x + 1, :] = gb
         self.img = cnf_img
         return self.clipping()
-    
+
+
 f1 = open("./pipeline_data/cnf_p.csv","w+")
+'''
 parameter = [1,1,1,1]
 raw_data = cv2.imread('bayer_img_awb.jpg',cv2.IMREAD_UNCHANGED)
 obj = CNF(raw_data,'rggb',0,parameter,1023)
@@ -184,3 +192,4 @@ cnf_data_bayer = obj.execute()
 cv2.imwrite('bayer_img_cnf.jpg', cnf_data_bayer)
 cnf_data_rgb = cv2.cvtColor(cnf_data_bayer, cv2.COLOR_BayerRGGB2BGR)
 cv2.imwrite('img_cnf.jpg',cnf_data_rgb)
+'''

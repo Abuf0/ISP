@@ -74,7 +74,8 @@ class AWB:
             awb_img[1::2, 1::2] = gb
         self.img = awb_img
         return self.clipping()
-    
+
+'''
 # 读取图像
 parameter = [1,1,1,1]
 raw_data = cv2.imread('bayer_img_aaf.jpg',cv2.IMREAD_UNCHANGED)
@@ -83,3 +84,4 @@ awb_data_bayer = obj.execute()
 cv2.imwrite('bayer_img_awb.jpg', awb_data_bayer)
 awb_data_rgb = cv2.cvtColor(awb_data_bayer, cv2.COLOR_BayerRGGB2BGR)
 cv2.imwrite('img_awb.jpg',awb_data_rgb)
+'''

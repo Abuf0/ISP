@@ -2,8 +2,32 @@ from PIL import Image
 import numpy as np
 import cv2
 
+img = cv2.imread("./img.jpg",cv2.IMREAD_UNCHANGED)
 
-image = cv2.imread('bayer_img.jpg',0)
+(height, width) = img.shape[:2]
+(B,G,R) = cv2.split(img) 
+img_conf = img
+img_conf[:,:,0]=B
+img_conf[:,:,1]=G
+img_conf[:,:,2]=R
+cv2.imwrite('conf_img.jpg', img_conf)
+
+bayer = np.empty((height, width), np.uint16)
+
+# strided slicing for this pattern:
+#   G R
+#   B G
+bayer[0::2, 0::2] = R[0::2, 0::2] # top left
+bayer[0::2, 1::2] = G[0::2, 1::2] # top right
+bayer[1::2, 0::2] = G[1::2, 0::2] # bottom left
+bayer[1::2, 1::2] = B[1::2, 1::2] # bottom right
+
+cv2.imwrite('bayer_img.jpg', bayer)
+
+img_rgb_conf = cv2.imread('bayer_img.jpg',cv2.COLOR_BayerRGGB2BGR)
+cv2.imwrite('img_rgb_conf.jpg',img_rgb_conf)
+
+image = cv2.imread('bayer_img.jpg',cv2.IMREAD_UNCHANGED)
 
 # 加载 JPG 图片
 

@@ -31,13 +31,15 @@ class AAF:
                 p6 = img_pad[y + 4, x]
                 p7 = img_pad[y + 4, x + 2]
                 p8 = img_pad[y + 4, x + 4]
-                aaf_img[y, x] = (p1+p2+p3+p4+p5+p6+p7+p8+8*p0)/16
+                aaf_img[y, x] = (int(p1)+int(p2)+int(p3)+int(p4)+int(p5)+int(p6)+int(p7)+int(p8)+8*int(p0))/16
         self.img = aaf_img
         return self.img
-    
+
+'''
 raw_data = cv2.imread('bayer_img_blc.jpg',cv2.IMREAD_UNCHANGED)
 obj = AAF(raw_data)
 aaf_data_bayer = obj.execute()
 cv2.imwrite('bayer_img_aaf.jpg', aaf_data_bayer)
 aaf_data_rgb = cv2.cvtColor(aaf_data_bayer, cv2.COLOR_BayerRGGB2BGR)
 cv2.imwrite('img_aaf.jpg',aaf_data_rgb)
+'''

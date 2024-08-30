@@ -9,7 +9,7 @@ module cnf#(
     input                   rstn                  ,
     input                   cnf_en                ,
     input        [DW-1:0]   thres                 ,
-    input        [DW-1:0]   cnf_gain              ,
+    input        [DW-1:0]   cnf_gain [0:3]        ,
     input        [DW-1:0]   cnf_clip              ,
     input        [2:0]      bayer_pattern         ,  
     input        [DW-1:0]   pixel_data_in         ,
@@ -46,6 +46,7 @@ logic [DW-1:0] gb_gain;
 logic [DW-1:0] b_gain;
 
 logic [DW-1:0] signal_gap;
+logic signal_gap_sign;
 logic [DW-1:0] damp_factor;
 logic [DW-1:0] chroma_corr;
 logic [DW-1:0] signal_meter;
@@ -152,9 +153,9 @@ always@(*) begin
     avg_g  = 'd0;
     avg_c1 = 'd0;
     avg_c2 = 'd0;
-    case({h_cnt[0],v_cnt[0]})
-    //case(bayer_index)
-        2'b00: begin
+    //case({h_cnt[0],v_cnt[0]})
+    case(bayer_index)
+        R: begin
             avg_g  = (mac_acc_b + mac_acc_c)/40;
             avg_c1 = mac_acc_a/25;
             avg_c2 = mac_acc_d/16;
@@ -169,7 +170,7 @@ always@(*) begin
         //    avg_c1 = mac_acc_c/25;
         //    avg_c2 = mac_acc_b/16;
         //end
-        2'b11: begin
+        B: begin
             avg_g  = (mac_acc_b + mac_acc_c)/40;
             avg_c1 = mac_acc_d/16;
             avg_c2 = mac_acc_a/25;
@@ -179,7 +180,7 @@ end
 
 assign center = mac_arr[40];
 
-assign is_noise = (center > avg_g+thres) && (center > avg_c2+thres) && (avg_c1 > avg_g+thres) && (avg_c1 > avg_c2+thres);
+assign is_noise = (center > avg_g+thres) && (center > avg_c2+thres) && (avg_c1 > avg_g+thres) && (avg_c1 > avg_c2+thres) : 0;
 
 assign bayer_index = {v_cnt[0],h_cnt[0]};
 
@@ -192,8 +193,10 @@ always@(*) begin
     endcase
 end
 
-assign signal_gap = (avg_g > avg_c2)?   (center - avg_g) : (center - avg_c2);
+assign signal_gap = signal_gap_sign?    ((avg_g > avg_c2)?   (avg_g - center) : (avg_c2 - center)) :
+                                        ((avg_g > avg_c2)?   (center - avg_g) : (center - avg_c2));
 
+assign signal_gap_sign = ~(center > avg_g && center > avg_c2);
 //***********************************
 // TODO -- xiaoshu
 always@(*) begin    
@@ -217,7 +220,8 @@ always@(*) begin
     endcase
 
 end
-assign chroma_corr = (avg_g > avg_c2)?  avg_g + (damp_factor*signal_gap) >>8 : avg_c2 + (damp_factor*signal_gap) >>8;
+assign chroma_corr = signal_gap_sign?   ((avg_g > avg_c2)?  avg_g - (damp_factor*signal_gap) >>8 : avg_c2 - (damp_factor*signal_gap) >>8) :
+                                        ((avg_g > avg_c2)?  avg_g + (damp_factor*signal_gap) >>8 : avg_c2 + (damp_factor*signal_gap) >>8) ;
 
 always@(*) begin
     fade1 = 0;
@@ -226,15 +230,15 @@ always@(*) begin
     else if(signal_meter > 30 && signal_meter <= 50)
         fade1 = 230;
     else if(signal_meter > 50 && signal_meter <= 70)
-        fade1 = 230;
+        fade1 = 205;
     else if(signal_meter > 70 && signal_meter <= 100)
-        fade1 = 230;
+        fade1 = 180;
     else if(signal_meter > 100 && signal_meter <= 150)
-        fade1 = 230;
+        fade1 = 154;
     else if(signal_meter > 150 && signal_meter <= 200)
-        fade1 = 230;
+        fade1 = 77;
     else if(signal_meter > 200 && signal_meter <= 250)
-        fade1 = 230;
+        fade1 = 26;
     else
         fade1 = 0;
 end
@@ -259,19 +263,10 @@ always@(*) begin
 end
 
 assign fadetot = fade1 * fade2;
-assign center_out = ((1<<16-fadetot)*center + fadetot * chroma_corr)>>16;
+assign center_out = (((1<<16)-fadetot)*center + fadetot * chroma_corr)>>16;
 
 assign pixel_data_out_pre = (bayer_arr[bayer_index]==R || bayer_arr[bayer_index]==B) && is_noise?   center_out : center;
-//assign mac_arr[1] = (v_cnt > 'd1)?                shift_reg[2]            : 'd0 ;
-//assign mac_arr[2] = (v_cnt > 'd1 && h_cnt < H-2)? shift_reg[4]            : 'd0 ;
-//assign mac_arr[3] = (h_cnt > 'd1)?                shift_reg[2*H]          : 'd0 ;
-//assign mac_arr[4] =                               shift_reg[2*H+2] << 3         ;
-//assign mac_arr[5] = (h_cnt < H-2)?                shift_reg[2*H+4]        : 'd0 ;
-//assign mac_arr[6] = (v_cnt < V-2 && h_cnt > 'd1)? shift_reg[4*H]          : 'd0 ;
-//assign mac_arr[7] = (v_cnt < V-2)?                shift_reg[4*H+2]        : 'd0 ;
-//assign mac_arr[8] = (v_cnt < V-2 && h_cnt < H-2)? shift_reg[4*H+4]        : 'd0 ;
 
-//assign pixel_data_out_pre = (mac_arr[0]+mac_arr[1]+mac_arr[2]+mac_arr[3]+(mac_arr[4] << 3)+mac_arr[5]+mac_arr[6]+mac_arr[7]+mac_arr[8]) >> 4 ;
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         h_cnt <= 'd0;
@@ -325,13 +320,24 @@ end
 
 `ifdef SIM
 integer file_cnf;
+integer file_cnf_p;
 initial begin
-   file_cnf = $fopen("./cnf_result.csv","w+");  // 初始化文件
+    file_cnf = $fopen("./cnf_result.csv","w+");  // 初始化文件
+    file_cnf_p = $fopen("./cnf_result_p.csv","w+");  // 初始化文件
 end
-
-always @(posedge clk) begin
+integer x;
+integer y;
+always @(negedge clk) begin
     if (pixel_data_out_vld) begin
-        $fwrite(file_cnf,"%d\n",pixel_data_out);
+        for(x=0;x<9;x=x+1) begin
+            for(y=0;y<9ly=y+1) begin
+                $fwrite(file_cnf_p,"%d",mac_arr[x*9+y]);
+            end
+            $fwrite(file_cnf_p,"\n");
+        end
+    fwrite(file_cnf_p,"(%d,%d,%d,%d)sgap=%d,fac=%d,cor=%d,sigme=%d,fad1=%d,fad2=%d\n",mac_acc_a,mac_acc_b,mac_acc_c,mac_acc_d,signal_gap,damp_factor,chroma_corr,signal_meter,fad1,fad2);
+    fwrite(file_cnf_p,"\n");
+    $fwrite(file_cnf,"%d\n",pixel_data_out);
     end
 //     else begin
 //         $fclose(file);   // 这里一定要写，关闭文件读写

@@ -26,3 +26,13 @@
     - fixed blc bug
     - fixed aaf
     - <TODO: building isp_pipeline.py>
+
+- 2024/8/29
+    - fixed awb
+    - fixing cnf bug
+
+- 2024/8/30
+    - fixed cnf bug
+    - fixing cfa bug
+        - new pipe code cannot trans bayer-to-rgb
+        - <TODO: confirm raw bayer format>

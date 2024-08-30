@@ -12,7 +12,7 @@ class CFA:
         self.clip = clip
 
     def padding(self):
-        img_pad = np.pad(self.img, ((2, 2), (2, 2)), 'reflect')
+        img_pad = np.pad(self.img, ((2, 2), (2, 2)), 'constant')
         return img_pad
 
     def clipping(self):
@@ -57,7 +57,7 @@ class CFA:
 
     def execute(self):
         img_pad = self.padding()
-        img_pad = img_pad.astype(np.int32)
+        img_pad = img_pad.astype(np.int16)
         raw_h = self.img.shape[0]
         raw_w = self.img.shape[1]
         cfa_img = np.empty((raw_h, raw_w, 3), np.int16)
@@ -107,8 +107,7 @@ class CFA:
         return self.clipping()
     
 raw_data = cv2.imread('bayer_img_cnf.jpg',cv2.IMREAD_UNCHANGED)
+#raw_data = cv2.imread('img_bayer_resize.jpg',cv2.IMREAD_UNCHANGED)
 obj = CFA(raw_data,'malvar','rggb',1023)
 cfa_data_rgb = obj.execute()
-#cv2.imwrite('bayer_img_cfa.jpg', cfa_data_bayer)
-#cfa_data_rgb = cv2.cvtColor(cfa_data_bayer, cv2.COLOR_BayerRGGB2BGR)
 cv2.imwrite('img_cfa.jpg',cfa_data_rgb)
