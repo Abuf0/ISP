@@ -36,3 +36,8 @@
     - fixing cfa bug
         - new pipe code cannot trans bayer-to-rgb
         - <TODO: confirm raw bayer format>
+
+- 2024/9/1
+    - fixed cfa-model bug(trans to rgb)
+    - refixed cnf-rtl padding
+    - built ccm/gac/csc-model

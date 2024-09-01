@@ -12,23 +12,23 @@ module csc#(
     input signed [DW-1:0]   csc_coef_g [0:3]      ,
     input signed [DW-1:0]   csc_coef_b [0:3]      ,
     input                   pixel_data_in_vld     , 
-    input        [DW-1:0]   pixel_data_in_r       ,
-    input        [DW-1:0]   pixel_data_in_g       ,
-    input        [DW-1:0]   pixel_data_in_b       ,
+    input        [DW/3-1:0] pixel_data_in_r       ,
+    input        [DW/3-1:0] pixel_data_in_g       ,
+    input        [DW/3-1:0] pixel_data_in_b       ,
     output logic            pixel_data_out_vld    ,
-    output logic [DW-1:0]   pixel_data_out_r      ,
-    output logic [DW-1:0]   pixel_data_out_g      ,
-    output logic [DW-1:0]   pixel_data_out_b      ,
+    output logic [DW/3-1:0] pixel_data_out_r      ,
+    output logic [DW/3-1:0] pixel_data_out_g      ,
+    output logic [DW/3-1:0] pixel_data_out_b      ,
     output logic            csc_done        
 );
 
-logic [DW-1:0]   pixel_data_r;          
-logic [DW-1:0]   pixel_data_g;          
-logic [DW-1:0]   pixel_data_b;  
+logic [DW/3-1:0]   pixel_data_r;          
+logic [DW/3-1:0]   pixel_data_g;          
+logic [DW/3-1:0]   pixel_data_b;  
 
-logic [DW+DW+2-1:0] pixel_data_out_r_tmp;
-logic [DW+DW+2-1:0] pixel_data_out_g_tmp;
-logic [DW+DW+2-1:0] pixel_data_out_b_tmp;
+logic [DW/3+DW/3+2-1:0] pixel_data_out_r_tmp;
+logic [DW/3+DW/3+2-1:0] pixel_data_out_g_tmp;
+logic [DW/3+DW/3+2-1:0] pixel_data_out_b_tmp;
 
 logic [HW-1:0] h_cnt; 
 logic [VW-1:0] v_cnt; 

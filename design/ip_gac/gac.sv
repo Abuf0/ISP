@@ -9,21 +9,21 @@ module gac#(
     input                   rstn                  ,
     input                   gac_en                ,
     input                   pixel_data_in_vld     , 
-    input        [DW-1:0]   pixel_data_in_r       ,
-    input        [DW-1:0]   pixel_data_in_g       ,
-    input        [DW-1:0]   pixel_data_in_b       ,
+    input        [DW/3-1:0] pixel_data_in_r       ,
+    input        [DW/3-1:0] pixel_data_in_g       ,
+    input        [DW/3-1:0] pixel_data_in_b       ,
     output logic            pixel_data_out_vld    ,
-    output logic [DW-1:0]   pixel_data_out_r      ,
-    output logic [DW-1:0]   pixel_data_out_g      ,
-    output logic [DW-1:0]   pixel_data_out_b      ,
+    output logic [DW/3-1:0] pixel_data_out_r      ,
+    output logic [DW/3-1:0] pixel_data_out_g      ,
+    output logic [DW/3-1:0] pixel_data_out_b      ,
     output logic            gac_done              ,
     //input                   lut_cen               ,
     input                   lut_din_vld           ,
-    input        [DW-1:0]   lut_din               ,
-    output logic [DW-1:0]   lut_dout    
+    input        [DW/3-1:0] lut_din               ,
+    output logic [DW/3-1:0] lut_dout    
 );
-logic [DW-1:0] lut_0 [0:255];
-logic [DW-1:0] lut_1 [0:255];
+logic [DW/3-1:0] lut_0 [0:255];
+logic [DW/3-1:0] lut_1 [0:255];
 
 // gamma is loaded
 initial begin

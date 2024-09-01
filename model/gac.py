@@ -25,6 +25,7 @@ class GC:
         self.img = gc_img
         return self.img
 
+'''
 gamma = 1/2.2
 bw = 8
 maxval = pow(2,bw)
@@ -35,8 +36,9 @@ val = [round(pow(float(i)/maxval,gamma)*maxval) for i in ind]
 lut = dict(zip(ind,val))
 #print(lut)
 raw_data = cv2.imread('img_ccm.jpg',cv2.IMREAD_UNCHANGED)
-obj = GC(raw_data,lut,'rbg')
+obj = GC(raw_data,lut,'rgb')
 gc_data_rgb = obj.execute()
 #cv2.imwrite('bayer_img_cfa.jpg', cfa_data_bayer)
 #cfa_data_rgb = cv2.cvtColor(cfa_data_bayer, cv2.COLOR_BayerRGGB2BGR)
 cv2.imwrite('img_gc.jpg',gc_data_rgb)
+'''

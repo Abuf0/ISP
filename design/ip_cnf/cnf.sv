@@ -96,10 +96,10 @@ generate
             assign mac_arr[j*9+2] = (v_cnt > (3-j) && h_cnt > 'd1)? shift_reg[8*H+8-(j*H+2)]            : 'd0 ;
             assign mac_arr[j*9+3] = (v_cnt > (3-j) && h_cnt > 'd0)? shift_reg[8*H+8-(j*H+3)]            : 'd0 ;
             assign mac_arr[j*9+4] = (v_cnt > (3-j))?                shift_reg[8*H+8-(j*H+4)]            : 'd0 ;
-            assign mac_arr[j*9+5] = (v_cnt > (3-j) && h_cnt < H-4)? shift_reg[8*H+8-(j*H+5)]            : 'd0 ;
-            assign mac_arr[j*9+6] = (v_cnt > (3-j) && h_cnt < H-3)? shift_reg[8*H+8-(j*H+6)]            : 'd0 ;
-            assign mac_arr[j*9+7] = (v_cnt > (3-j) && h_cnt < H-2)? shift_reg[8*H+8-(j*H+7)]            : 'd0 ;
-            assign mac_arr[j*9+8] = (v_cnt > (3-j) && h_cnt < H-1)? shift_reg[8*H+8-(j*H+8)]            : 'd0 ;
+            assign mac_arr[j*9+5] = (v_cnt > (3-j) && h_cnt < H-1)? shift_reg[8*H+8-(j*H+5)]            : 'd0 ;
+            assign mac_arr[j*9+6] = (v_cnt > (3-j) && h_cnt < H-2)? shift_reg[8*H+8-(j*H+6)]            : 'd0 ;
+            assign mac_arr[j*9+7] = (v_cnt > (3-j) && h_cnt < H-3)? shift_reg[8*H+8-(j*H+7)]            : 'd0 ;
+            assign mac_arr[j*9+8] = (v_cnt > (3-j) && h_cnt < H-4)? shift_reg[8*H+8-(j*H+8)]            : 'd0 ;
         end
         else if(j==4) begin
             assign mac_arr[j*9+0] = (h_cnt > 'd3)?                  shift_reg[8*H+8-(j*H+0)]            : 'd0 ;
@@ -107,21 +107,21 @@ generate
             assign mac_arr[j*9+2] = (h_cnt > 'd1)?                  shift_reg[8*H+8-(j*H+2)]            : 'd0 ;
             assign mac_arr[j*9+3] = (h_cnt > 'd0)?                  shift_reg[8*H+8-(j*H+3)]            : 'd0 ;
             assign mac_arr[j*9+4] =                                 shift_reg[8*H+8-(j*H+4)]                  ;
-            assign mac_arr[j*9+5] = (h_cnt < H-4)?                  shift_reg[8*H+8-(j*H+5)]            : 'd0 ;
-            assign mac_arr[j*9+6] = (h_cnt < H-3)?                  shift_reg[8*H+8-(j*H+6)]            : 'd0 ;
-            assign mac_arr[j*9+7] = (h_cnt < H-2)?                  shift_reg[8*H+8-(j*H+7)]            : 'd0 ;
-            assign mac_arr[j*9+8] = (h_cnt < H-1)?                  shift_reg[8*H+8-(j*H+8)]            : 'd0 ;            
+            assign mac_arr[j*9+5] = (h_cnt < H-1)?                  shift_reg[8*H+8-(j*H+5)]            : 'd0 ;
+            assign mac_arr[j*9+6] = (h_cnt < H-2)?                  shift_reg[8*H+8-(j*H+6)]            : 'd0 ;
+            assign mac_arr[j*9+7] = (h_cnt < H-3)?                  shift_reg[8*H+8-(j*H+7)]            : 'd0 ;
+            assign mac_arr[j*9+8] = (h_cnt < H-4)?                  shift_reg[8*H+8-(j*H+8)]            : 'd0 ;            
         end
         else begin
-            assign mac_arr[j*9+0] = (v_cnt < V-8+j && h_cnt > 'd3)? shift_reg[8*H+8-(j*H+0)]            : 'd0 ;
-            assign mac_arr[j*9+1] = (v_cnt < V-8+j && h_cnt > 'd2)? shift_reg[8*H+8-(j*H+1)]            : 'd0 ;
-            assign mac_arr[j*9+2] = (v_cnt < V-8+j && h_cnt > 'd1)? shift_reg[8*H+8-(j*H+2)]            : 'd0 ;
-            assign mac_arr[j*9+3] = (v_cnt < V-8+j && h_cnt > 'd0)? shift_reg[8*H+8-(j*H+3)]            : 'd0 ;
-            assign mac_arr[j*9+4] = (v_cnt < V-8+j)?                shift_reg[8*H+8-(j*H+4)]            : 'd0 ;
-            assign mac_arr[j*9+5] = (v_cnt < V-8+j && h_cnt < H-4)? shift_reg[8*H+8-(j*H+5)]            : 'd0 ;
-            assign mac_arr[j*9+6] = (v_cnt < V-8+j && h_cnt < H-3)? shift_reg[8*H+8-(j*H+6)]            : 'd0 ;
-            assign mac_arr[j*9+7] = (v_cnt < V-8+j && h_cnt < H-2)? shift_reg[8*H+8-(j*H+7)]            : 'd0 ;
-            assign mac_arr[j*9+8] = (v_cnt < V-8+j && h_cnt < H-1)? shift_reg[8*H+8-(j*H+8)]            : 'd0 ;
+            assign mac_arr[j*9+0] = (v_cnt < V+4-j && h_cnt > 'd3)? shift_reg[8*H+8-(j*H+0)]            : 'd0 ;
+            assign mac_arr[j*9+1] = (v_cnt < V+4-j && h_cnt > 'd2)? shift_reg[8*H+8-(j*H+1)]            : 'd0 ;
+            assign mac_arr[j*9+2] = (v_cnt < V+4-j && h_cnt > 'd1)? shift_reg[8*H+8-(j*H+2)]            : 'd0 ;
+            assign mac_arr[j*9+3] = (v_cnt < V+4-j && h_cnt > 'd0)? shift_reg[8*H+8-(j*H+3)]            : 'd0 ;
+            assign mac_arr[j*9+4] = (v_cnt < V+4-j)?                shift_reg[8*H+8-(j*H+4)]            : 'd0 ;
+            assign mac_arr[j*9+5] = (v_cnt < V+4-j && h_cnt < H-1)? shift_reg[8*H+8-(j*H+5)]            : 'd0 ;
+            assign mac_arr[j*9+6] = (v_cnt < V+4-j && h_cnt < H-2)? shift_reg[8*H+8-(j*H+6)]            : 'd0 ;
+            assign mac_arr[j*9+7] = (v_cnt < V+4-j && h_cnt < H-3)? shift_reg[8*H+8-(j*H+7)]            : 'd0 ;
+            assign mac_arr[j*9+8] = (v_cnt < V+4-j && h_cnt < H-4)? shift_reg[8*H+8-(j*H+8)]            : 'd0 ;
         end 
     end
 endgenerate

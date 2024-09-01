@@ -24,6 +24,7 @@ class CCM:
         self.img = ccm_img.astype(np.uint16)
         return self.img
 
+'''
 ccm = np.zeros((3,4))  
 ccm[0][0] = 1024
 ccm[1][1] = 1024
@@ -34,3 +35,4 @@ ccm_data_rgb = obj.execute()
 #cv2.imwrite('bayer_img_cfa.jpg', cfa_data_bayer)
 #cfa_data_rgb = cv2.cvtColor(cfa_data_bayer, cv2.COLOR_BayerRGGB2BGR)
 cv2.imwrite('img_ccm.jpg',ccm_data_rgb)
+'''

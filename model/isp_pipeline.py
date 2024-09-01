@@ -10,6 +10,10 @@ from aaf import AAF
 from awb import AWB
 from cnf import CNF
 from cfa import CFA
+from ccm import CCM
+from gac import GC
+from csc import CSC
+from pic2bayer import int_to_bin8
 
 raw_data = cv2.imread('img_bayer_resize.jpg',cv2.IMREAD_UNCHANGED)
 print(50*'-' + '\nLoading RAW Image Done......')
@@ -18,7 +22,7 @@ print(50*'-' + '\nLoading RAW Image Done......')
 # dead pixel correction
 raw_data = raw_data.astype(np.uint16)
 
-thres = 30
+thres = 100
 clip = 250
 f = open("./pipeline_data/dpc_data.csv","w+")
 obj = DPC(raw_data,thres,'mean',clip)
@@ -38,7 +42,7 @@ f.close()
 # black level compensation
 dpc_data = dpc_data.astype(np.uint16)
 clip = 250
-bias = [0,10,20,30]
+bias = [0,0,0,0]
 f = open("./pipeline_data/blc_data.csv","w+")
 
 obj = BLC(dpc_data,bias,'rggb',clip)
@@ -75,8 +79,8 @@ f.close()
 aaf_data = aaf_data.astype(np.uint16)
 
 f = open("./pipeline_data/awb_data.csv","w+")
-parameter = [1.5,1,1,0.5]
-#parameter = [1,1,1,1]
+#parameter = [1.5,1,1,0.5]
+parameter = [1,1,1,1]
 clip = 250
 obj = AWB(aaf_data,parameter,'rggb',clip)  
 awb_data = obj.execute()
@@ -97,7 +101,7 @@ f = open("./pipeline_data/cnf_data.csv","w+")
 thres = 0
 clip = 250
 #obj = CNF(awb_data,'rggb',thres,parameter,clip)
-obj = CNF(raw_data,'rggb',thres,parameter,clip)
+obj = CNF(awb_data,'rggb',thres,parameter,clip)
 cnf_data = obj.execute()
 
 raw_h = cnf_data.shape[0]
@@ -112,14 +116,14 @@ cv2.imwrite('./pipeline_data/bayer_img_cnf.jpg', cnf_data)
 f.close()
 
 
-#Color Filter Array Interpolation
+# Color Filter Array Interpolation
 
 cnf_data = cnf_data.astype(np.uint16)
 
 f = open("./pipeline_data/cfa_data.csv","w+")
 clip=250
 #obj = CFA(cnf_data,'malvar','rggb',clip)
-obj = CFA(raw_data,'malvar','rggb',clip)
+obj = CFA(cnf_data,'malvar','rggb',clip)
 cfa_data = obj.execute()
 
 raw_h = cfa_data.shape[0]
@@ -127,22 +131,99 @@ raw_w = cfa_data.shape[1]
 for y in range(raw_h):
     for x in range(raw_w):
         #f.write("(%d,%d):%d (%d)\n"%(y,x,cfa_data[y,x],cnf_data[y,x]))
-        f.write("(%d,%d):%d-%d-%d (%d))\n"%(y,x,cfa_data[y,x,0],cfa_data[y,x,1],cfa_data[y,x,2],raw_data[y,x]))
+        f.write("(%d,%d): %d-%d-%d (%d))\n"%(y,x,cfa_data[y,x,0],cfa_data[y,x,1],cfa_data[y,x,2],raw_data[y,x]))
 
 print(50*'-' + '\nColor Filter Array Interpolation Done......')
 cv2.imwrite('./pipeline_data/img_cfa.jpg',cfa_data)
 f.close()
 
+# Color Correction Matrix
+cfa_data = cfa_data.astype(np.uint16)
 
-cfa_data = cfa_data.astype(np.uint8)
-cv2.imshow('Example',cfa_data)
-cv2.waitKey(0)
+f = open("./pipeline_data/ccm_data.csv","w+")
+ccm = np.zeros((3,4))  
+ccm[0][0] = 1024
+ccm[1][1] = 1024
+ccm[2][2] = 1024
 
-cnf_data_rgb = cv2.imread('./pipeline_data/bayer_img_cnf.jpg',cv2.COLOR_BayerRGGB2BGR)
-cv2.imshow('Example',cnf_data_rgb)
-cv2.waitKey(0)
+obj = CCM(cfa_data,ccm)
+ccm_data = obj.execute()
 
-image_path = "img_cfa.jpg"
-image = Image.open(image_path)
-color_mode = image.mode
-print(color_mode)
+raw_h = ccm_data.shape[0]
+raw_w = ccm_data.shape[1]
+for y in range(raw_h):
+    for x in range(raw_w):
+        f.write("(%d,%d): %d-%d-%d\n"%(y,x,ccm_data[y,x,0],ccm_data[y,x,1],ccm_data[y,x,2]))
+
+
+print(50*'-' + '\n Color Correction Matrix Done......')
+cv2.imwrite('./pipeline_data/img_ccm.jpg',ccm_data)
+f.close()
+
+
+# Gamma Correction
+ccm_data = ccm_data.astype(np.uint16)
+
+f = open("./pipeline_data/gac_data.csv","w+")
+gamma = 1/2.2
+bw = 8
+maxval = pow(2,bw)
+ind = range(0,maxval)
+val = [round(pow(float(i)/maxval,gamma)*maxval) for i in ind]
+#valt = [np.log(float(i)/maxval) for i in ind]
+#print(valt)
+lut = dict(zip(ind,val))
+#print(lut)
+f_lut = open('./pipeline_data/lut_gamma_bin.txt','w+')
+for i in ind:
+    lut_bin = int_to_bin8(val[i])
+    f_lut.write(str(lut_bin))
+    f_lut.write('\n')
+f_lut.close()
+
+
+obj = GC(ccm_data,lut,'rgb')
+gc_data = obj.execute()
+
+raw_h = gc_data.shape[0]
+raw_w = gc_data.shape[1]
+for y in range(raw_h):
+    for x in range(raw_w):
+        f.write("(%d,%d): %d-%d-%d\n"%(y,x,gc_data[y,x,0],gc_data[y,x,1],gc_data[y,x,2]))
+
+print(50*'-' + '\n Gamma Correction Done......')
+cv2.imwrite('./pipeline_data/img_gc.jpg',gc_data)
+f.close()
+
+# Color Space Conversion
+
+gc_data = gc_data.astype(np.uint16)
+
+f = open("./pipeline_data/csc_data.csv","w+")
+csc = np.zeros((3,4))  
+csc[0][0] =	0.257*1024	
+csc[0][1] =	0.504*1024
+csc[0][2] =	0.098*1024
+csc[0][3] =	16*1024
+csc[1][0] =	-0.148*1024
+csc[1][1] =	-0.291*1024
+csc[1][2] =	0.439*1024
+csc[1][3] =	128*1024	
+csc[2][0] =	0.439*1024
+csc[2][1] =	-0.368*1024
+csc[2][2] =	-0.071*1024
+csc[2][3] =	128*1024	
+
+obj = CSC(gc_data,ccm)
+csc_data = obj.execute()
+
+raw_h = csc_data.shape[0]
+raw_w = csc_data.shape[1]
+for y in range(raw_h):
+    for x in range(raw_w):
+        f.write("(%d,%d): %d-%d-%d\n"%(y,x,csc_data[y,x,0],csc_data[y,x,1],csc_data[y,x,2]))
+
+
+print(50*'-' + '\n Color Space Conversion Done......')
+cv2.imwrite('./pipeline_data/img_csc.jpg',csc_data)
+f.close()

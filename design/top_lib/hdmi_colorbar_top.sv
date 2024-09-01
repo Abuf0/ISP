@@ -45,15 +45,15 @@ logic          clk_locked;
 logic          rst_pix_n;
 logic  [10:0]  pixel_xpos_w;
 logic  [10:0]  pixel_ypos_w;
-logic  [23:0]  pixel_data_rgb[0:16];
+logic  [DW-1:0]  pixel_data_rgb[0:16];
 logic          pixel_data_vld[0:16];
 logic  [23:0]  buffer_data_rgb_csc;
 logic  [23:0]  pixel_data_w;
 logic  [BW-1:0]  pixel_data_bayer[0:16];
 //logic  [15:0]  isp_enable;
-logic [23:0]   pixel_data_out;
-logic [23:0]   pixel_data_load   ;
-logic [23:0]   pixel_data_update ;
+logic [DW-1:0] pixel_data_out;
+logic [DW-1:0] pixel_data_load   ;
+logic [DW-1:0] pixel_data_update ;
 logic          rd_rst            ;
 logic          rd_en             ;
 logic          wt_rst            ;
@@ -332,7 +332,7 @@ assign pixel_data_bayer[DPC] = pixel_data_rgb[DPC][BW-1:0];
 
 // BLC module
 blc #(
-    .DW  (DW   ),
+    .DW  (BW   ),
     .H   (H    ),
     .V   (V    ),
     .HW  (HW   ),
@@ -354,7 +354,7 @@ blc #(
 
 // AAF module
 aaf #(
-    .DW  (DW   ),
+    .DW  (BW   ),
     .H   (H    ),
     .V   (V    ),
     .HW  (HW   ),
@@ -372,7 +372,7 @@ aaf #(
 
 // AWB module
 awb #(
-    .DW  (DW   ),
+    .DW  (BW   ),
     .H   (H    ),
     .V   (V    ),
     .HW  (HW   ),
@@ -393,7 +393,7 @@ awb #(
 
 // CNF module -- RGB
 cnf #(
-    .DW  (DW   ),
+    .DW  (BW   ),
     .H   (H    ),
     .V   (V    ),
     .HW  (HW   ),
@@ -414,9 +414,9 @@ cnf #(
 );
  
 // CFA module
-
+logic [BW-1:0] pixel_data_rgb_cfa_r;
 cfa #(
-    .DW  (DW   ),
+    .DW  (BW   ),
     .H   (H    ),
     .V   (V    ),
     .HW  (HW   ),
@@ -427,15 +427,17 @@ cfa #(
     .cfa_en              (isp_enable[CFA]        ), // TODO
     .bayer_pattern       (bayer_pattern          ), // TODO
     //.cfa_clip            (cfa_clip               ), // TODO
-    .pixel_data_in       (pixel_data_rgb[CFA]    ),
+    .pixel_data_in       (pixel_data_bayer[CFA]  ),
     .pixel_data_in_vld   (pixel_data_vld[CFA]    ),
-    .pixel_data_out_r    (pixel_data_rgb[CFA+1][DW-1:DW-8]  ),
-    .pixel_data_out_g    (pixel_data_rgb[CFA+1][DW-9:DW-16] ),
-    .pixel_data_out_b    (pixel_data_rgb[CFA+1][DW-17:DW-24]),
+    .pixel_data_out_r    (pixel_data_rgb_cfa_r   ),
+    .pixel_data_out_g    (pixel_data_rgb_cfa_g   ),
+    .pixel_data_out_b    (pixel_data_rgb_cfa_b   ),
     .pixel_data_out_vld  (pixel_data_vld[CFA+1]  ),
     .cfa_done            (                       )  // TODO
 );
- 
+
+assign pixel_data_rgb[CFA+1] = {pixel_data_rgb_cfa_r[DW/3-1:0],pixel_data_rgb_cfa_g[DW/3-1:0],pixel_data_rgb_cfa_b[DW/3-1:0]};
+
 // CCM module
 
 ccm #(
