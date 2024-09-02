@@ -330,7 +330,7 @@ integer y;
 always @(negedge clk) begin
     if (pixel_data_out_vld) begin
         for(x=0;x<9;x=x+1) begin
-            for(y=0;y<9ly=y+1) begin
+            for(y=0;y<9;y=y+1) begin
                 $fwrite(file_cnf_p,"%d",mac_arr[x*9+y]);
             end
             $fwrite(file_cnf_p,"\n");

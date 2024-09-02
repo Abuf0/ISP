@@ -99,4 +99,29 @@ always_ff@(posedge clk or negedge rstn) begin
     else if(ccm_done)
         ccm_done <= 1'b0;
 end
+
+`ifdef SIM
+integer file_cm;
+initial begin
+    file_ccm = $fopen("./ccm_result.csv","w+");  // 初始化文件
+end
+integer x;
+integer y;
+always @(negedge clk) begin
+    if (pixel_data_out_vld) begin
+        //for(x=0;x<9;x=x+1) begin
+        //    for(y=0;y<9;y=y+1) begin
+        //        $fwrite(file_cnf_p,"%d",mac_arr[x*9+y]);
+        //    end
+        //    $fwrite(file_cnf_p,"\n");
+        //end
+    fwrite(file_ccm,"(%d,%d)%d-%d-%d\n",v_cnt,h_cnt,pixel_data_out_r,pixel_data_out_g,pixel_data_out_b);
+    //$fwrite(file_cnf,"%d\n",pixel_data_out);
+    end
+//     else begin
+//         $fclose(file);   // 这里一定要写，关闭文件读写
+//     end
+end
+`endif
+
 endmodule
