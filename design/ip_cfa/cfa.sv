@@ -9,11 +9,12 @@ module cfa#(
     input                       rstn                  ,
     input                       cfa_en                ,
     input        [2:0]          bayer_pattern         ,  
+    input        [DW-1:0]       cfa_clip              ,
     input        [DW-1:0]       pixel_data_in         ,
     input                       pixel_data_in_vld     ,
     output logic [DW-1:0]       pixel_data_out_r      ,
     output logic [DW-1:0]       pixel_data_out_g      ,
-    output logic [DW-1:0]       pixel_data_out_b      ,
+    output logic [DW-1:0]       pixel_data_out_b      , 
     output logic                pixel_data_out_vld    ,
     output logic                cfa_done        
 );
@@ -35,9 +36,9 @@ parameter R = 2'd0;
 logic [1:0] bayer_arr[0:3];
 logic [1:0] bayer_index;
 
-logic [DW-1:0] r [0:4-1];
-logic [DW-1:0] g [0:4-1];
-logic [DW-1:0] b [0:4-1];
+logic signed [DW:0] r [0:4-1];
+logic signed [DW:0] g [0:4-1];
+logic signed [DW:0] b [0:4-1];
 
 always@(*) begin
     {bayer_arr[0],bayer_arr[1],bayer_arr[2],bayer_arr[3]} = {R,GR,GB,B};
@@ -91,16 +92,16 @@ endgenerate
 //assign pixel_data_out_tmp = (mac_arr[0]+mac_arr[1]+mac_arr[2]+mac_arr[3]+(mac_arr[4] << 3)+mac_arr[5]+mac_arr[6]+mac_arr[7]+mac_arr[8]) >> 4 ;
 
 assign r[0] = mac_arr[12]<<3;
-assign r[1] = (mac_arr[12]<<2) + mac_arr[12] - mac_arr[2] - mac_arr[8] - mac_arr[16] - mac_arr[18] - mac_arr[22] +
-              ((mac_arr[10] + mac_arr[14])>>1) + ((mac_arr[7] + mac_arr[17])<<2);
-assign r[2] = (mac_arr[12]<<2) + mac_arr[12] - mac_arr[10] - mac_arr[16] - mac_arr[14] - mac_arr[8] - mac_arr[18] +
+assign r[1] = (mac_arr[12]<<2) + mac_arr[12] - mac_arr[10] - mac_arr[6] - mac_arr[16] - mac_arr[8] - mac_arr[18] - mac_arr[14] +
               ((mac_arr[2] + mac_arr[22])>>1) + ((mac_arr[11] + mac_arr[13])<<2);
+assign r[2] = (mac_arr[12]<<2) + mac_arr[12] - mac_arr[2] - mac_arr[6] - mac_arr[8] - mac_arr[22] - mac_arr[16] - mac_arr[18] +
+              ((mac_arr[10] + mac_arr[14])>>1) + ((mac_arr[7] + mac_arr[17])<<2);
 assign r[3] = (mac_arr[12]<<2) + (mac_arr[12]<<1) - 3*(mac_arr[10] + mac_arr[2] + mac_arr[14] + mac_arr[22])>>1 +
               (mac_arr[6] + mac_arr[8] + mac_arr[16] + mac_arr[18])<<1;
               
 
-assign g[0] = (mac_arr[12]<<2) - mac_arr[10] - mac_arr[2] - mac_arr[14] - mac_arr[22] +
-              (mac_arr[6] + mac_arr[8] + mac_arr[16] + mac_arr[18])<<1;
+assign g[0] = (mac_arr[12]<<2) - mac_arr[2] - mac_arr[10] - mac_arr[22] - mac_arr[14] +
+              (mac_arr[17] + mac_arr[13] + mac_arr[7] + mac_arr[11])<<1;
 assign g[1] = mac_arr[12]<<3;
 assign g[2] = mac_arr[12]<<3;
 assign g[3] = g[0];
@@ -110,9 +111,9 @@ assign b[1] = r[2];
 assign b[2] = r[1];
 assign b[3] = mac_arr[12]<<3;  // r[0]
 
-assign pixel_data_out_r_pre = r[bayer_index] >> 3;
-assign pixel_data_out_g_pre = g[bayer_index] >> 3;
-assign pixel_data_out_b_pre = b[bayer_index] >> 3;
+assign pixel_data_out_r_pre = r[bayer_index][DW]?   'd0 : ((r[bayer_index] >> 3) > cfa_clip?     cfa_clip : (r[bayer_index] >> 3)) ;
+assign pixel_data_out_g_pre = g[bayer_index][DW]?   'd0 : ((g[bayer_index] >> 3) > cfa_clip?     cfa_clip : (g[bayer_index] >> 3)) ;
+assign pixel_data_out_b_pre = b[bayer_index][DW]?   'd0 : ((b[bayer_index] >> 3) > cfa_clip?     cfa_clip : (b[bayer_index] >> 3)) ;
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
@@ -168,7 +169,7 @@ end
 `ifdef SIM
 integer file_cfa;
 initial begin
-    file_cnf = $fopen("./cfa_result.csv","w+");  // 初始化文件
+    file_cfa = $fopen("./cfa_result.csv","w+");  // 初始化文件
 end
 integer x;
 integer y;
@@ -180,7 +181,7 @@ always @(negedge clk) begin
         //    end
         //    $fwrite(file_cnf_p,"\n");
         //end
-    fwrite(file_cnf,"(%d,%d)%d-%d-%d\n",v_cnt,h_cnt,pixel_data_out_r,pixel_data_out_g,pixel_data_out_b);
+    $fwrite(file_cfa,"(%d,%d)%d-%d-%d\n",v_cnt,h_cnt,pixel_data_out_r,pixel_data_out_g,pixel_data_out_b);
     //$fwrite(file_cnf,"%d\n",pixel_data_out);
     end
 //     else begin

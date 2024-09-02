@@ -26,9 +26,9 @@ logic [DW/3-1:0]   pixel_data_r;
 logic [DW/3-1:0]   pixel_data_g;          
 logic [DW/3-1:0]   pixel_data_b;  
 
-logic [D/3+DW/3+2-1:0] pixel_data_out_r_tmp;
-logic [D/3+DW/3+2-1:0] pixel_data_out_g_tmp;
-logic [D/3+DW/3+2-1:0] pixel_data_out_b_tmp;
+logic [DW/3+DW+2-1:0] pixel_data_out_r_tmp;
+logic [DW/3+DW+2-1:0] pixel_data_out_g_tmp;
+logic [DW/3+DW+2-1:0] pixel_data_out_b_tmp;
 
 logic [HW-1:0] h_cnt; 
 logic [VW-1:0] v_cnt; 
@@ -58,9 +58,9 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_out_b <= 'd0;
     end
     else if(ccm_en) begin
-        pixel_data_out_r <= pixel_data_out_r_tmp << 10;
-        pixel_data_out_g <= pixel_data_out_g_tmp << 10;
-        pixel_data_out_b <= pixel_data_out_b_tmp << 10;
+        pixel_data_out_r <= pixel_data_out_r_tmp >> 10;
+        pixel_data_out_g <= pixel_data_out_g_tmp >> 10;
+        pixel_data_out_b <= pixel_data_out_b_tmp >> 10;
     end
     else begin
         pixel_data_out_r <= pixel_data_r;
@@ -101,7 +101,7 @@ always_ff@(posedge clk or negedge rstn) begin
 end
 
 `ifdef SIM
-integer file_cm;
+integer file_ccm;
 initial begin
     file_ccm = $fopen("./ccm_result.csv","w+");  // 初始化文件
 end
@@ -115,7 +115,7 @@ always @(negedge clk) begin
         //    end
         //    $fwrite(file_cnf_p,"\n");
         //end
-    fwrite(file_ccm,"(%d,%d)%d-%d-%d\n",v_cnt,h_cnt,pixel_data_out_r,pixel_data_out_g,pixel_data_out_b);
+    $fwrite(file_ccm,"(%d,%d) %d-%d-%d\n",v_cnt,h_cnt,pixel_data_out_r,pixel_data_out_g,pixel_data_out_b);
     //$fwrite(file_cnf,"%d\n",pixel_data_out);
     end
 //     else begin

@@ -24,7 +24,7 @@ parameter R = 2'd0;
 logic [1:0] bayer_arr[0:3];
 logic [1:0] bayer_index;
 
-logic [DW-1:0] pixel_data_gain;
+logic [DW:0] pixel_data_gain;   // TODO
 
 logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt;

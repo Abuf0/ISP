@@ -27,12 +27,14 @@ class CSC:
         csc_img[:, :, 1] = self.img[:, :, 0] * self.csc[1, 0] + self.img[:, :, 1] * self.csc[1, 1] + self.img[:, :, 2] * self.csc[1, 2] + self.csc[1, 3]
         csc_img[:, :, 2] = self.img[:, :, 0] * self.csc[2, 0] + self.img[:, :, 1] * self.csc[2, 1] + self.img[:, :, 2] * self.csc[2, 2] + self.csc[2, 3]
         csc_img = csc_img / 1024
-        #print(csc_img)
+        print("%d,%d,%d"%(self.img[0,0,0],self.img[0,0,1],self.img[0,0,2]))
+        print("%d,%d,%d"%(csc_img[0,0,0],csc_img[0,0,1],csc_img[0,0,2]))
+        print("%d,%d,%d,%d"%(self.csc[0, 0],self.csc[0, 1],self.csc[0, 2],self.csc[0, 3]))
 
         self.img = csc_img.astype(np.uint8)
         #print(self.img)
         return self.img
-
+'''
 csc = np.zeros((3,4))  
 # csc[0][0] = 263
 # csc[0][1] = 516
@@ -64,3 +66,4 @@ csc_data_yuv = obj.execute()
 cv2.imwrite('yuv_img_csc.jpg', csc_data_yuv)
 csc_data_rgb = cv2.cvtColor(csc_data_yuv, cv2.COLOR_YCrCb2BGR)
 cv2.imwrite('img_csc.jpg',csc_data_rgb)
+'''

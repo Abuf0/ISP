@@ -26,9 +26,9 @@ logic [DW/3-1:0]   pixel_data_r;
 logic [DW/3-1:0]   pixel_data_g;          
 logic [DW/3-1:0]   pixel_data_b;  
 
-logic [DW/3+DW/3+2-1:0] pixel_data_out_r_tmp;
-logic [DW/3+DW/3+2-1:0] pixel_data_out_g_tmp;
-logic [DW/3+DW/3+2-1:0] pixel_data_out_b_tmp;
+logic signed [DW/3+DW/3+2:0] pixel_data_out_r_tmp;
+logic signed [DW/3+DW/3+2:0] pixel_data_out_g_tmp;
+logic signed [DW/3+DW/3+2:0] pixel_data_out_b_tmp;
 
 logic [HW-1:0] h_cnt; 
 logic [VW-1:0] v_cnt; 
@@ -48,8 +48,8 @@ always_ff@(posedge clk or negedge rstn) begin
     end
 end
 assign pixel_data_out_r_tmp =  csc_coef_r[0]*pixel_data_r + csc_coef_r[1]*pixel_data_g + csc_coef_r[2]*pixel_data_b + csc_coef_r[3];
-assign pixel_data_out_g_tmp = -csc_coef_g[0]*pixel_data_r - csc_coef_g[1]*pixel_data_g + csc_coef_g[2]*pixel_data_b + csc_coef_g[3];
-assign pixel_data_out_b_tmp =  csc_coef_b[0]*pixel_data_r - csc_coef_b[1]*pixel_data_g - csc_coef_b[2]*pixel_data_b + csc_coef_b[3];
+assign pixel_data_out_g_tmp =  csc_coef_g[0]*pixel_data_r + csc_coef_g[1]*pixel_data_g + csc_coef_g[2]*pixel_data_b + csc_coef_g[3];
+assign pixel_data_out_b_tmp =  csc_coef_b[0]*pixel_data_r + csc_coef_b[1]*pixel_data_g + csc_coef_b[2]*pixel_data_b + csc_coef_b[3];
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn) begin
@@ -115,7 +115,7 @@ always @(negedge clk) begin
         //    end
         //    $fwrite(file_cnf_p,"\n");
         //end
-    fwrite(file_cnf,"(%d,%d)%d-%d-%d\n",v_cnt,h_cnt,pixel_data_out_r,pixel_data_out_g,pixel_data_out_b);
+    $fwrite(file_csc,"(%d,%d)%d-%d-%d\n",v_cnt,h_cnt,pixel_data_out_r,pixel_data_out_g,pixel_data_out_b);
     //$fwrite(file_cnf,"%d\n",pixel_data_out);
     end
 //     else begin

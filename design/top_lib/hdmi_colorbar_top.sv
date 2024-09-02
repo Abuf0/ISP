@@ -67,11 +67,11 @@ logic  [23:0]  video_rgb;
 logic [DW-1:0] dpc_thres;
 logic [DW-1:0] dpc_clip;
 logic [1:0] bayer_pattern;
-logic [DW-1:0] blc_bias [0:3];
+logic [BW-1:0] blc_bias [0:3];
 logic [DW-1:0] blc_clip;
-logic [DW-1:0] awb_gain [0:3];
+logic [BW-1:0] awb_gain [0:3];
 logic [DW-1:0] awb_clip;
-logic [DW-1:0] cnf_gain [0:3];
+logic [BW-1:0] cnf_gain [0:3];
 logic [DW-1:0] cnf_clip;
 logic [DW-1:0] cnf_thres;
 logic [DW-1:0] cfa_clip;
@@ -124,37 +124,35 @@ assign cnf_gain[1] = 256;  // 1.0 << 8
 assign cnf_gain[2] = 256;  // 1.0 << 8
 assign cnf_gain[3] = 128;  // 0.5 << 8
 
-assign cnf_clip = 1023;
+assign cnf_clip = 250;
 assign cnf_thres = 0;
-assign cfa_clip = 1023;
+assign cfa_clip = 250;
 
-assign ccm_coef_r[0] = 1024 ;
-assign ccm_coef_g[0] = 0    ;
-assign ccm_coef_b[0] = 0    ;
-assign csc_coef_r[0] = 263  ;
-assign csc_coef_g[0] = -152 ;
-assign csc_coef_b[0] = 450  ;
-
+assign ccm_coef_r[0] = 1024     ;
+assign ccm_coef_g[0] = 0        ;
+assign ccm_coef_b[0] = 0        ;
 assign ccm_coef_r[1] = 0        ;
 assign ccm_coef_g[1] =  1024    ;
 assign ccm_coef_b[1] =  0       ;
-assign csc_coef_r[1] =  516     ;
-assign csc_coef_g[1] = -298     ;
-assign csc_coef_b[1] = -377     ;
-
 assign ccm_coef_r[2] = 0        ;
 assign ccm_coef_g[2] =  0       ;
 assign ccm_coef_b[2] =  1024    ;
-assign csc_coef_r[2] =  100     ;
-assign csc_coef_g[2] = 450      ;
-assign csc_coef_b[2] = 73       ;
-
 assign ccm_coef_r[3] =  0       ;
 assign ccm_coef_g[3] =  0       ;
 assign ccm_coef_b[3] =  0       ;
-assign csc_coef_r[3] =  16384   ;
+
+assign csc_coef_r[0] = -73      ;
+assign csc_coef_g[0] = 450      ;
+assign csc_coef_b[0] = 100      ;
+assign csc_coef_r[1] =  -377    ;
+assign csc_coef_g[1] = -298     ;
+assign csc_coef_b[1] = 516      ;
+assign csc_coef_r[2] =  450     ;
+assign csc_coef_g[2] = -152     ;
+assign csc_coef_b[2] = 263      ;
+assign csc_coef_r[3] =  32768   ;
 assign csc_coef_g[3] = 32768    ;
-assign csc_coef_b[3] = 32768    ;
+assign csc_coef_b[3] = 16384    ;
 
 assign bnf_dw[0][0] = 8	    ;
 assign bnf_dw[0][1] = 12    ;	
@@ -415,6 +413,8 @@ cnf #(
  
 // CFA module
 logic [BW-1:0] pixel_data_rgb_cfa_r;
+logic [BW-1:0] pixel_data_rgb_cfa_g;
+logic [BW-1:0] pixel_data_rgb_cfa_b;
 cfa #(
     .DW  (BW   ),
     .H   (H    ),
@@ -426,7 +426,7 @@ cfa #(
     .rstn                (rst_pix_n              ),
     .cfa_en              (isp_enable[CFA]        ), // TODO
     .bayer_pattern       (bayer_pattern          ), // TODO
-    //.cfa_clip            (cfa_clip               ), // TODO
+    .cfa_clip            (cfa_clip               ), // TODO
     .pixel_data_in       (pixel_data_bayer[CFA]  ),
     .pixel_data_in_vld   (pixel_data_vld[CFA]    ),
     .pixel_data_out_r    (pixel_data_rgb_cfa_r   ),

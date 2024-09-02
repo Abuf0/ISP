@@ -60,6 +60,7 @@ logic [DW-1:0] pixel_data_out_pre;
 logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt;
 logic init;
+logic [1:0] bayer_index;
 
 assign r_gain = cnf_gain[0];
 assign gr_gain = cnf_gain[1];
@@ -180,7 +181,7 @@ end
 
 assign center = mac_arr[40];
 
-assign is_noise = (center > avg_g+thres) && (center > avg_c2+thres) && (avg_c1 > avg_g+thres) && (avg_c1 > avg_c2+thres) : 0;
+assign is_noise = (center > avg_g+thres) && (center > avg_c2+thres) && (avg_c1 > avg_g+thres) && (avg_c1 > avg_c2+thres);
 
 assign bayer_index = {v_cnt[0],h_cnt[0]};
 
@@ -220,8 +221,8 @@ always@(*) begin
     endcase
 
 end
-assign chroma_corr = signal_gap_sign?   ((avg_g > avg_c2)?  avg_g - (damp_factor*signal_gap) >>8 : avg_c2 - (damp_factor*signal_gap) >>8) :
-                                        ((avg_g > avg_c2)?  avg_g + (damp_factor*signal_gap) >>8 : avg_c2 + (damp_factor*signal_gap) >>8) ;
+assign chroma_corr = signal_gap_sign?   ((avg_g > avg_c2)?  avg_g - ((damp_factor*signal_gap) >>8) : avg_c2 - ((damp_factor*signal_gap) >>8)) :
+                                        ((avg_g > avg_c2)?  avg_g + ((damp_factor*signal_gap) >>8) : avg_c2 + ((damp_factor*signal_gap) >>8)) ;
 
 always@(*) begin
     fade1 = 0;
@@ -335,8 +336,8 @@ always @(negedge clk) begin
             end
             $fwrite(file_cnf_p,"\n");
         end
-    fwrite(file_cnf_p,"(%d,%d,%d,%d)sgap=%d,fac=%d,cor=%d,sigme=%d,fad1=%d,fad2=%d\n",mac_acc_a,mac_acc_b,mac_acc_c,mac_acc_d,signal_gap,damp_factor,chroma_corr,signal_meter,fad1,fad2);
-    fwrite(file_cnf_p,"\n");
+    $fwrite(file_cnf_p,"(%d,%d,%d,%d)sgap=%d,fac=%d,cor=%d,sigme=%d,fad1=%d,fad2=%d\n",mac_acc_a,mac_acc_b,mac_acc_c,mac_acc_d,signal_gap,damp_factor,chroma_corr,signal_meter,fade1,fade2);
+    $fwrite(file_cnf_p,"\n");
     $fwrite(file_cnf,"%d\n",pixel_data_out);
     end
 //     else begin

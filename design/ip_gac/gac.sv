@@ -27,8 +27,8 @@ logic [DW/3-1:0] lut_1 [0:255];
 
 // gamma is loaded
 initial begin
-    $readmemh("./gamma_lut_0.txt",lut_0);
-    $readmemh("./gamma_lut_1.txt",lut_1); 
+    $readmemb("./ext3/home/wangyufei/Projects/6-ISP/design/ip_gac/gamma_lut_0.txt",lut_0);
+    $readmemb("./ext3/home/wangyufei/Projects/6-ISP/design/ip_gac/gamma_lut_1.txt",lut_1); 
 end
 
 logic [7:0] cnt;
@@ -49,37 +49,29 @@ always_ff@(posedge clk or negedge rstn) begin
         flag <= ~flag;
 end
 
-assign we_0 = flag?    lut_din_vld : 1'b1;
-assign we_1 = flag?    1'b1 : lut_din_vld;
+assign we_0 = flag?    lut_din_vld : 1'b0;
+assign we_1 = flag?    1'b0 : lut_din_vld;
 
 genvar i;
 generate 
     for(i=0;i<256;i=i+1) begin
         if(i==255) begin
-            always_ff@(posedge clk or negedge rstn) begin
-                if(~rstn)
-                    lut_0[i] <= 'd0;
-                else if(we_0)
+            always_ff@(posedge clk) begin
+                if(we_0)
                     lut_0[i] <= lut_din;
             end
-            always_ff@(posedge clk or negedge rstn) begin
-                if(~rstn)
-                    lut_1[i] <= 'd0;
-                else if(we_1)
+            always_ff@(posedge clk) begin
+                if(we_1)
                     lut_1[i] <= lut_din;
             end            
         end
         else begin
-            always_ff@(posedge clk or negedge rstn) begin
-                if(~rstn)
-                    lut_0[i] <= 'd0;
-                else if(we_0)
+            always_ff@(posedge clk) begin
+                if(we_0)
                     lut_0[i] <= lut_0[i+1];
             end
-            always_ff@(posedge clk or negedge rstn) begin
-                if(~rstn)
-                    lut_1[i] <= 'd0;
-                else if(we_1)
+            always_ff@(posedge clk) begin
+                if(we_1)
                     lut_1[i] <= lut_1[i+1];
             end
         end
@@ -125,7 +117,7 @@ always @(negedge clk) begin
         //    end
         //    $fwrite(file_cnf_p,"\n");
         //end
-    fwrite(file_cnf,"(%d,%d)%d-%d-%d\n",v_cnt,h_cnt,pixel_data_out_r,pixel_data_out_g,pixel_data_out_b);
+    $fwrite(file_gac,"%d-%d-%d\n",pixel_data_out_r,pixel_data_out_g,pixel_data_out_b);
     //$fwrite(file_cnf,"%d\n",pixel_data_out);
     end
 //     else begin
