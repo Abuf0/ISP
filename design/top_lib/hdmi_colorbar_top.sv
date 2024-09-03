@@ -81,6 +81,7 @@ logic [DW-1:0] ccm_coef_b [0:3];
 logic signed [DW-1:0] csc_coef_r [0:3];
 logic signed [DW-1:0] csc_coef_g [0:3];
 logic signed [DW-1:0] csc_coef_b [0:3];
+logic [DW-1:0] nlm_clip;
 logic [DW-1:0] bnf_dw [0:4][0:4];   
 logic [DW-1:0] bnf_rw [0:3]     ;     
 logic [DW-1:0] bnf_rthres [0:2]   ;   
@@ -153,6 +154,8 @@ assign csc_coef_b[2] = 263      ;
 assign csc_coef_r[3] =  32768   ;
 assign csc_coef_g[3] = 32768    ;
 assign csc_coef_b[3] = 16384    ;
+
+assign nlm_clip = 250;
 
 assign bnf_dw[0][0] = 8	    ;
 assign bnf_dw[0][1] = 12    ;	
@@ -519,7 +522,7 @@ csc #(
 // NLM module
 
 nlm #(
-    .DW  (DW   ),
+    .DW  (BW   ),
     .H   (H    ),
     .V   (V    ),
     .HW  (HW   ),
@@ -527,9 +530,10 @@ nlm #(
 ) nlm_inst(
     .clk                (pixel_clk               ),
     .rstn               (rst_pix_n               ),
+    .nlm_clip           (nlm_clip                ),
     .nlm_en             (isp_enable[NLM]         ), // TODO
     .pixel_data_in_vld  (pixel_data_vld[NLM]     ), 
-    .pixel_data_in      (pixel_data_rgb[NLM]     ),
+    .pixel_data_in      ({8'd0,pixel_data_rgb[NLM][DW-17:DW-24]}     ),
     .pixel_data_out_vld (pixel_data_vld[NLM+1]   ),
     .pixel_data_out     (pixel_data_rgb[NLM+1]   ),
     .nlm_done           (                        )  // TODO

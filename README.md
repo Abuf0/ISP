@@ -47,3 +47,8 @@
         - csc coef rgb mapping
     - building nlm-model
         - <TODO: determine dist & w bit-wise and mapping, output LUT_EXP>
+
+- 2024/9/3
+    - fixing nlm
+        - <TODO: check rtl coefiency>
+        - modify nlm-model for slide & y!=j,x!=i
