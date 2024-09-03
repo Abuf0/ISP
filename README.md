@@ -41,3 +41,9 @@
     - fixed cfa-model bug(trans to rgb)
     - refixed cnf-rtl padding
     - built ccm/gac/csc-model
+
+- 2024/9/2
+    - fixed cfa/ccm/gac/csc
+        - csc coef rgb mapping
+    - building nlm-model
+        - <TODO: determine dist & w bit-wise and mapping, output LUT_EXP>

@@ -5,22 +5,24 @@ import cv2
 class NLM:
     'Non-Local Means Denoising'
 
-    def __init__(self, img, ds, Ds, h, clip):
+    def __init__(self, img, ds, Ds, h, clip, lut_en, lut_exp):
         self.img = img
         self.ds = ds    # neighbour window size - 1 /2
         self.Ds = Ds    # search window size - 1 / 2
         self.h = h
         self.clip = clip
+        self.lut_en = lut_en
+        self.lut_exp = lut_exp
 
     def padding(self):
-        img_pad = np.pad(self.img, (self.Ds, self.Ds), 'reflect')
+        img_pad = np.pad(self.img, (self.Ds, self.Ds), 'constant')
         return img_pad
 
     def clipping(self):
         np.clip(self.img, 0, self.clip, out=self.img)
         return self.img
 
-    def calWeights(self, img, kernel, y, x):
+    def calWeights(self, img, kernel, y, x, lut_en,lut_exp):
         wmax = 0
         sweight = 0
         average = 0
@@ -33,11 +35,22 @@ class NLM:
                 if j != y or i != x:
                     sub = np.subtract(neighbour_w, center_w)
                     dist = np.sum(np.multiply(kernel, np.multiply(sub, sub)))
-                    w = np.exp(-dist/pow(self.h, 2))    # replaced by look up table
+                    if(lut_en):
+                        w = lut_exp[round(dist)]/pow(2,15)
+                    else:
+                        w = np.exp(-dist/pow(self.h, 2))    # replaced by look up table
+                    f1.write("w=%f\t"%(w))
                     if w > wmax:
                         wmax = w
                     sweight = sweight + w
                     average = average + w * img[start_y, start_x]
+                f1.write("\n")
+                f1.write(str(sub))
+                f1.write("\ndist=")
+                f1.write(str(int(dist)))
+                f1.write("\n")
+                #f1.write(str(w))
+                f1.write("sw=%d, avg=%d, wmax=%d\n"%(sweight,average,wmax))
         return sweight, average, wmax
 
     def execute(self):
@@ -47,24 +60,31 @@ class NLM:
         raw_w = self.img.shape[1]
         nlm_img = np.empty((raw_h, raw_w), np.uint16)
         kernel = np.ones((2*self.ds+1, 2*self.ds+1)) / pow(2*self.ds+1, 2)
+        lut_en = self.lut_en
+        lut_exp = self.lut_exp
+        print("kernel:\n")
+        print(kernel)
         for y in range(img_pad.shape[0] - 2 * self.Ds):
             for x in range(img_pad.shape[1] - 2 * self.Ds):
                 center_y = y + self.Ds
                 center_x = x + self.Ds
-                sweight, average, wmax = self.calWeights(img_pad, kernel, center_y, center_x)
+                sweight, average, wmax = self.calWeights(img_pad, kernel, center_y, center_x, lut_en,lut_exp)
                 average = average + wmax * img_pad[center_y, center_x]
                 sweight = sweight + wmax
                 nlm_img[y,x] = average / sweight
         self.img = nlm_img
         return self.clipping()
 
-nlm_h = 10
-nlm_clip = 255
-raw_data = cv2.imread('yuv_img_csc.jpg',cv2.IMREAD_UNCHANGED)
-obj = NLM(raw_data[:,:,0],1,4,nlm_h,nlm_clip)
-nlm_data_yuv_0 = obj.execute()
-cv2.imwrite('yuv_img_nlm_gray.jpg', nlm_data_yuv_0)
-nlm_data_yuv = raw_data
-nlm_data_yuv[:,:,0] = nlm_data_yuv_0
-nlm_data_rgb = cv2.cvtColor(nlm_data_yuv, cv2.COLOR_YCrCb2BGR)
-cv2.imwrite('img_nlm.jpg',nlm_data_rgb)
+
+f1 = open("./pipeline_data/nlm_p.csv","w+")
+
+# nlm_h = 10
+# nlm_clip = 255
+# raw_data = cv2.imread('yuv_img_csc.jpg',cv2.IMREAD_UNCHANGED)
+# obj = NLM(raw_data[:,:,0],1,4,nlm_h,nlm_clip)
+# nlm_data_yuv_0 = obj.execute()
+# cv2.imwrite('yuv_img_nlm_gray.jpg', nlm_data_yuv_0)
+# nlm_data_yuv = raw_data
+# nlm_data_yuv[:,:,0] = nlm_data_yuv_0
+# nlm_data_rgb = cv2.cvtColor(nlm_data_yuv, cv2.COLOR_YCrCb2BGR)
+# cv2.imwrite('img_nlm.jpg',nlm_data_rgb)

@@ -1,6 +1,6 @@
 // To match speed, one cycle output one  calweight
 module calweights #(
-    parameter DW = 8    ,
+    parameter DW = 16   ,
     parameter DS = 4    ,   // search window size-1 /2
     parameter KS = 1        // neighbour window size-1 /2
 
@@ -10,8 +10,8 @@ module calweights #(
     input        [DW-1:0]   array [0:DS*2] [0:DS*2] ,
     input                   data_vld                ,
     output logic [DW-1:0]   wmax                    ,
-    output logic [DW-1:0]   wsum                    ,
-    output logic [DW-1:0]   average                 ,
+    output logic [DW+DW-1:0]wsum                    ,
+    output logic [DW+DW-1:0]average                 ,
     output logic [DW-1:0]   center                  ,
     output logic            calout_vld
 );
@@ -26,9 +26,9 @@ logic [DW-1:0] array_buff [0:SIZE_S-1] [0:SIZE_S-1];
 logic data_vld_ff1;
 logic data_vld_ff2;
 
-logic [DW-1:0] LUT_EXP [0:255]; //TODO
+logic [DW-1:0] LUT_EXP [0:1039]; //TODO
 initial begin
-    $readmemh("./lut_exp.txt",LUT_EXP);
+    $readmemh("/ext3/home/wangyufei/Projects/6-ISP/design/ip_nlm/lut_exp_bin.txt",LUT_EXP);
 end
 
 genvar i;
@@ -54,7 +54,7 @@ generate
                 assign weight[i][j] = 'd0;
             end
             else begin
-                assign weight[i][j] = LUT_EXP[sigma[i][j]];
+                assign weight[i][j] = (sigma[i][j] > 1039)?   'd0 : LUT_EXP[sigma[i][j]];
             end
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
@@ -90,6 +90,8 @@ genvar k;
 logic [DW-1:0] wmax_tmp [0:4][0:1];
 logic [DW-1:0] wmax_mux [0:4];
 logic [DW-1:0] wmax_012;
+logic [DW+DW-1:0] wsum_pre;
+logic [DW+DW+DW-1:0] average_pre;
 assign wsum_pre =  wght_buff[0][0] + wght_buff[0][1] + wght_buff[0][2] + wght_buff[0][3] + wght_buff[0][4] +
                    wght_buff[1][0] + wght_buff[1][1] + wght_buff[1][2] + wght_buff[1][3] + wght_buff[1][4] +
                    wght_buff[2][0] + wght_buff[2][1]                   + wght_buff[2][3] + wght_buff[2][4] +
