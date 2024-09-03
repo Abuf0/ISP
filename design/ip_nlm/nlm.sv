@@ -26,10 +26,10 @@ logic            calout_vld              ;
 logic            calout_vld_ff1          ;
 
 // 原方案：padding时停顿，shift入0；舍弃原因：串行输入是连续的
-logic [DW-1:0] shift_reg[0:(DS-1)*H+DS-1];
+logic [DW-1:0] shift_reg[0:(2*DS-1)*H+2*DS-1];
 logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt;
-logic flag;
+logic init;
 
 logic [DW-1:0]    pixel_data_out_pre;
 logic [DW+DW-1:0] pixel_average;
@@ -37,7 +37,7 @@ logic [DW+DW-1:0] pixel_wsum;
 
 genvar i;
 generate 
-    for(i=0;i<4*H+4;i=i+1) begin: SFT_REG
+    for(i=0;i<8*H+9;i=i+1) begin: SFT_REG
         if(i==0) begin
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
@@ -62,7 +62,7 @@ genvar y;
 generate 
     for(x=0;x<DS*2+1;x=x+1) begin
         for(y=0;y<DS*2+1;y=y+1) begin
-            assign array[x][y] = ( (v_cnt < (DS-x)) || (v_cnt > V+DS-x) || (h_cnt < (DS-y)) || (h_cnt > (H+DS-y)))?   shift_reg[x*H+y]    : 'd0;
+            assign array[x][y] = ( (v_cnt < (DS-x)) || (v_cnt > V+DS-x) || (h_cnt < (DS-y)) || (h_cnt > (H+DS-y)))?   shift_reg[8*H+8-(x*H+y)]    : 'd0;
         end 
     end
 endgenerate
@@ -70,27 +70,33 @@ endgenerate
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         h_cnt <= 'd0;
-    else if(nlm_en && (pixel_data_in_vld || flag))
+    else if(init && v_cnt==4 && h_cnt==4)
+        h_cnt <= 'd0;
+    else if(nlm_en && pixel_data_in_vld)
         h_cnt <= (h_cnt==H-1)?  'd0:(h_cnt+1'b1);
 end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         v_cnt <= 'd0;
-    else if(nlm_en && (pixel_data_in_vld || flag) && h_cnt==H-1)
+    else if(init && v_cnt==4 && h_cnt==4)
+        v_cnt <= 'd0;
+    else if(nlm_en && pixel_data_in_vld && h_cnt==H-1)
         v_cnt <= (v_cnt==V-1)?  'd0:(v_cnt+1'b1);
 end
+   
 always_ff@(posedge clk or negedge rstn) begin
-    if(~rstn)
-        flag <= 1'b0;
-    else if(nlm_en && v_cnt==V-1 && h_cnt==H-1)
-        flag <= 1'b1;
+    if(~rstn)   
+        init <= 1'b1;
+    else if(init && v_cnt==4 && h_cnt==4)
+        init <= 1'b0;
 end
+
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         data_vld <= 'd0;
-    else if(nlm_en && v_cnt >= DS && h_cnt >= DS)
-        data_vld <= (pixel_data_in_vld || flag) ;
+    else if(nlm_en)
+        data_vld <= ~init & pixel_data_in_vld  ;
 end
 
 calweights #(
@@ -151,4 +157,22 @@ always_ff@(posedge clk or negedge rstn) begin
     else if(nlm_done)
         nlm_done <= 1'b0;
 end
+
+`ifdef SIM
+integer file_nlm;
+initial begin
+    file_nlm = $fopen("./nlm_result.csv","w+");  // 初始化文件
+end
+integer x;
+integer y;
+always @(negedge clk) begin
+    if(pixel_data_out_vld) begin
+        $fwrite(file_nlm,"%d\n",pixel_data_out);
+    end
+//     else begin
+//         $fclose(file);   // 这里一定要写，关闭文件读写
+//     end
+end
+`endif
+
 endmodule

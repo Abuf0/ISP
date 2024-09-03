@@ -150,4 +150,32 @@ always_ff@(posedge clk or negedge rstn) begin
     else
         {calout_vld,data_vld_ff2,data_vld_ff1} <= {data_vld_ff2,data_vld_ff1,data_vld};
 end
+
+`ifdef SIM
+integer file_nlm_p;
+initial begin
+    file_nlm_p = $fopen("./nlm_result_p.csv","w+");  // 初始化文件
+end
+integer x;
+integer y;
+always @(negedge clk) begin
+    if (data_vld) begin
+        for(x=0;x<SIZE_S-SIZE_N;x=x+1) begin
+            for(y=0;y<SIZE_S-SIZE_N;y=y+1) begin
+                $fwrite(file_nlm_p,"%d",array_buff[x][y]);
+            end
+            $fwrite(file_nlm_p,"\nsigma=\n");
+        end
+        for(x=0;x<SIZE_S-SIZE_N;x=x+1) begin
+            for(y=0;y<SIZE_S-SIZE_N;y=y+1) begin
+                $fwrite(file_nlm_p,"%d",sigma[x][y]);
+            end
+            $fwrite(file_nlm_p,"\n");
+        end        
+    end
+//     else begin
+//         $fclose(file);   // 这里一定要写，关闭文件读写
+//     end
+end
+`endif
 endmodule
