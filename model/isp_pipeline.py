@@ -13,7 +13,10 @@ from cfa import CFA
 from ccm import CCM
 from gac import GC
 from csc import CSC
+from nlm import NLM
 from pic2bayer import int_to_bin8
+from pic2bayer import int_to_bin16
+
 
 raw_data = cv2.imread('img_bayer_resize.jpg',cv2.IMREAD_UNCHANGED)
 print(50*'-' + '\nLoading RAW Image Done......')
@@ -123,7 +126,7 @@ cnf_data = cnf_data.astype(np.uint16)
 f = open("./pipeline_data/cfa_data.csv","w+")
 clip=250
 #obj = CFA(cnf_data,'malvar','rggb',clip)
-obj = CFA(raw_data,'malvar','rggb',clip)
+obj = CFA(raw_data,'malvar','rggb',clip)    ######### TODO for debug
 cfa_data = obj.execute()
 
 raw_h = cfa_data.shape[0]
@@ -225,5 +228,42 @@ for y in range(raw_h):
 
 
 print(50*'-' + '\n Color Space Conversion Done......')
-cv2.imwrite('./pipeline_data/img_csc.jpg',csc_data)
+cv2.imwrite('./pipeline_data/yuv_img_csc.jpg',csc_data)
+f.close()
+
+# Non-local means denoising
+csc_data = csc_data.astype(np.uint16)
+
+f = open("./pipeline_data/nlm_data.csv","w+")
+nlm_h = 10
+nlm_clip = 250 
+lut_en = 0
+
+maxval = pow(2,16) # 255x255
+ind = range(0,maxval)
+val = [int(np.exp(-i/pow(nlm_h,2))*pow(2,15)) for i in ind]
+#f.write(str(val))
+lut_exp = dict(zip(ind,val))
+f_lut = open('./pipeline_data/lut_exp_bin.txt','w+')
+for i in ind:
+    lut_exp = int_to_bin16(val[i])
+    #f_lut.write(str(i))
+    #f_lut.write("\t")
+    if(lut_exp!=int_to_bin16(0)):
+        f_lut.write(str(lut_exp))
+        f_lut.write('\n')
+f_lut.close()
+
+obj = NLM(csc_data[:,:,0],1,4,nlm_h,nlm_clip,lut_en,lut_exp)
+nlm_data = obj.execute()
+
+raw_h = nlm_data.shape[0]
+raw_w = nlm_data.shape[1]
+for y in range(raw_h):
+    for x in range(raw_w):
+        f.write("(%d,%d): %d (%d)\n"%(y,x,nlm_data[y,x],csc_data[y,x,0]))
+
+
+print(50*'-' + '\n Non-local means denoising Done......')
+cv2.imwrite('./pipeline_data/yuv_img_nlm.jpg',nlm_data)
 f.close()

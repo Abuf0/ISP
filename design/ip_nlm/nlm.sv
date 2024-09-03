@@ -19,8 +19,8 @@ module nlm#(
 logic [DW-1:0]   array [0:DS*2] [0:DS*2] ;
 logic            data_vld                ;
 logic [DW-1:0]   wmax                    ;
-logic [DW-1:0]   wsum                    ;
-logic [DW-1:0]   average                 ;
+logic [DW+DW-1:0]wsum                    ;
+logic [DW+DW-1:0]average                 ;
 logic [DW-1:0]   center                  ;
 logic            calout_vld              ;
 logic            calout_vld_ff1          ;
@@ -31,9 +31,9 @@ logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt;
 logic flag;
 
-logic [DW-1:0] pixel_data_out_pre;
-logic [DW-1:0] pixel_average;
-logic [DW-1:0] pixel_wsum;
+logic [DW-1:0]    pixel_data_out_pre;
+logic [DW+DW-1:0] pixel_average;
+logic [DW+DW-1:0] pixel_wsum;
 
 genvar i;
 generate 
