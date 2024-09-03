@@ -1,6 +1,6 @@
 module nlm#(
     parameter DW = 16   ,
-    parameter DS = 4    ,
+    parameter DS = 3    ,
     parameter H = 1280  ,
     parameter V = 720   ,
     parameter HW = 11   ,
@@ -9,6 +9,7 @@ module nlm#(
     input                   clk                   ,
     input                   rstn                  ,
     input                   nlm_en                ,
+    input        [DW-1:0]   nlm_clip              ,
     input                   pixel_data_in_vld     , 
     input        [DW-1:0]   pixel_data_in         ,
     output logic            pixel_data_out_vld    ,
@@ -16,7 +17,7 @@ module nlm#(
     output logic            nlm_done              
 );
 
-logic [DW-1:0]   array [0:DS*2] [0:DS*2] ;
+logic [DW-1:0]   array [0:2*DS] [0:2*DS] ;
 logic            data_vld                ;
 logic [DW-1:0]   wmax                    ;
 logic [DW+DW-1:0]wsum                    ;
@@ -26,7 +27,7 @@ logic            calout_vld              ;
 logic            calout_vld_ff1          ;
 
 // 原方案：padding时停顿，shift入0；舍弃原因：串行输入是连续的
-logic [DW-1:0] shift_reg[0:(2*DS-1)*H+2*DS-1];
+logic [DW-1:0] shift_reg[0:(2*DS)*H+2*DS];
 logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt;
 logic init;
@@ -60,9 +61,9 @@ endgenerate
 genvar x;
 genvar y;
 generate 
-    for(x=0;x<DS*2+1;x=x+1) begin
-        for(y=0;y<DS*2+1;y=y+1) begin
-            assign array[x][y] = ( (v_cnt < (DS-x)) || (v_cnt > V+DS-x) || (h_cnt < (DS-y)) || (h_cnt > (H+DS-y)))?   shift_reg[8*H+8-(x*H+y)]    : 'd0;
+    for(x=0;x<2*DS+1;x=x+1) begin
+        for(y=0;y<2*DS+1;y=y+1) begin
+            assign array[x][y] = ( (x<DS &&v_cnt < (DS-x)) || (v_cnt > V+DS-x) || (y<DS && h_cnt < (DS-y)) || (h_cnt > (H+DS-y)))?   'd0 : shift_reg[2*DS*H+2*DS-(x*H+y)] ;
         end 
     end
 endgenerate
@@ -70,7 +71,7 @@ endgenerate
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         h_cnt <= 'd0;
-    else if(init && v_cnt==4 && h_cnt==4)
+    else if(init && v_cnt==DS && h_cnt==DS)
         h_cnt <= 'd0;
     else if(nlm_en && pixel_data_in_vld)
         h_cnt <= (h_cnt==H-1)?  'd0:(h_cnt+1'b1);
@@ -78,7 +79,7 @@ end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         v_cnt <= 'd0;
-    else if(init && v_cnt==4 && h_cnt==4)
+    else if(init && v_cnt==DS && h_cnt==DS)
         v_cnt <= 'd0;
     else if(nlm_en && pixel_data_in_vld && h_cnt==H-1)
         v_cnt <= (v_cnt==V-1)?  'd0:(v_cnt+1'b1);
@@ -87,7 +88,7 @@ end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)   
         init <= 1'b1;
-    else if(init && v_cnt==4 && h_cnt==4)
+    else if(init && v_cnt==DS && h_cnt==DS)
         init <= 1'b0;
 end
 
@@ -120,13 +121,13 @@ always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         pixel_wsum <= 'd0;
     else  if(calout_vld)
-        pixel_wsum <= wsum + wmax;
+        pixel_wsum <= wsum ;//+ wmax;
 end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         pixel_average <= 'd0;
     else  if(calout_vld)
-        pixel_average <= average + wmax * center;
+        pixel_average <= average ;//+ wmax * center;
 end
 
 assign pixel_data_out_pre = pixel_average / pixel_wsum;
@@ -135,7 +136,7 @@ always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         pixel_data_out <= 'd0;
     else  if(nlm_en && calout_vld_ff1)
-        pixel_data_out <= pixel_data_out_pre;
+        pixel_data_out <= (pixel_data_out_pre > nlm_clip)?  nlm_clip : pixel_data_out_pre;
     else if(~nlm_en && pixel_data_in_vld)
         pixel_data_out <= pixel_data_in;
 end
@@ -152,7 +153,7 @@ end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         nlm_done <= 1'b0;
-    else if(nlm_en && v_cnt==V-1 && h_cnt==H-1 && flag && ~nlm_done)
+    else if(nlm_en && v_cnt==V-1 && h_cnt==H-1 && ~init && ~nlm_done)
         nlm_done <= 1'b1;
     else if(nlm_done)
         nlm_done <= 1'b0;
@@ -163,8 +164,7 @@ integer file_nlm;
 initial begin
     file_nlm = $fopen("./nlm_result.csv","w+");  // 初始化文件
 end
-integer x;
-integer y;
+
 always @(negedge clk) begin
     if(pixel_data_out_vld) begin
         $fwrite(file_nlm,"%d\n",pixel_data_out);

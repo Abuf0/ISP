@@ -237,7 +237,7 @@ csc_data = csc_data.astype(np.uint16)
 f = open("./pipeline_data/nlm_data.csv","w+")
 nlm_h = 10
 nlm_clip = 250 
-lut_en = 0
+lut_en = 1
 
 maxval = pow(2,16) # 255x255
 ind = range(0,maxval)
@@ -246,15 +246,15 @@ val = [int(np.exp(-i/pow(nlm_h,2))*pow(2,15)) for i in ind]
 lut_exp = dict(zip(ind,val))
 f_lut = open('./pipeline_data/lut_exp_bin.txt','w+')
 for i in ind:
-    lut_exp = int_to_bin16(val[i])
+    lut_exp_bin16 = int_to_bin16(val[i])
     #f_lut.write(str(i))
     #f_lut.write("\t")
-    if(lut_exp!=int_to_bin16(0)):
-        f_lut.write(str(lut_exp))
+    if(lut_exp_bin16!=int_to_bin16(0)):
+        f_lut.write(str(lut_exp_bin16))
         f_lut.write('\n')
 f_lut.close()
 
-obj = NLM(csc_data[:,:,0],1,4,nlm_h,nlm_clip,lut_en,lut_exp)
+obj = NLM(gc_data[:,:,0],1,3,nlm_h,nlm_clip,lut_en,lut_exp)
 nlm_data = obj.execute()
 
 raw_h = nlm_data.shape[0]

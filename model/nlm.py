@@ -26,31 +26,46 @@ class NLM:
         wmax = 0
         sweight = 0
         average = 0
-        for j in range(2 * self.Ds + 1 - 2 * self.ds - 1):
-            for i in range(2 * self.Ds + 1 - 2 * self.ds - 1):
+        #for j in range(2 * self.Ds + 1 - 2 * self.ds - 1):
+        #    for i in range(2 * self.Ds + 1  - 2 * self.ds - 1):
+        for j in range(2 * self.Ds + 1 - 2 * self.ds):          # modify
+            for i in range(2 * self.Ds + 1  - 2 * self.ds):     # modify
                 start_y = y - self.Ds + self.ds + j
                 start_x = x - self.Ds + self.ds + i
+                #print("(y,x)=(%d,%d), (start_y,start_x)=(%d,%d)\n"%(y,x,start_y,start_x))
                 neighbour_w = img[start_y - self.ds:start_y + self.ds + 1, start_x - self.ds:start_x + self.ds + 1]
                 center_w = img[y-self.ds:y+self.ds+1, x-self.ds:x+self.ds+1]
                 if j != y or i != x:
                     sub = np.subtract(neighbour_w, center_w)
                     dist = np.sum(np.multiply(kernel, np.multiply(sub, sub)))
+                    #dist = np.sum(np.multiply(sub, sub))
                     if(lut_en):
-                        w = lut_exp[round(dist)]/pow(2,15)
+                        w = int(lut_exp[round(dist)])/pow(2,15)
                     else:
                         w = np.exp(-dist/pow(self.h, 2))    # replaced by look up table
-                    f1.write("w=%f\t"%(w))
+                    #f1.write("w=%f\t"%(w))
                     if w > wmax:
                         wmax = w
                     sweight = sweight + w
                     average = average + w * img[start_y, start_x]
-                f1.write("\n")
-                f1.write(str(sub))
-                f1.write("\ndist=")
-                f1.write(str(int(dist)))
-                f1.write("\n")
+                    f1.write(str(w))
+                    f1.write("(%d,%d:%d)"%(start_y,start_x,img[start_y,start_x]))
+                    f1.write(", ")
+                    #f1.write(str(x))
+                    #f1.write("\n")
+                #f1.write("(%d,%d):\n"%(j,i))
+                #f1.write("dist=")
+                #f1.write("\n")
+                #f1.write(str(int(dist)))
+                #f1.write(" , ")
+            f1.write("\n")
+        f1.write("sw=%d, avg=%d, wmax=%d\n"%(sweight,average,wmax))
+        f1.write('\ncenter\n:')
+        f1.write(str(center_w))
+        f1.write("\n")
+        f1.write("\n")
                 #f1.write(str(w))
-                f1.write("sw=%d, avg=%d, wmax=%d\n"%(sweight,average,wmax))
+                #f1.write("sw=%d, avg=%d, wmax=%d\n"%(sweight,average,wmax))
         return sweight, average, wmax
 
     def execute(self):
