@@ -38,7 +38,7 @@ logic [DW+DW-1:0] pixel_wsum;
 
 genvar i;
 generate 
-    for(i=0;i<8*H+9;i=i+1) begin: SFT_REG
+    for(i=0;i<2*DS*H+2*DS+1;i=i+1) begin: SFT_REG
         if(i==0) begin
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
@@ -63,7 +63,7 @@ genvar y;
 generate 
     for(x=0;x<2*DS+1;x=x+1) begin
         for(y=0;y<2*DS+1;y=y+1) begin
-            assign array[x][y] = ( (x<DS &&v_cnt < (DS-x)) || (v_cnt > V+DS-x) || (y<DS && h_cnt < (DS-y)) || (h_cnt > (H+DS-y)))?   'd0 : shift_reg[2*DS*H+2*DS-(x*H+y)] ;
+            assign array[x][y] = ( (x<DS && v_cnt < (DS-x)) || (v_cnt > V+DS-x) || (y<DS && h_cnt < (DS-y)) || (h_cnt > (H+DS-y)))?   'd0 : shift_reg[2*DS*H+2*DS-(x*H+y)] ;
         end 
     end
 endgenerate

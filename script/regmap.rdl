@@ -1,0 +1,61 @@
+reg {
+	field {
+		sw = r;
+		hw = w;
+		desc = "11111";
+	} ro_chip_id_h[15:0] = 0x020A;
+} CHIP_ID_H @0x0000;
+reg {
+	field {
+		sw = r;
+		hw = w;
+		desc = "22222";
+	} ro_chip_id_ana[7:0] = 0x0201;
+} CHIP_ID_ANA @0x0004;
+reg {
+	field {
+		sw = rw;
+		hw = r;
+		desc = "RW";
+	} rg_efuse_1[1:0] = 0x2;
+	field {
+		sw = w;
+		hw = na;
+		swmod = true;
+		desc = "W1C";
+	} rg_efuse_2[3:2] = 0x0;
+	field {
+		sw = na;
+		hw = w;
+		desc = "WO";
+	} rg_efuse_3[4:4] = 0;
+	field {
+		sw = rw;
+		hw = r;
+		desc = "None";
+	} rg_efuse_4[7:5] = 0;
+	field {
+		sw = rw;
+		hw = r;
+		desc = "None";
+	} rg_efuse_5[15:8] = 0;
+} rg_efuse_ctrl0 @0x0006;
+reg {
+} rg_none @0x000a;
+reg {
+	field {
+		sw = rw;
+		hw = r;
+		desc = "None";
+	} rg_efuse_1[1:0] = 0x2;
+	field {
+		sw = rw;
+		hw = r;
+		desc = "None";
+	} rg_err_addr_overlap[1:1] = 0x1;
+	field {
+		sw = rw;
+		hw = r;
+		desc = "None";
+	} rg_err_addr_flip[2:3] = 0x1;
+} rg_error @0x000e;
