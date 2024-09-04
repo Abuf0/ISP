@@ -14,6 +14,7 @@ from ccm import CCM
 from gac import GC
 from csc import CSC
 from nlm import NLM
+from bnf import BNF
 from pic2bayer import int_to_bin8
 from pic2bayer import int_to_bin16
 
@@ -266,4 +267,63 @@ for y in range(raw_h):
 
 print(50*'-' + '\n Non-local means denoising Done......')
 cv2.imwrite('./pipeline_data/yuv_img_nlm.jpg',nlm_data)
+f.close()
+
+
+# Bilateral Noise Filtering
+nlm_data = nlm_data.astype(np.uint16)
+
+f = open("./pipeline_data/bnf_data.csv","w+")
+
+bnf_dw = np.zeros((5,5))
+bnf_rw = [1, 1, 1, 1]
+bnf_rthres = [32, 64, 128]
+bnf_dw[0][0] = 8	# BNF distance weights
+bnf_dw[0][1] = 12	# BNF distance weights
+bnf_dw[0][2] = 32	# BNF distance weights
+bnf_dw[0][3] = 12	# BNF distance weights
+bnf_dw[0][4] = 8	# BNF distance weights
+bnf_dw[1][0] = 12	# BNF distance weights
+bnf_dw[1][1] = 64	# BNF distance weights
+bnf_dw[1][2] = 128	# BNF distance weights
+bnf_dw[1][3] = 64	# BNF distance weights
+bnf_dw[1][4] = 12	# BNF distance weights
+bnf_dw[2][0] = 32	# BNF distance weights
+bnf_dw[2][1] = 128	# BNF distance weights
+bnf_dw[2][2] = 1024	# BNF distance weights
+bnf_dw[2][3] = 128	# BNF distance weights
+bnf_dw[2][4] = 32	# BNF distance weights
+bnf_dw[3][0] = 12	# BNF distance weights
+bnf_dw[3][1] = 64	# BNF distance weights
+bnf_dw[3][2] = 128	# BNF distance weights
+bnf_dw[3][3] = 64	# BNF distance weights
+bnf_dw[3][4] = 12	# BNF distance weights
+bnf_dw[4][0] = 8	# BNF distance weights
+bnf_dw[4][1] = 12	# BNF distance weights
+bnf_dw[4][2] = 32	# BNF distance weights
+bnf_dw[4][3] = 12	# BNF distance weights
+bnf_dw[4][4] = 8	# BNF distance weights
+
+bnf_rw[0] =0	# BNF radiometric diff
+bnf_rw[1] =8	# BNF radiometric diff
+bnf_rw[2] =16	# BNF radiometric diff
+bnf_rw[3] =32	# BNF radiometric diff
+
+bnf_rthres[0] = 128	# BNF diff threshold
+bnf_rthres[1] = 32	# BNF diff threshold
+bnf_rthres[2] = 8	# BNF diff threshold
+
+bnf_clip = 250	# BNF clip value
+
+obj = BNF(nlm_data, bnf_dw, bnf_rw, bnf_rthres, bnf_clip)
+bnf_data = obj.execute()
+
+raw_h = bnf_data.shape[0]
+raw_w = bnf_data.shape[1]
+for y in range(raw_h):
+    for x in range(raw_w):
+        f.write("(%d,%d): %d (%d)\n"%(y,x,bnf_data[y,x],nlm_data[y,x]))
+
+print(50*'-' + '\n Bilateral Noise Filtering......')
+cv2.imwrite('./pipeline_data/yuv_img_bnf.jpg',bnf_data)
 f.close()
