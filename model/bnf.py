@@ -13,7 +13,7 @@ class BNF:
         self.clip = clip
 
     def padding(self):
-        img_pad = np.pad(self.img, (2, 2), 'reflect')
+        img_pad = np.pad(self.img, (2, 2), 'constant')
         return img_pad
 
     def clipping(self):
@@ -47,51 +47,51 @@ class BNF:
         self.img = bnf_img
         return self.clipping()
 
-bnf_dw = np.zeros((5,5))
-bnf_rw = [1, 1, 1, 1]
-bnf_rthres = [32, 64, 128]
-bnf_clip = 255
-
-bnf_dw[0][0] = 8	# BNF distance weights
-bnf_dw[0][1] = 12	# BNF distance weights
-bnf_dw[0][2] = 32	# BNF distance weights
-bnf_dw[0][3] = 12	# BNF distance weights
-bnf_dw[0][4] = 8	# BNF distance weights
-bnf_dw[1][0] = 12	# BNF distance weights
-bnf_dw[1][1] = 64	# BNF distance weights
-bnf_dw[1][2] = 128	# BNF distance weights
-bnf_dw[1][3] = 64	# BNF distance weights
-bnf_dw[1][4] = 12	# BNF distance weights
-bnf_dw[2][0] = 32	# BNF distance weights
-bnf_dw[2][1] = 128	# BNF distance weights
-bnf_dw[2][2] = 1024	# BNF distance weights
-bnf_dw[2][3] = 128	# BNF distance weights
-bnf_dw[2][4] = 32	# BNF distance weights
-bnf_dw[3][0] = 12	# BNF distance weights
-bnf_dw[3][1] = 64	# BNF distance weights
-bnf_dw[3][2] = 128	# BNF distance weights
-bnf_dw[3][3] = 64	# BNF distance weights
-bnf_dw[3][4] = 12	# BNF distance weights
-bnf_dw[4][0] = 8	# BNF distance weights
-bnf_dw[4][1] = 12	# BNF distance weights
-bnf_dw[4][2] = 32	# BNF distance weights
-bnf_dw[4][3] = 12	# BNF distance weights
-bnf_dw[4][4] = 8	# BNF distance weights
-bnf_rw[0] =0	# BNF radiometric diff
-bnf_rw[1] =8	# BNF radiometric diff
-bnf_rw[2] =16	# BNF radiometric diff
-bnf_rw[3] =32	# BNF radiometric diff
-bnf_rthres[0] = 128	# BNF diff threshold
-bnf_rthres[1] = 32	# BNF diff threshold
-bnf_rthres[2] = 8	# BNF diff threshold
-bnf_clip = 255	# BNF clip value
-
-raw_data_rgb = cv2.imread('img_nlm.jpg',cv2.IMREAD_UNCHANGED)
-raw_data = cv2.imread('yuv_img_nlm_gray.jpg',cv2.IMREAD_UNCHANGED)
-obj = BNF(raw_data, bnf_dw, bnf_rw, bnf_rthres, bnf_clip)
-bnf_data_yuv_0 = obj.execute()
-cv2.imwrite('yuv_img_bnf_gray.jpg', bnf_data_yuv_0)
-bnf_data_yuv = cv2.cvtColor(raw_data_rgb, cv2.COLOR_BGR2YCrCb)
-bnf_data_yuv[:,:,0] = bnf_data_yuv_0
-bnf_data_rgb = cv2.cvtColor(bnf_data_yuv, cv2.COLOR_YCrCb2BGR)
-cv2.imwrite('img_bnf.jpg',bnf_data_rgb)
+#bnf_dw = np.zeros((5,5))
+#bnf_rw = [1, 1, 1, 1]
+#bnf_rthres = [32, 64, 128]
+#bnf_clip = 255
+#
+#bnf_dw[0][0] = 8	# BNF distance weights
+#bnf_dw[0][1] = 12	# BNF distance weights
+#bnf_dw[0][2] = 32	# BNF distance weights
+#bnf_dw[0][3] = 12	# BNF distance weights
+#bnf_dw[0][4] = 8	# BNF distance weights
+#bnf_dw[1][0] = 12	# BNF distance weights
+#bnf_dw[1][1] = 64	# BNF distance weights
+#bnf_dw[1][2] = 128	# BNF distance weights
+#bnf_dw[1][3] = 64	# BNF distance weights
+#bnf_dw[1][4] = 12	# BNF distance weights
+#bnf_dw[2][0] = 32	# BNF distance weights
+#bnf_dw[2][1] = 128	# BNF distance weights
+#bnf_dw[2][2] = 1024	# BNF distance weights
+#bnf_dw[2][3] = 128	# BNF distance weights
+#bnf_dw[2][4] = 32	# BNF distance weights
+#bnf_dw[3][0] = 12	# BNF distance weights
+#bnf_dw[3][1] = 64	# BNF distance weights
+#bnf_dw[3][2] = 128	# BNF distance weights
+#bnf_dw[3][3] = 64	# BNF distance weights
+#bnf_dw[3][4] = 12	# BNF distance weights
+#bnf_dw[4][0] = 8	# BNF distance weights
+#bnf_dw[4][1] = 12	# BNF distance weights
+#bnf_dw[4][2] = 32	# BNF distance weights
+#bnf_dw[4][3] = 12	# BNF distance weights
+#bnf_dw[4][4] = 8	# BNF distance weights
+#bnf_rw[0] =0	# BNF radiometric diff
+#bnf_rw[1] =8	# BNF radiometric diff
+#bnf_rw[2] =16	# BNF radiometric diff
+#bnf_rw[3] =32	# BNF radiometric diff
+#bnf_rthres[0] = 128	# BNF diff threshold
+#bnf_rthres[1] = 32	# BNF diff threshold
+#bnf_rthres[2] = 8	# BNF diff threshold
+#bnf_clip = 255	# BNF clip value
+#
+#raw_data_rgb = cv2.imread('img_nlm.jpg',cv2.IMREAD_UNCHANGED)
+#raw_data = cv2.imread('yuv_img_nlm_gray.jpg',cv2.IMREAD_UNCHANGED)
+#obj = BNF(raw_data, bnf_dw, bnf_rw, bnf_rthres, bnf_clip)
+#bnf_data_yuv_0 = obj.execute()
+#cv2.imwrite('yuv_img_bnf_gray.jpg', bnf_data_yuv_0)
+#bnf_data_yuv = cv2.cvtColor(raw_data_rgb, cv2.COLOR_BGR2YCrCb)
+#bnf_data_yuv[:,:,0] = bnf_data_yuv_0
+#bnf_data_rgb = cv2.cvtColor(bnf_data_yuv, cv2.COLOR_YCrCb2BGR)
+#cv2.imwrite('img_bnf.jpg',bnf_data_rgb)

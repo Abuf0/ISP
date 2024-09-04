@@ -27,14 +27,13 @@ logic [DW-1:0] img_wgt [0:4][0:4];
 logic [DW+5-1:0] img_wgt_sum;
 logic [DW+5-1:0] weight_sum;
 logic [DW-1:0] pixel_data_out_pre;
-logic pixel_data_out_vld_pre;
 logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt;
-logic flag;
+logic init;
 
 genvar i;
 generate 
-    for(i=0;i<5*H+5;i=i+1) begin: SFT_REG
+    for(i=0;i<5*H+6;i=i+1) begin: SFT_REG
         if(i==0) begin
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
@@ -96,20 +95,25 @@ assign pixel_data_out_pre = img_wgt_sum / weight_sum ;
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         h_cnt <= 'd0;
-    else if(bnf_en && (pixel_data_in_vld || flag))
+    else if(init && v_cnt==2 && h_cnt==2)
+        h_cnt <= 'd0;
+    else if(bnf_en && pixel_data_in_vld)
         h_cnt <= (h_cnt==H-1)?  'd0:(h_cnt+1'b1);
 end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         v_cnt <= 'd0;
-    else if(bnf_en && (pixel_data_in_vld || flag) && h_cnt==H-1)
+    else if(init && v_cnt==2 && h_cnt==2)
+        v_cnt <= 'd0;
+    else if(bnf_en && pixel_data_in_vld && h_cnt==H-1)
         v_cnt <= (v_cnt==V-1)?  'd0:(v_cnt+1'b1);
 end
+   
 always_ff@(posedge clk or negedge rstn) begin
-    if(~rstn)
-        flag <= 1'b0;
-    else if(bnf_en && v_cnt==V-1 && h_cnt==H-1)
-        flag <= 1'b1;
+    if(~rstn)   
+        init <= 1'b1;
+    else if(init && v_cnt==2 && h_cnt==2)
+        init <= 1'b0;
 end
 
 always_ff@(posedge clk or negedge rstn) begin
@@ -125,34 +129,15 @@ always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         pixel_data_out_vld <= 'd0;
     else if(bnf_en)
-        pixel_data_out_vld <= pixel_data_out_vld_pre;
+        pixel_data_out_vld <= ~init && pixel_data_in_vld;
     else
         pixel_data_out_vld <= pixel_data_in_vld;
 end
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
-        pixel_data_out_vld_pre <= 1'b0;
-    else if(~flag) begin
-        if(v_cnt == 'd2 && h_cnt >= 'd2 && pixel_data_in_vld)  
-            pixel_data_out_vld_pre <= 1'b1;
-        else if(v_cnt > 'd2 && pixel_data_in_vld)
-            pixel_data_out_vld_pre <= 1'b1;
-        else 
-            pixel_data_out_vld_pre <= 1'b0;
-    end
-    else if(flag) begin
-        if(v_cnt == 'd2 && h_cnt > 'd2)
-            pixel_data_out_vld_pre <= 1'b0;
-        else 
-            pixel_data_out_vld_pre <= 1'b1;
-    end
-end
-
-always_ff@(posedge clk or negedge rstn) begin
-    if(~rstn)
         bnf_done <= 1'b0;
-    else if(bnf_en && v_cnt==V-1 && h_cnt==H-1 && flag && ~bnf_done)
+    else if(bnf_en && v_cnt==V-1 && h_cnt==H-1 && ~init && ~bnf_done)
         bnf_done <= 1'b1;
     else if(bnf_done)
         bnf_done <= 1'b0;

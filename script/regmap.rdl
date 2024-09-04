@@ -1,5 +1,5 @@
 addrmap regmap {
-}name = "pacific_top";
+name = "pacific_top";
 default accesswidth = 16;
 default regwidth = 16;
 littleendian;

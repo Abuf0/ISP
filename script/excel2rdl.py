@@ -91,7 +91,7 @@ else:
 rdl_file = open('./regmap.rdl','w+')
 #regfile_name = row[search_dict[REGFILE_NAME]]
 #regfile_offset = row[search_dict[OFFSET_TITLE]]
-rdl_file.write("addrmap regmap {\n}")
+rdl_file.write("addrmap regmap {\n")
 rdl_file.write("name = \"%s\";\n"%(TOP_NAME))
 rdl_file.write("default accesswidth = %s;\n"%(str(ACCESS_WIDTH)))
 rdl_file.write("default regwidth = %s;\n"%(str(REG_WIDTH)))
