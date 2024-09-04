@@ -70,14 +70,18 @@ generate
 endgenerate
 
 generate
-    for(i=0; i < SIZE_S-SIZE_N; i=i+1) begin
-        for(j=0; j < SIZE_S-SIZE_N; j=j+1) begin 
+    for(i=0; i < SIZE_S; i=i+1) begin
+        for(j=0; j < SIZE_S; j=j+1) begin 
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
                     array_buff[i][j] <= 'd0;
                 else if(data_vld)
                     array_buff[i][j] <= array[i][j];
             end
+        end
+    end
+    for(i=0; i < SIZE_A; i=i+1) begin
+        for(j=0; j < SIZE_A; j=j+1) begin 
             logic [DW-1:0] L1_buff [0:SIZE_N-1] [0:SIZE_N-1];
             for(kx=0;kx<SIZE_N;kx=kx+1) begin : INSIDE_L
                 for(ky=0;ky<SIZE_N;ky=ky+1) begin
@@ -93,6 +97,7 @@ genvar k;
 logic [DW-1:0] wmax_tmp [0:SIZE_A-1][0:1];
 logic [DW-1:0] wmax_mux [0:SIZE_A-1];
 logic [DW-1:0] wmax_012;
+logic [DW-1:0] wmax_pre;
 logic [DW+DW-1:0] wsum_pre;
 logic [DW+DW+DW-1:0] average_pre;
 assign wsum_pre =  wght_buff[0][0] + wght_buff[0][1] + wght_buff[0][2] + wght_buff[0][3] + wght_buff[0][4] +
