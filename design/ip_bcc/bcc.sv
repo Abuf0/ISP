@@ -23,6 +23,9 @@ logic [VW-1:0] v_cnt;
 
 logic pixel_data_out_vld_pre;
 logic [DW-1:0] pixel_data_out_pre;
+logic signed [DW:0] signed_delta;
+logic signed [DW:0] signed_delta_shift;
+logic signed [DW:0] signed_pixel_data_out_pre;
 logic [DW-1:0] pixel_data;
 
 always_ff@(posedge clk or negedge rstn) begin
@@ -32,15 +35,19 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data <= pixel_data_in;
 end
 
-assign pixel_data_out_pre = |pixel_data[DW-1:7]?    pixel_data + brightness + ((pixel_data - 7'd127) * contrast) >> 5;
-                                                    pixel_data + brightness + ((7'd127 - pixel_data) * contrast) >> 5;
+assign signed_delta = (pixel_data - 7'd127) * contrast;
+assign signed_delta_shift = signed_delta >>> 5;
+assign signed_pixel_data_out_pre = pixel_data + brightness + signed_delta_shift;
+
+assign pixel_data_out_pre = signed_pixel_data_out_pre[DW]?  'd0 : ((signed_pixel_data_out_pre > bcc_clip)?   bcc_clip : signed_pixel_data_out_pre) ;
+                        
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn) begin
         pixel_data_out <= 'd0;
     end
     else if(bcc_en && pixel_data_out_vld_pre) 
-        pixel_data_out <= (pixel_data_out_pre > bcc_clip)?  bcc_clip : pixel_data_out_pre;
+        pixel_data_out <= pixel_data_out_pre;
     else if(~bcc_en && pixel_data_out_vld_pre)
         pixel_data_out <= pixel_data;
 end
