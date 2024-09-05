@@ -37,7 +37,6 @@ class HSC:
         hsc_img[:,:,1] = self.saturation * (hsc_img[:,:,1] - 128) / 256 + 128
         self.img = hsc_img
         print(lut_cos[self.hue])
-        print("\n")
         print(lut_sin[self.hue])
         return self.clipping()
 

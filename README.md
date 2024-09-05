@@ -52,3 +52,12 @@
     - fixing nlm
         - <TODO: check rtl coefiency>
         - modify nlm-model for slide & y!=j,x!=i
+
+- 2024/9/4
+    - fixed bnf
+
+- 2024/9/5
+    - fixed eeh
+    - fixed bcc
+    - building fcs & hsc
+        - <TODO: buffer issue>
