@@ -16,6 +16,7 @@ from csc import CSC
 from nlm import NLM
 from bnf import BNF
 from eeh import EEH
+from bcc import BCC
 from pic2bayer import int_to_bin8
 from pic2bayer import int_to_bin16
 
@@ -373,9 +374,31 @@ raw_h = ee_data.shape[0]
 raw_w = ee_data.shape[1]
 for y in range(raw_h):
     for x in range(raw_w):
-        f.write("(%d,%d): %d, %d (%d)\n"%(y,x,ee_data[y,x],em_data[y,x],bnf_data[y,x]))
+        f.write("(%d,%d): ee=%d, em=%d (%d)\n"%(y,x,ee_data[y,x],em_data[y,x],bnf_data[y,x]))
 
 print(50*'-' + '\n Edge Enhancement Done......')
 cv2.imwrite('./pipeline_data/yuv_img_ee.jpg',ee_data)
 cv2.imwrite('./pipeline_data/yuv_img_em.jpg',em_data)
+f.close()
+
+# Brightness Contrast Control
+ee_data = ee_data.astype(np.int16)
+
+f = open("./pipeline_data/bcc_data.csv","w+")
+
+brightness = 10 # [-255,255]
+contrast = 10/pow(2,5)  # [-32,128]
+bcc_clip = 250
+
+obj = BCC(ee_data, brightness, contrast, bcc_clip)
+bcc_data = obj.execute()
+
+raw_h = bcc_data.shape[0]
+raw_w = bcc_data.shape[1]
+for y in range(raw_h):
+    for x in range(raw_w):
+        f.write("(%d,%d): %d (%d)\n"%(y,x,bcc_data[y,x],ee_data[y,x]))
+
+print(50*'-' + '\n Brightness Contrast Control Done......')
+cv2.imwrite('./pipeline_data/yuv_img_bcc.jpg',bcc_data)
 f.close()

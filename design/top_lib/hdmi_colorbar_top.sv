@@ -86,13 +86,12 @@ logic [DW-1:0] bnf_dw [0:4][0:4];
 logic [DW-1:0] bnf_rw [0:3]     ;     
 logic [DW-1:0] bnf_rthres [0:2]   ;   
 logic [DW-1:0] bnf_clip     ;         
-logic [1:0] edge_filter [0:2][0:4] ;
-logic [DW-1:0] eeh_clip [0:1]     ;    
+logic signed [4:0] edge_filter [0:2][0:4] ;
 logic [DW-1:0] eeh_rthres [0:1] ;      
 logic [DW-1:0] eeh_gain [0:1]  ; 
-logic signed [DW-1:0] eeh_emclip [0:1];      
+logic signed [DW:0] eeh_emclip [0:1];      
 logic [DW-1:0] bcc_brightness;
-logic [DW-1:0] bcc_constrast ;
+logic [DW-1:0] bcc_contrast ;
 logic [DW-1:0] bcc_clip      ;
 logic [DW-1:0] fcs_edge [0:1] ;
 logic [DW-1:0] fcs_gain       ;
@@ -211,8 +210,8 @@ assign eeh_rthres[0] = 32	    ;
 assign eeh_rthres[1] = 64	    ; 
 assign eeh_emclip[0] = -64	;   
 assign eeh_emclip[1] = 64	;   
-assign brightness = 10      ;
-assign contrast = 10        ;
+assign bcc_brightness = 10      ;
+assign bcc_contrast = 10        ;
 assign bcc_clip = 255       ;
 assign fcs_edge[0] = 64     ;
 assign fcs_edge[1] = 32     ;
@@ -582,7 +581,7 @@ eeh #(
     //.eeh_rthres         (eeh_rthres [0:1]        ), // TODO
     //.eeh_gain           (eeh_gain [0:1]          ), // TODO
     .edge_filter        (edge_filter              ), // TODO
-    .eeh_clip           (eeh_clip                 ), // TODO
+    .eeh_clip           (eeh_emclip               ), // TODO
     .eeh_rthres         (eeh_rthres               ), // TODO
     .eeh_gain           (eeh_gain                ), // TODO 
     .pixel_data_in_vld  (pixel_data_vld[EEH]     ), 
@@ -594,7 +593,7 @@ eeh #(
 );
 assign pixel_data_vld[BCC] = pixel_data_vld[EEH+1];
 
-// BCC module
+// BCC module 
 bcc #(
     .DW  (DW   ),
     .H   (H    ),
@@ -606,7 +605,7 @@ bcc #(
     .rstn               (rst_pix_n               ),
     .bcc_en             (isp_enable[BCC]         ), // TODO
     .brightness         (bcc_brightness          ), // TODO
-    .constrast          (bcc_constrast           ), // TODO
+    .contrast           (bcc_contrast            ), // TODO
     .bcc_clip           (bcc_clip                ), // TODO   
     .pixel_data_in_vld  (pixel_data_vld[BCC]     ), 
     .pixel_data_in      (pixel_data_rgb[BCC]     ),

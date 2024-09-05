@@ -8,8 +8,8 @@ module eeh#(
     input                           clk                   ,
     input                           rstn                  ,
     input                           eeh_en                ,
-    input        [1:0]              edge_filter [0:2][0:4],    // -1 or +1  compensate code
-    input        [DW-1:0]           eeh_clip [0:1]        ,
+    input signed [4:0]              edge_filter [0:2][0:4],    // -1 or +1  compensate code
+    input signed [DW:0]             eeh_clip [0:1]        ,
     input        [DW-1:0]           eeh_rthres [0:1]      ,
     input        [DW-1:0]           eeh_gain [0:1]        ,
     input        [DW-1:0]           pixel_data_in         ,
@@ -24,7 +24,7 @@ logic [DW-1:0] shift_reg[0:2*H+4];
 logic [DW-1:0] array[0:2][0:4];
 
 logic signed [DW:0] em_img_wght [0:2][0:4];
-logic signed [DW-1+3:0] em_img_sum;
+logic signed [DW+3:0] em_img_sum;
 logic signed [DW:0] ee_img;
 logic signed [DW:0] em_img;
 logic signed [DW:0] em_lut;
@@ -66,7 +66,7 @@ generate
     for(x=0;x<3;x=x+1) begin
         for(y=0;y<5;y=y+1) begin    // pad((1,1),(2,2))
             assign array[x][y] = ( (x<1 && v_cnt < (1-x)) || (v_cnt > V+1-x) || (y<2 && h_cnt < (2-y)) || (h_cnt > (H+2-y)))?   'd0 : shift_reg[2*H+4-(x*H+y)] ;
-            assign em_img_wght[x][y] = edge_filter[x][y][1]?  -array[x][y] : array[x][y];
+            assign em_img_wght[x][y] = edge_filter[x][y]*$signed(array[x][y]);
         end 
     end
 endgenerate
@@ -75,7 +75,7 @@ assign em_img_sum = em_img_wght[0][0] + em_img_wght[0][1] + em_img_wght[0][2] + 
                     em_img_wght[1][0] + em_img_wght[1][1] + em_img_wght[1][2] + em_img_wght[1][3] + em_img_wght[1][4] +
                     em_img_wght[2][0] + em_img_wght[2][1] + em_img_wght[2][2] + em_img_wght[2][3] + em_img_wght[2][4] ;
 
-assign em_img = em_img_sum >> 3 ;
+assign em_img = em_img_sum >>> 3 ;
 
 assign em_lut = (em_img <= -eeh_rthres[1])?   eeh_gain[1]*em_img :
                 (em_img > -eeh_rthres[1] && em_img < -eeh_rthres[0])?   'sd0 :
@@ -83,7 +83,7 @@ assign em_lut = (em_img <= -eeh_rthres[1])?   eeh_gain[1]*em_img :
                 (em_img > eeh_rthres[0] && em_img < eeh_rthres[1])?   'sd0 :
                 (em_img >= eeh_rthres[1])?   eeh_gain[1]*em_img :    'sd0;
 
-assign em_lut_clip_pre = ((em_lut>>8) > eeh_clip[1])?   eeh_clip[1] : (em_lut>>8);
+assign em_lut_clip_pre = ((em_lut>>>8) > eeh_clip[1])?   eeh_clip[1] : (em_lut>>>8);
 assign em_lut_clip = (eeh_clip[0] > em_lut_clip_pre)?   eeh_clip[0] : em_lut_clip_pre;
 
 assign ee_img = array[1][2] + em_lut_clip ;

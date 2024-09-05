@@ -19,7 +19,7 @@ class EEH:
         return img_pad
 
     def clipping(self):
-        np.clip(self.img, 0, 250, out=self.img)
+        np.clip(self.img, 0, 255, out=self.img)
         return self.img
 
     def emlut(self, val, thres, gain, clip):
