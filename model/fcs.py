@@ -34,17 +34,17 @@ class FCS:
         self.img = fcs_img
         return self.clipping()
 
-fcs_edge = [32,64]
-fcs_gain = 32
-fcs_intercept = 2
-fcs_slop = 3
-
-raw_data = cv2.imread('yuv_img_csc.jpg',cv2.IMREAD_UNCHANGED)
-raw_data_edgemap = cv2.imread('yuv_img_edgemap_gray.jpg',cv2.IMREAD_UNCHANGED)
-obj = FCS(raw_data[:,:,1:3],raw_data_edgemap,fcs_edge,fcs_gain,fcs_intercept,fcs_slop)
-fsc_data_yuv_12 = obj.execute()
-fsc_data_yuv = raw_data
-fsc_data_yuv [:,:,1:3] = fsc_data_yuv_12
-cv2.imwrite('yuv_img_fsc.jpg', fsc_data_yuv)
-fsc_data_rgb = cv2.cvtColor(fsc_data_yuv, cv2.COLOR_YCrCb2BGR)
-cv2.imwrite('img_fsc.jpg',fsc_data_rgb)
+#fcs_edge = [32,64]
+#fcs_gain = 32
+#fcs_intercept = 2
+#fcs_slop = 3
+#
+#raw_data = cv2.imread('yuv_img_csc.jpg',cv2.IMREAD_UNCHANGED)
+#raw_data_edgemap = cv2.imread('yuv_img_edgemap_gray.jpg',cv2.IMREAD_UNCHANGED)
+#obj = FCS(raw_data[:,:,1:3],raw_data_edgemap,fcs_edge,fcs_gain,fcs_intercept,fcs_slop)
+#fsc_data_yuv_12 = obj.execute()
+#fsc_data_yuv = raw_data
+#fsc_data_yuv [:,:,1:3] = fsc_data_yuv_12
+#cv2.imwrite('yuv_img_fsc.jpg', fsc_data_yuv)
+#fsc_data_rgb = cv2.cvtColor(fsc_data_yuv, cv2.COLOR_YCrCb2BGR)
+#cv2.imwrite('img_fsc.jpg',fsc_data_rgb)

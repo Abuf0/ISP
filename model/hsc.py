@@ -31,20 +31,25 @@ class HSC:
         hsc_img = np.empty((img_h, img_w, img_c), np.int16)
         hsc_img[:,:,0] = (self.img[:,:,0] - 128) * lut_cos[self.hue] + (self.img[:,:,1] - 128) * lut_sin[self.hue] + 128
         hsc_img[:,:,1] = (self.img[:,:,1] - 128) * lut_cos[self.hue] - (self.img[:,:,0] - 128) * lut_sin[self.hue] + 128
-        hsc_img[:,:,0] = self.saturation * (self.img[:,:,0] - 128) / 256 + 128
-        hsc_img[:,:,1] = self.saturation * (self.img[:,:,1] - 128) / 256 + 128
+        #hsc_img[:,:,0] = self.saturation * (self.img[:,:,0] - 128) / 256 + 128
+        #hsc_img[:,:,1] = self.saturation * (self.img[:,:,1] - 128) / 256 + 128
+        hsc_img[:,:,0] = self.saturation * (hsc_img[:,:,0] - 128) / 256 + 128
+        hsc_img[:,:,1] = self.saturation * (hsc_img[:,:,1] - 128) / 256 + 128
         self.img = hsc_img
+        print(lut_cos[self.hue])
+        print("\n")
+        print(lut_sin[self.hue])
         return self.clipping()
 
-hue = 128
-saturation = 256
-hsc_clip = 255
-
-raw_data = cv2.imread('yuv_img_fsc.jpg',cv2.IMREAD_UNCHANGED)
-obj = HSC(raw_data[:,:,1:3],hue,saturation,hsc_clip)
-hsc_data_yuv_12 = obj.execute()
-hsc_data_yuv = raw_data
-hsc_data_yuv [:,:,1:3] = hsc_data_yuv_12
-cv2.imwrite('yuv_img_hsc.jpg', hsc_data_yuv)
-hsc_data_rgb = cv2.cvtColor(hsc_data_yuv, cv2.COLOR_YCrCb2BGR)
-cv2.imwrite('img_hsc.jpg',hsc_data_rgb)
+#hue = 128
+#saturation = 256
+#hsc_clip = 255
+#
+#raw_data = cv2.imread('yuv_img_fsc.jpg',cv2.IMREAD_UNCHANGED)
+#obj = HSC(raw_data[:,:,1:3],hue,saturation,hsc_clip)
+#hsc_data_yuv_12 = obj.execute()
+#hsc_data_yuv = raw_data
+#hsc_data_yuv [:,:,1:3] = hsc_data_yuv_12
+#cv2.imwrite('yuv_img_hsc.jpg', hsc_data_yuv)
+#hsc_data_rgb = cv2.cvtColor(hsc_data_yuv, cv2.COLOR_YCrCb2BGR)
+#cv2.imwrite('img_hsc.jpg',hsc_data_rgb)

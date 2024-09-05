@@ -97,10 +97,13 @@ logic [DW-1:0] fcs_edge [0:1] ;
 logic [DW-1:0] fcs_gain       ;
 logic [DW-1:0] fcs_intercept  ;
 logic [DW-1:0] fcs_slop       ;
-logic [DW-1:0] hue_cos          ;
-logic [DW-1:0] hue_sin          ;
+logic [DW-1:0] fcs_clip       ;
+logic signed [DW:0] hue_cos          ;
+logic signed [DW:0] hue_sin          ;
 logic [DW-1:0] hsc_saturation   ;
 logic [DW-1:0] hsc_clip         ;
+logic [DW/3-1:0] yuv_out [0:2]    ;
+logic yuv_out_vld               ;
 
 assign dpc_thres = 30;
 assign dpc_clip  = 250;
@@ -218,9 +221,10 @@ assign fcs_edge[1] = 32     ;
 assign fcs_gain = 32        ;
 assign fcs_intercept = 2    ;
 assign fcs_slop = 3         ;
+assign fcs_clip = 255       ;
 
-assign hue_cos        = 128;
-assign hue_sin        = 180;
+assign hue_cos        = -158;
+assign hue_sin        = 202;
 assign hsc_saturation = 256 ;
 assign hsc_clip       = 255 ;
 
@@ -616,6 +620,23 @@ bcc #(
 
 // FCS module
 
+logic [DW-1:0] pixel_data_rgb_csc_ff1;
+logic [DW-1:0] pixel_data_rgb_csc_ff2;
+logic [DW-1:0] pixel_data_rgb_csc_ff3;
+always_ff@(posedge pixel_clk or negedge rst_pix_n) begin
+    if(rst_pix_n)   begin
+        pixel_data_rgb_csc_ff1 <= 'd0;
+        pixel_data_rgb_csc_ff2 <= 'd0;
+        pixel_data_rgb_csc_ff3 <= 'd0;
+    end
+    else if(pixel_data_out_vld[CSC+1])  begin
+        pixel_data_rgb_csc_ff1 <= pixel_data_rgb[CSC+1];
+        pixel_data_rgb_csc_ff2 <= pixel_data_rgb_csc_ff1;
+        pixel_data_rgb_csc_ff3 <= pixel_data_rgb_csc_ff2;
+    end
+end
+assign buffer_data_rgb_csc = pixel_data_rgb_csc_ff3;
+
 fcs #(
     .DW  (DW   ),
     .H   (H    ),
@@ -630,13 +651,14 @@ fcs #(
     .gain                   (fcs_gain                ), // TODO
     .intercept              (fcs_intercept           ), // TODO
     .slop                   (fcs_slop                ), // TODO
+    .fcs_clip               (fcs_clip                ),
     .pixel_data_in_vld      (pixel_data_vld[FCS]     ), 
     .pixel_data_in_edgemap  (pixel_data_em           ),
-    .buffer_data_in_ccs_y   (buffer_data_rgb_csc[DW-1:DW-8]  ),  // TODO
+    //.buffer_data_in_ccs_y   (buffer_data_rgb_csc[DW-1:DW-8]  ),  // TODO
     .buffer_data_in_ccs_cr  (buffer_data_rgb_csc[DW-9:DW-16] ),  // TODO
     .buffer_data_in_ccs_cb  (buffer_data_rgb_csc[DW-17:DW-24]),  // TODO
     .pixel_data_out_vld     (pixel_data_vld[FCS+1]      ),
-    .pixel_data_out_y       (pixel_data_rgb[FCS+1][DW-1:DW-8]  ),
+    //.pixel_data_out_y       (pixel_data_rgb[FCS+1][DW-1:DW-8]  ),
     .pixel_data_out_cr      (pixel_data_rgb[FCS+1][DW-9:DW-16] ),
     .pixel_data_out_cb      (pixel_data_rgb[FCS+1][DW-17:DW-24]),
     .fcs_done               (                        )  // TODO
@@ -667,6 +689,56 @@ hsc #(
     .pixel_data_out_cb      (pixel_data_rgb[HSC+1][DW-17:DW-24]),
     .hsc_done               (                        )  // TODO
 );
+logic [DW-1:0] pixel_data_bcc_ff1;
+logic [DW-1:0] pixel_data_bcc_ff2;
+always_ff@(posedge pixel_clk or negedge rst_pix_n) begin
+    if(~rst_pix_n) begin
+        pixel_data_bcc_ff1 <= 'd0;
+        pixel_data_bcc_ff2 <= 'd0;
+    end
+    else if(pixel_data_out_vld[BCC+1]) begin
+        pixel_data_bcc_ff1 <= pixel_data_rgb[BCC+1];
+        pixel_data_bcc_ff2 <= pixel_data_bcc_ff1;
+    end
+end
+ 
+logic [DW/3-1:0] yuv_out_pre[0:2];
+logic yuv_out_vld_pre;
+assign yuv_out_pre[0] = pixel_data_bcc_ff1[DW/3-1:0];
+assign yuv_out_pre[1] = pixel_data_rgb[HSC+1][DW-9:DW-16];
+assign yuv_out_pre[2] = pixel_data_rgb[HSC+1][DW-17:DW-24];
+assign yuv_out_vld_pre = pixel_data_vld[HSC+1];
+
+always_ff@(posedge pixel_clk or negedge rst_pix_n) begin
+    if(~rst_pix_n) begin
+        yuv_out[0]  <= 'd0 ;
+        yuv_out[1]  <= 'd0 ;
+        yuv_out[2]  <= 'd0 ;
+        yuv_out_vld <= 'd0 ;
+    end
+    else begin
+        yuv_out[0]  <= yuv_out_pre[0]  ;
+        yuv_out[1]  <= yuv_out_pre[1]  ;
+        yuv_out[2]  <= yuv_out_pre[2]  ;
+        yuv_out_vld <= yuv_out_vld_pre ;
+    end
+end
+
+`ifdef SIM
+integer file_yuv_out;
+initial begin
+    file_yuv_out = $fopen("./yuv_out_result.csv","w+");  // 初始化文件
+end
+
+always @(negedge clk) begin
+    if(yuv_out_vld) begin
+        $fwrite(file_yuv_out,"yuv=%d, cr=%d, cb=%d\n",yuv_out[0],yuv_out[1],yuv_out[2]);
+    end
+//     else begin
+//         $fclose(file);   // 这里一定要写，关闭文件读写
+//     end
+end
+`endif
 
 `ifdef  FPGA
 dvi_transmitter_top u_rgb2dvi_0(

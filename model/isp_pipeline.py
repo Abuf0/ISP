@@ -17,6 +17,8 @@ from nlm import NLM
 from bnf import BNF
 from eeh import EEH
 from bcc import BCC
+from fcs import FCS
+from hsc import HSC
 from pic2bayer import int_to_bin8
 from pic2bayer import int_to_bin16
 
@@ -401,4 +403,57 @@ for y in range(raw_h):
 
 print(50*'-' + '\n Brightness Contrast Control Done......')
 cv2.imwrite('./pipeline_data/yuv_img_bcc.jpg',bcc_data)
+f.close()
+
+# False Color Suppresion
+em_data = em_data.astype(np.int16)
+csc_data = csc_data.astype(np.uint16)
+
+f = open("./pipeline_data/fcs_data.csv","w+")
+
+fcs_edge = [32,64]
+fcs_gain = 32
+fcs_intercept = 2
+fcs_slop = 3
+
+obj = FCS(csc_data[:,:,1:3],em_data,fcs_edge,fcs_gain,fcs_intercept,fcs_slop)
+fcs_data = obj.execute()
+
+raw_h = fcs_data.shape[0]
+raw_w = fcs_data.shape[1]
+for y in range(raw_h):
+    for x in range(raw_w):
+        f.write("(%d,%d): %s (em=%d, csc=%s)\n"%(y,x,str(fcs_data[y,x,:]),em_data[y,x],str(csc_data[y,x,1:3])))
+
+print(50*'-' + '\n False Color Suppresion Done......')
+bcc_fcs_data = csc_data
+bcc_fcs_data[:,:,0] = bcc_data
+bcc_fcs_data[:,:,1:3] = fcs_data
+cv2.imwrite('./pipeline_data/yuv_img_bcc_fcs.jpg',bcc_fcs_data)
+f.close()
+
+# Hue Saturation Control
+fcs_data = fcs_data.astype(np.int16)
+
+f = open("./pipeline_data/hsc_data.csv","w+")
+
+hue = 128
+saturation = 256
+hsc_clip = 250
+
+obj = HSC(fcs_data,hue,saturation,hsc_clip)
+hsc_data = obj.execute()
+
+raw_h = hsc_data.shape[0]
+raw_w = hsc_data.shape[1]
+for y in range(raw_h):
+    for x in range(raw_w):
+        f.write("(%d,%d): hsc=%s (fcs=%s)\n"%(y,x,str(hsc_data[y,x,:]),str(fcs_data[y,x,:])))
+
+print(50*'-' + '\n Hue Saturation Control Done......')
+
+yum_out = np.empty((raw_h,raw_w,3),dtype=np.uint8)
+yum_out[:,:,0] = bcc_data
+yum_out[:,:,1:3] = hsc_data
+cv2.imwrite('./pipeline_data/yuv_img_out.jpg',yum_out)
 f.close()
