@@ -16,7 +16,7 @@ module fcs#(
     input           [DW-1:0]   buffer_data_in_ccs_y  ,
     input           [DW-1:0]   buffer_data_in_ccs_cr ,
     input           [DW-1:0]   buffer_data_in_ccs_cb ,
-    input           [DW-1:0]   pixel_data_in_edgemap ,
+    input  signed   [DW:0]     pixel_data_in_edgemap ,
     output logic               pixel_data_out_vld    ,
     output logic    [DW-1:0]   pixel_data_out_y      ,
     output logic    [DW-1:0]   pixel_data_out_cr     ,
@@ -49,10 +49,10 @@ always_ff@(posedge clk or negedge rstn) begin
     end
 end
 
-assign edge_data_abs = edge_data[DW]?   -edge_data : edge_data;
+assign edge_data_abs = edge_data[DW]?   ~edge_data[DW-1:0]+1'b1 : edge_data[DW-1:0];
 
 assign uv_gain = (edge_data_abs <= fcs_edge[0])?    gain :
-                 (edge_data_abs >= fcs_edge[1])?    'd0 : (intercept - slop * edge_data);
+                 (edge_data_abs >= fcs_edge[1])?    'd0 : (edge_data[DW]?    (intercept + slop * edge_data_abs) : (intercept - slop * edge_data_abs));
 
 assign pixel_data_out_pre[0] = (uv_gain * buffer_data_in_ccs_y ) >> 8 + 8'd128;
 assign pixel_data_out_pre[1] = (uv_gain * buffer_data_in_ccs_cr) >> 8 + 8'd128;

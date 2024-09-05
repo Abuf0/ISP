@@ -15,6 +15,7 @@ from gac import GC
 from csc import CSC
 from nlm import NLM
 from bnf import BNF
+from eeh import EEH
 from pic2bayer import int_to_bin8
 from pic2bayer import int_to_bin16
 
@@ -327,6 +328,54 @@ for y in range(raw_h):
     for x in range(raw_w):
         f.write("(%d,%d): %d (%d)\n"%(y,x,bnf_data[y,x],nlm_data[y,x]))
 
-print(50*'-' + '\n Bilateral Noise Filtering......')
+print(50*'-' + '\n Bilateral Noise Filtering Done......')
 cv2.imwrite('./pipeline_data/yuv_img_bnf.jpg',bnf_data)
+f.close()
+
+# Edge Enhancement
+#bnf_data = bnf_data.astype(np.uint16)
+bnf_data = bnf_data.astype(np.int16)
+
+f = open("./pipeline_data/eeh_data.csv","w+")
+
+edge_filter = np.zeros((3,5))
+ee_gain = [32,128]
+ee_thres = [32,64]
+ee_emclip = [-64,64]
+
+edge_filter[0][0] = -1	# Edge filter
+edge_filter[0][1] = 0	# Edge filter
+edge_filter[0][2] = -1	# Edge filter
+edge_filter[0][3] = 0	# Edge filter
+edge_filter[0][4] = -1	# Edge filter
+edge_filter[1][0] = -1	# Edge filter
+edge_filter[1][1] = 0	# Edge filter
+edge_filter[1][2] = 8	# Edge filter
+edge_filter[1][3] = 0	# Edge filter
+edge_filter[1][4] = -1	# Edge filter
+edge_filter[2][0] = -1	# Edge filter
+edge_filter[2][1] = 0	# Edge filter
+edge_filter[2][2] = -1	# Edge filter
+edge_filter[2][3] = 0	# Edge filter
+edge_filter[2][4] = -1	# Edge filter
+ee_gain[0] = 32	        # Edge enhancement min gain
+ee_gain[1] = 128	    # Edge enhancement max gain
+ee_thres[0] = 32	    # Edge enhancement min threshold
+ee_thres[1] = 64	    # Edge enhancement max threshold
+ee_emclip[0] = -64	    # Edge map min clip value
+ee_emclip[1] = 64	    # Edge map max clip value
+
+
+obj = EEH(bnf_data, edge_filter, ee_gain, ee_thres, ee_emclip)
+ee_data, em_data = obj.execute()
+
+raw_h = ee_data.shape[0]
+raw_w = ee_data.shape[1]
+for y in range(raw_h):
+    for x in range(raw_w):
+        f.write("(%d,%d): %d, %d (%d)\n"%(y,x,ee_data[y,x],em_data[y,x],bnf_data[y,x]))
+
+print(50*'-' + '\n Edge Enhancement Done......')
+cv2.imwrite('./pipeline_data/yuv_img_ee.jpg',ee_data)
+cv2.imwrite('./pipeline_data/yuv_img_em.jpg',em_data)
 f.close()

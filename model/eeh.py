@@ -2,7 +2,7 @@
 import numpy as np
 import cv2
 
-class EE:
+class EEH:
     'Edge Enhancement'
 
     def __init__(self, img, edge_filter, gain, thres, emclip):
@@ -15,11 +15,11 @@ class EE:
     def padding(self):
         # 对行扩充1，1
         # 对列扩充2，2
-        img_pad = np.pad(self.img, ((1, 1), (2, 2)), 'reflect')
+        img_pad = np.pad(self.img, ((1, 1), (2, 2)), 'constant')
         return img_pad
 
     def clipping(self):
-        np.clip(self.img, 0, 255, out=self.img)
+        np.clip(self.img, 0, 250, out=self.img)
         return self.img
 
     def emlut(self, val, thres, gain, clip):
@@ -51,44 +51,44 @@ class EE:
         self.img = ee_img
         return self.clipping(), em_img
 
-edge_filter = np.zeros((3,5))
-ee_gain = [32,128]
-ee_thres = [32,64]
-ee_emclip = [-64,64]
+#edge_filter = np.zeros((3,5))
+#ee_gain = [32,128]
+#ee_thres = [32,64]
+#ee_emclip = [-64,64]
+#
+#edge_filter[0][0] = -1	# Edge filter
+#edge_filter[0][1] = 0	# Edge filter
+#edge_filter[0][2] = -1	# Edge filter
+#edge_filter[0][3] = 0	# Edge filter
+#edge_filter[0][4] = -1	# Edge filter
+#edge_filter[1][0] = -1	# Edge filter
+#edge_filter[1][1] = 0	# Edge filter
+#edge_filter[1][2] = 8	# Edge filter
+#edge_filter[1][3] = 0	# Edge filter
+#edge_filter[1][4] = -1	# Edge filter
+#edge_filter[2][0] = -1	# Edge filter
+#edge_filter[2][1] = 0	# Edge filter
+#edge_filter[2][2] = -1	# Edge filter
+#edge_filter[2][3] = 0	# Edge filter
+#edge_filter[2][4] = -1	# Edge filter
+#ee_gain[0] = 32	        # Edge enhancement min gain
+#ee_gain[1] = 128	    # Edge enhancement max gain
+#ee_thres[0] = 32	    # Edge enhancement min threshold
+#ee_thres[1] = 64	    # Edge enhancement max threshold
+#ee_emclip[0] = -64	    # Edge map min clip value
+#ee_emclip[1] = 64	    # Edge map max clip value
 
-edge_filter[0][0] = -1	# Edge filter
-edge_filter[0][1] = 0	# Edge filter
-edge_filter[0][2] = -1	# Edge filter
-edge_filter[0][3] = 0	# Edge filter
-edge_filter[0][4] = -1	# Edge filter
-edge_filter[1][0] = -1	# Edge filter
-edge_filter[1][1] = 0	# Edge filter
-edge_filter[1][2] = 8	# Edge filter
-edge_filter[1][3] = 0	# Edge filter
-edge_filter[1][4] = -1	# Edge filter
-edge_filter[2][0] = -1	# Edge filter
-edge_filter[2][1] = 0	# Edge filter
-edge_filter[2][2] = -1	# Edge filter
-edge_filter[2][3] = 0	# Edge filter
-edge_filter[2][4] = -1	# Edge filter
-ee_gain[0] = 32	        # Edge enhancement min gain
-ee_gain[1] = 128	    # Edge enhancement max gain
-ee_thres[0] = 32	    # Edge enhancement min threshold
-ee_thres[1] = 64	    # Edge enhancement max threshold
-ee_emclip[0] = -64	    # Edge map min clip value
-ee_emclip[1] = 64	    # Edge map max clip value
-
-raw_data_rgb = cv2.imread('img_bnf.jpg',cv2.IMREAD_UNCHANGED)
-raw_data = cv2.imread('yuv_img_bnf_gray.jpg',cv2.IMREAD_UNCHANGED)
-obj = EE(raw_data, edge_filter, ee_gain, ee_thres, ee_emclip)
-ee_data_yuv_0, edgemap_data_yuv_0 = obj.execute()
-cv2.imwrite('yuv_img_ee_gray.jpg', ee_data_yuv_0)
-cv2.imwrite('yuv_img_edgemap_gray.jpg', ee_data_yuv_0)
-ee_data_yuv = cv2.cvtColor(raw_data_rgb, cv2.COLOR_BGR2YCrCb)
-edgemap_data_yuv = cv2.cvtColor(raw_data_rgb, cv2.COLOR_BGR2YCrCb)
-ee_data_yuv[:,:,0] = ee_data_yuv_0
-edgemap_data_yuv[:,:,0] = edgemap_data_yuv_0
-ee_data_rgb = cv2.cvtColor(ee_data_yuv, cv2.COLOR_YCrCb2BGR)
-cv2.imwrite('img_ee.jpg',ee_data_rgb)
-edgemap_data_rgb = cv2.cvtColor(edgemap_data_yuv, cv2.COLOR_YCrCb2BGR)
-cv2.imwrite('img_edgemap.jpg',edgemap_data_rgb)
+#raw_data_rgb = cv2.imread('img_bnf.jpg',cv2.IMREAD_UNCHANGED)
+#raw_data = cv2.imread('yuv_img_bnf_gray.jpg',cv2.IMREAD_UNCHANGED)
+#obj = EEH(raw_data, edge_filter, ee_gain, ee_thres, ee_emclip)
+#ee_data_yuv_0, edgemap_data_yuv_0 = obj.execute()
+#cv2.imwrite('yuv_img_ee_gray.jpg', ee_data_yuv_0)
+#cv2.imwrite('yuv_img_edgemap_gray.jpg', ee_data_yuv_0)
+#ee_data_yuv = cv2.cvtColor(raw_data_rgb, cv2.COLOR_BGR2YCrCb)
+#edgemap_data_yuv = cv2.cvtColor(raw_data_rgb, cv2.COLOR_BGR2YCrCb)
+#ee_data_yuv[:,:,0] = ee_data_yuv_0
+#edgemap_data_yuv[:,:,0] = edgemap_data_yuv_0
+#ee_data_rgb = cv2.cvtColor(ee_data_yuv, cv2.COLOR_YCrCb2BGR)
+#cv2.imwrite('img_ee.jpg',ee_data_rgb)
+#edgemap_data_rgb = cv2.cvtColor(edgemap_data_yuv, cv2.COLOR_YCrCb2BGR)
+#cv2.imwrite('img_edgemap.jpg',edgemap_data_rgb)

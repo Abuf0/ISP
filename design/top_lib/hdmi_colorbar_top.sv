@@ -566,7 +566,7 @@ bnf #(
 );
 
 // EEH module
-
+logic signed [DW:0] pixel_data_em;
 eeh #(
     .DW  (DW   ),
     .H   (H    ),
@@ -588,14 +588,13 @@ eeh #(
     .pixel_data_in_vld  (pixel_data_vld[EEH]     ), 
     .pixel_data_in      (pixel_data_rgb[EEH]     ),
     .pixel_data_out_vld (pixel_data_vld[EEH+1]   ),
-    .pixel_data_out_em  (pixel_data_rgb[BCC]    ),
-    .pixel_data_out_ee  (pixel_data_rgb[EEH]    ),
+    .pixel_data_out_em  (pixel_data_em           ),
+    .pixel_data_out_ee  (pixel_data_rgb[BCC]     ),
     .eeh_done           (                        )  // TODO
 );
 assign pixel_data_vld[BCC] = pixel_data_vld[EEH+1];
 
 // BCC module
-
 bcc #(
     .DW  (DW   ),
     .H   (H    ),
@@ -633,7 +632,7 @@ fcs #(
     .intercept              (fcs_intercept           ), // TODO
     .slop                   (fcs_slop                ), // TODO
     .pixel_data_in_vld      (pixel_data_vld[FCS]     ), 
-    .pixel_data_in_edgemap  (pixel_data_rgb[FCS]     ),
+    .pixel_data_in_edgemap  (pixel_data_em           ),
     .buffer_data_in_ccs_y   (buffer_data_rgb_csc[DW-1:DW-8]  ),  // TODO
     .buffer_data_in_ccs_cr  (buffer_data_rgb_csc[DW-9:DW-16] ),  // TODO
     .buffer_data_in_ccs_cb  (buffer_data_rgb_csc[DW-17:DW-24]),  // TODO
