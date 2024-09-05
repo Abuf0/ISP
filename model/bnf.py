@@ -44,9 +44,12 @@ class BNF:
                             rdiff[i,j] = self.rw[3]
                 weights = np.multiply(rdiff, self.dw)
                 bnf_img[y,x] = np.sum(np.multiply(img_pad[y:y+5,x:x+5], weights[:,:])) / np.sum(weights)
+                f2.write(str(rdiff))
+                f2.write("%d,%d\n"%(np.sum(np.multiply(img_pad[y:y+5,x:x+5], weights[:,:])),np.sum(weights)))
         self.img = bnf_img
         return self.clipping()
 
+f2 = open('./pipeline_data/bnf_p.csv','w+')
 #bnf_dw = np.zeros((5,5))
 #bnf_rw = [1, 1, 1, 1]
 #bnf_rthres = [32, 64, 128]
