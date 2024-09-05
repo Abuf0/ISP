@@ -19,7 +19,7 @@ module bnf#(
     output logic            bnf_done        
 );
 // 原方案：padding时停顿，shift入0；舍弃原因：串行输入是连续的
-logic [DW-1:0] shift_reg[0:5*H+5];
+logic [DW-1:0] shift_reg[0:4*H+4];
 logic [DW-1:0] array[0:4][0:4];
 logic [DW-1:0] rdiff[0:4][0:4];
 logic [DW-1:0] weight[0:4][0:4];
@@ -33,7 +33,7 @@ logic init;
 
 genvar i;
 generate 
-    for(i=0;i<5*H+6;i=i+1) begin: SFT_REG
+    for(i=0;i<4*H+5;i=i+1) begin: SFT_REG
         if(i==0) begin
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
@@ -58,7 +58,7 @@ genvar y;
 generate 
     for(x=0;x<5;x=x+1) begin
         for(y=0;y<5;y=y+1) begin
-            assign array[x][y] = ( (v_cnt < (2-x)) || (v_cnt > V+2-x) || (h_cnt < (2-y)) || (h_cnt > (H+2-y)))?   shift_reg[x*H+y]    : 'd0;
+            assign array[x][y] = ( (x<2 && v_cnt < (2-x)) || (v_cnt > V+2-x) || (t<2 && h_cnt < (2-y)) || (h_cnt > (H+2-y)))?   'd0 : shift_reg[4*H+4-(x*H+y)];
         end 
     end
 endgenerate
@@ -69,9 +69,9 @@ generate
             logic [DW-1:0] rdiff_rw;
             assign rdiff[x][y] = (array[x][y] > array[2][2])?  array[x][y]-array[2][2] : array[2][2]-array[x][y];
             assign rdiff_rw = (rdiff[x][y] >= rthres[0])?    rw[0] :
-                              (rdiff[x][y] < rthres[0] && rdiff[x][y] > rthres[1])?     rw[1] :
-                              (rdiff[x][y] < rthres[1] && rdiff[x][y] > rthres[2])?     rw[2] :
-                              (rdiff[x][y] < rthres[2])?     rw[3] : ((array[x][y]>array[2][2])?    array[x][y] : array[2][2]);
+                              (rdiff[x][y] < rthres[0] && rdiff[x][y] >= rthres[1])?     rw[1] :
+                              (rdiff[x][y] < rthres[1] && rdiff[x][y] >= rthres[2])?     rw[2] :
+                              (rdiff[x][y] < rthres[2])?     rw[3] : rdiff[x][y];
             assign weight[x][y] = rdiff_rw * dw[x][y];
             assign img_wgt[x][y] = array[x][y] * weight[x][y];
         end 
@@ -142,5 +142,21 @@ always_ff@(posedge clk or negedge rstn) begin
     else if(bnf_done)
         bnf_done <= 1'b0;
 end
+
+`ifdef SIM
+integer file_bnf;
+initial begin
+    file_bnf = $fopen("./bnf_result.csv","w+");  // 初始化文件
+end
+
+always @(negedge clk) begin
+    if(pixel_data_out_vld) begin
+        $fwrite(file_bnf,"%d\n",pixel_data_out);
+    end
+//     else begin
+//         $fclose(file);   // 这里一定要写，关闭文件读写
+//     end
+end
+`endif
 
 endmodule
