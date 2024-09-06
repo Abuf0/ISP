@@ -11,7 +11,7 @@ module sync_fifo #(
     output logic                    fifo_empty      ,
     output logic                    fifo_full       
 );
-parameter PTR_WIDTH = $clog(FIFO_DEEPTH);
+parameter PTR_WIDTH = $clog2(FIFO_DEEPTH);
 logic [FIFO_WIDTH-1:0] ram [0:FIFO_DEEPTH-1];
 logic [PTR_WIDTH-1:0] wptr;
 logic [PTR_WIDTH-1:0] rptr;
@@ -34,7 +34,7 @@ end
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         {rptr_h,rptr} <= 'd0;
-    else if(wr_en && ~fifo_empty_pre)
+    else if(rd_en && ~fifo_empty_pre)
         {rptr_h,rptr} <= {rptr_h_next,rptr_next};
 end
 
@@ -70,7 +70,7 @@ always_ff@(posedge clk or negedge rstn) begin
     if(~rstn)
         rdata <= 'd0;
     else if(rd_en && ~fifo_empty)
-        rdata <= raw[rptr];
+        rdata <= ram[rptr];
 end
 
 endmodule

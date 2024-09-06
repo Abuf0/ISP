@@ -47,9 +47,9 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_b <= pixel_data_in_b;
     end
 end
-assign pixel_data_out_r_tmp =  csc_coef_r[0]*pixel_data_r + csc_coef_r[1]*pixel_data_g + csc_coef_r[2]*pixel_data_b + csc_coef_r[3];
-assign pixel_data_out_g_tmp =  csc_coef_g[0]*pixel_data_r + csc_coef_g[1]*pixel_data_g + csc_coef_g[2]*pixel_data_b + csc_coef_g[3];
-assign pixel_data_out_b_tmp =  csc_coef_b[0]*pixel_data_r + csc_coef_b[1]*pixel_data_g + csc_coef_b[2]*pixel_data_b + csc_coef_b[3];
+assign pixel_data_out_r_tmp =  csc_coef_r[0]*pixel_data_r + csc_coef_r[1]*pixel_data_g + csc_coef_r[2]*pixel_data_b ;//+ csc_coef_r[3];
+assign pixel_data_out_g_tmp =  csc_coef_g[0]*pixel_data_r + csc_coef_g[1]*pixel_data_g + csc_coef_g[2]*pixel_data_b ;//+ csc_coef_g[3];
+assign pixel_data_out_b_tmp =  csc_coef_b[0]*pixel_data_r + csc_coef_b[1]*pixel_data_g + csc_coef_b[2]*pixel_data_b ;//+ csc_coef_b[3];
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn) begin
@@ -58,9 +58,9 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_out_b <= 'd0;
     end
     else if(csc_en) begin
-        pixel_data_out_r <= pixel_data_out_r_tmp << 10;
-        pixel_data_out_g <= pixel_data_out_g_tmp << 10;
-        pixel_data_out_b <= pixel_data_out_b_tmp << 10;
+        pixel_data_out_r <= (pixel_data_out_r_tmp <<< 10) + csc_coef_r[3];
+        pixel_data_out_g <= (pixel_data_out_g_tmp <<< 10) + csc_coef_g[3];
+        pixel_data_out_b <= (pixel_data_out_b_tmp <<< 10) + csc_coef_b[3];
     end
     else begin
         pixel_data_out_r <= pixel_data_r;

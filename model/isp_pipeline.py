@@ -259,8 +259,8 @@ for i in ind:
         f_lut.write('\n')
 f_lut.close()
 
-#obj = NLM(csc_data[:,:,0],1,3,nlm_h,nlm_clip,lut_en,lut_exp)
-obj = NLM(gc_data[:,:,0],1,3,nlm_h,nlm_clip,lut_en,lut_exp) # debug
+obj = NLM(csc_data[:,:,0],1,3,nlm_h,nlm_clip,lut_en,lut_exp)
+#obj = NLM(gc_data[:,:,0],1,3,nlm_h,nlm_clip,lut_en,lut_exp) # debug
 nlm_data = obj.execute()
 
 raw_h = nlm_data.shape[0]
@@ -320,8 +320,8 @@ bnf_rthres[2] = 8	# BNF diff threshold
 
 bnf_clip = 250	# BNF clip value
 
-#obj = BNF(nlm_data, bnf_dw, bnf_rw, bnf_rthres, bnf_clip)
-obj = BNF(gc_data[:,:,0], bnf_dw, bnf_rw, bnf_rthres, bnf_clip)
+obj = BNF(nlm_data, bnf_dw, bnf_rw, bnf_rthres, bnf_clip)
+#obj = BNF(gc_data[:,:,0], bnf_dw, bnf_rw, bnf_rthres, bnf_clip)
 
 bnf_data = obj.execute()
 

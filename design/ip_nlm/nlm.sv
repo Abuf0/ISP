@@ -18,6 +18,7 @@ module nlm#(
 );
 
 logic [DW-1:0]   array [0:2*DS] [0:2*DS] ;
+logic [DW-1:0]   array_ff1 [0:2*DS] [0:2*DS] ;
 logic            data_vld                ;
 logic [DW-1:0]   wmax                    ;
 logic [DW+DW-1:0]wsum                    ;
@@ -64,6 +65,12 @@ generate
     for(x=0;x<2*DS+1;x=x+1) begin
         for(y=0;y<2*DS+1;y=y+1) begin
             assign array[x][y] = ( (x<DS && v_cnt < (DS-x)) || (v_cnt > V+DS-x) || (y<DS && h_cnt < (DS-y)) || (h_cnt > (H+DS-y)))?   'd0 : shift_reg[2*DS*H+2*DS-(x*H+y)] ;
+            always_ff@(posedge clk or negedge rstn) begin
+                if(~rstn)
+                    array_ff1[x][y] <= 'd0;
+                else if(nlm)
+                    array_ff1[x][y] <= array[x][y];
+            end
         end 
     end
 endgenerate
@@ -108,7 +115,7 @@ calweights #(
 (
     .clk               ( clk         ),
     .rstn              ( rstn        ),
-    .array             ( array       ),
+    .array             ( array_ff1   ),
     .data_vld          ( data_vld    ),
     .wmax              ( wmax        ),
     .wsum              ( wsum        ),

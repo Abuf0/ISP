@@ -59,7 +59,7 @@ class NLM:
                 #f1.write(str(int(dist)))
                 #f1.write(" , ")
             f1.write("\n")
-        f1.write("sw=%d, avg=%d, wmax=%d\n"%(sweight,average,wmax))
+        f1.write("sw=%s, avg=%s, wmax=%s\n"%(str(sweight),str(average),str(wmax)))
         f1.write('\ncenter\n:')
         f1.write(str(center_w))
         f1.write("\n")
