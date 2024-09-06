@@ -13,6 +13,7 @@ class HSC:
 
     def clipping(self):
         np.clip(self.img, 0, self.clip, out=self.img)
+        print(self.clip)
         return self.img
 
     def lut(self):
@@ -28,18 +29,29 @@ class HSC:
         img_h = self.img.shape[0]
         img_w = self.img.shape[1]
         img_c = self.img.shape[2]
-        hsc_img = np.empty((img_h, img_w, img_c), np.int16)
+        hsc_img = np.empty((img_h, img_w, img_c), np.int32)
         hsc_img[:,:,0] = (self.img[:,:,0] - 128) * lut_cos[self.hue] + (self.img[:,:,1] - 128) * lut_sin[self.hue] + 128
         hsc_img[:,:,1] = (self.img[:,:,1] - 128) * lut_cos[self.hue] - (self.img[:,:,0] - 128) * lut_sin[self.hue] + 128
+        for x in range(img_h):
+            for y in range(img_w):
+                f4.write(str(hsc_img[x,y,0]))
+                f4.write('\t')
+                f4.write(str(self.saturation * (hsc_img[x,y,0] - 128) / 256))
+                f4.write('\n')
         #hsc_img[:,:,0] = self.saturation * (self.img[:,:,0] - 128) / 256 + 128
         #hsc_img[:,:,1] = self.saturation * (self.img[:,:,1] - 128) / 256 + 128
         hsc_img[:,:,0] = self.saturation * (hsc_img[:,:,0] - 128) / 256 + 128
         hsc_img[:,:,1] = self.saturation * (hsc_img[:,:,1] - 128) / 256 + 128
+        for x in range(img_h):
+            for y in range(img_w):
+                f4.write(str(hsc_img[x,y,0:2]))
+                f4.write('\n')
         self.img = hsc_img
         print(lut_cos[self.hue])
         print(lut_sin[self.hue])
         return self.clipping()
 
+f4 = open('./pipeline_data/hsc_p.csv','w+')
 #hue = 128
 #saturation = 256
 #hsc_clip = 255

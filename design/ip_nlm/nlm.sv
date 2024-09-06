@@ -68,7 +68,7 @@ generate
             always_ff@(posedge clk or negedge rstn) begin
                 if(~rstn)
                     array_ff1[x][y] <= 'd0;
-                else if(nlm)
+                else if(nlm_en)
                     array_ff1[x][y] <= array[x][y];
             end
         end 

@@ -22,6 +22,7 @@ class FCS:
         img_w = self.img.shape[1]
         img_c = self.img.shape[2]
         fcs_img = np.empty((img_h, img_w, img_c), np.int16)
+        print(self.fcs_edge[0])
         for y in range(img_h):
             for x in range(img_w):
                 if np.abs(self.edgemap[y,x]) <= self.fcs_edge[0]:

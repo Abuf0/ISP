@@ -61,3 +61,11 @@
     - fixed bcc
     - building fcs & hsc
         - <TODO: buffer issue>
+
+- 2024/9/6
+    - fixed fcs & hsc
+        - added sync_fifo
+        - <TODO: hsc algo maybe wrong>
+    - <TODO: check rtl coefiency>
+    - <TODO: check yuv_out effect>
+    - <TODO：change raw img>
