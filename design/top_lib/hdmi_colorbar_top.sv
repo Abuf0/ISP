@@ -522,6 +522,20 @@ csc #(
    .csc_done           (                                       )   
 );
 
+sync_fifo #(
+    .FIFO_DEEPTH(2048),
+    .FIFO_WIDTH (16  )
+) fifo_csc2fcs_inst(
+    .clk                (pixel_clk                          ),
+    .rstn               (rst_pix_n                          ),
+    .wr_en              (pixel_data_vld[CSC+1]              ),
+    .rd_en              (pixel_data_vld[FCS]                ),
+    .wdata              (pixel_data_rgb[CSC+1][DW-1:DW-16]  ),
+    .rdata              (buffer_data_rgb_csc[DW-1:DW-16]    ),
+    .fifo_empty         (                                   ),
+    .fifo_full          (                                   )  
+);
+
 // NLM module
 
 nlm #(
@@ -619,24 +633,6 @@ bcc #(
 );
 
 // FCS module
-
-logic [DW-1:0] pixel_data_rgb_csc_ff1;
-logic [DW-1:0] pixel_data_rgb_csc_ff2;
-logic [DW-1:0] pixel_data_rgb_csc_ff3;
-always_ff@(posedge pixel_clk or negedge rst_pix_n) begin
-    if(~rst_pix_n)   begin
-        pixel_data_rgb_csc_ff1 <= 'd0;
-        pixel_data_rgb_csc_ff2 <= 'd0;
-        pixel_data_rgb_csc_ff3 <= 'd0;
-    end
-    else if(pixel_data_vld[CSC+1])  begin
-        pixel_data_rgb_csc_ff1 <= pixel_data_rgb[CSC+1];
-        pixel_data_rgb_csc_ff2 <= pixel_data_rgb_csc_ff1;
-        pixel_data_rgb_csc_ff3 <= pixel_data_rgb_csc_ff2;
-    end
-end
-assign buffer_data_rgb_csc = pixel_data_rgb_csc_ff3;
-
 fcs #(
     .DW  (DW   ),
     .H   (H    ),
@@ -655,12 +651,12 @@ fcs #(
     .pixel_data_in_vld      (pixel_data_vld[FCS]     ), 
     .pixel_data_in_edgemap  (pixel_data_em           ),
     //.buffer_data_in_ccs_y   (buffer_data_rgb_csc[DW-1:DW-8]  ),  // TODO
-    .buffer_data_in_ccs_cr  (buffer_data_rgb_csc[DW-9:DW-16] ),  // TODO
-    .buffer_data_in_ccs_cb  (buffer_data_rgb_csc[DW-17:DW-24]),  // TODO
+    .buffer_data_in_csc_cr  (buffer_data_rgb_csc[DW-9:DW-16] ),  // TODO
+    .buffer_data_in_csc_cb  (buffer_data_rgb_csc[DW-1:DW-8]  ),  // TODO
     .pixel_data_out_vld     (pixel_data_vld[FCS+1]      ),
     //.pixel_data_out_y       (pixel_data_rgb[FCS+1][DW-1:DW-8]  ),
     .pixel_data_out_cr      (pixel_data_rgb[FCS+1][DW-9:DW-16] ),
-    .pixel_data_out_cb      (pixel_data_rgb[FCS+1][DW-17:DW-24]),
+    .pixel_data_out_cb      (pixel_data_rgb[FCS+1][DW-1:DW-8]  ),
     .fcs_done               (                        )  // TODO
 );
 
@@ -682,31 +678,36 @@ hsc #(
     .clip                   (hsc_clip                ), // TODO
     .pixel_data_in_vld      (pixel_data_vld[HSC]     ),
     .buffer_data_in_ccs_cr  (pixel_data_rgb[HSC][DW-9:DW-16] ),  // TODO
-    .buffer_data_in_ccs_cb  (pixel_data_rgb[HSC][DW-17:DW-24]),  // TODO
+    .buffer_data_in_ccs_cb  (pixel_data_rgb[HSC][DW-1:DW-8]  ),  // TODO
     .pixel_data_out_vld     (pixel_data_vld[HSC+1]   ),
     //.pixel_data_out         (pixel_data_rgb[HSC+1][DW-9:0]   ),
     .pixel_data_out_cr      (pixel_data_rgb[HSC+1][DW-9:DW-16] ),
-    .pixel_data_out_cb      (pixel_data_rgb[HSC+1][DW-17:DW-24]),
+    .pixel_data_out_cb      (pixel_data_rgb[HSC+1][DW-1:DW-8]  ),
     .hsc_done               (                        )  // TODO
 );
-logic [DW-1:0] pixel_data_bcc_ff1;
-logic [DW-1:0] pixel_data_bcc_ff2;
-always_ff@(posedge pixel_clk or negedge rst_pix_n) begin
-    if(~rst_pix_n) begin
-        pixel_data_bcc_ff1 <= 'd0;
-        pixel_data_bcc_ff2 <= 'd0;
-    end
-    else if(pixel_data_vld[BCC+1]) begin
-        pixel_data_bcc_ff1 <= pixel_data_rgb[BCC+1];
-        pixel_data_bcc_ff2 <= pixel_data_bcc_ff1;
-    end
-end
- 
+
+logic [7:0] buffer_data_bcc;
+
+sync_fifo #(
+    .FIFO_DEEPTH(512),
+    .FIFO_WIDTH (8  )
+) fifo_bcc2yuv_inst(
+    .clk                (pixel_clk                          ),
+    .rstn               (rst_pix_n                          ),
+    .wr_en              (pixel_data_vld[BCC+1]              ),
+    .rd_en              (pixel_data_vld[HSC+1]              ),
+    .wdata              (pixel_data_rgb[BCC+1][7:0]         ),
+    .rdata              (buffer_data_bcc                    ),
+    .fifo_empty         (                                   ),
+    .fifo_full          (                                   )  
+);
+
+
 logic [DW/3-1:0] yuv_out_pre[0:2];
 logic yuv_out_vld_pre;
-assign yuv_out_pre[0] = pixel_data_bcc_ff1[DW/3-1:0];
+assign yuv_out_pre[0] = buffer_data_bcc[DW/3-1:0];
 assign yuv_out_pre[1] = pixel_data_rgb[HSC+1][DW-9:DW-16];
-assign yuv_out_pre[2] = pixel_data_rgb[HSC+1][DW-17:DW-24];
+assign yuv_out_pre[2] = pixel_data_rgb[HSC+1][DW-11:DW-8];
 assign yuv_out_vld_pre = pixel_data_vld[HSC+1];
 
 always_ff@(posedge pixel_clk or negedge rst_pix_n) begin

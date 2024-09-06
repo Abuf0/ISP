@@ -14,8 +14,8 @@ module fcs#(
     input           [DW-1:0]   slop                  ,
     input           [DW-1:0]   fcs_clip              ,
     input                      pixel_data_in_vld     , 
-    input           [DW-1:0]   buffer_data_in_ccs_cr ,
-    input           [DW-1:0]   buffer_data_in_ccs_cb ,
+    input           [DW-1:0]   buffer_data_in_csc_cr ,
+    input           [DW-1:0]   buffer_data_in_csc_cb ,
     input  signed   [DW:0]     pixel_data_in_edgemap ,
     output logic               pixel_data_out_vld    ,
     output logic    [DW-1:0]   pixel_data_out_cr     ,
@@ -42,8 +42,8 @@ always_ff@(posedge clk or negedge rstn) begin
         edge_data <= 'sd0;
     end
     else if(fcs_en && pixel_data_in_vld) begin
-        pixel_data[0] <= buffer_data_in_ccs_cr ;
-        pixel_data[1] <= buffer_data_in_ccs_cb ;
+        pixel_data[0] <= buffer_data_in_csc_cr ;
+        pixel_data[1] <= buffer_data_in_csc_cb ;
         edge_data <=     pixel_data_in_edgemap ;   
     end
 end
@@ -53,8 +53,8 @@ assign edge_data_abs = edge_data[DW]?   ~edge_data[DW-1:0]+1'b1 : edge_data[DW-1
 assign uv_gain = (edge_data_abs <= fcs_edge[0])?    gain :
                  (edge_data_abs >= fcs_edge[1])?    'd0 : (intercept - slop * edge_data);
 
-assign pixel_data_out_gain_pre[0] = uv_gain * buffer_data_in_ccs_cr;
-assign pixel_data_out_gain_pre[1] = uv_gain * buffer_data_in_ccs_cb;
+assign pixel_data_out_gain_pre[0] = uv_gain * buffer_data_in_csc_cr;
+assign pixel_data_out_gain_pre[1] = uv_gain * buffer_data_in_csc_cb;
  
 assign pixel_data_out_gain[0] = (pixel_data_out_gain_pre[0] >>> 8) + 8'd128;
 assign pixel_data_out_gain[1] = (pixel_data_out_gain_pre[1] >>> 8) + 8'd128;
@@ -72,8 +72,8 @@ always_ff@(posedge clk or negedge rstn) begin
         pixel_data_out_cb <= pixel_data_out_pre[1] ;
     end
     else if(~fcs_en && pixel_data_in_vld) begin
-        pixel_data_out_cr <= buffer_data_in_ccs_cr;
-        pixel_data_out_cb <= buffer_data_in_ccs_cb;
+        pixel_data_out_cr <= buffer_data_in_csc_cr;
+        pixel_data_out_cb <= buffer_data_in_csc_cb;
     end
 end
 
