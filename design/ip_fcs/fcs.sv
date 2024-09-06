@@ -28,6 +28,7 @@ logic [VW-1:0] v_cnt;
 
 logic pixel_data_out_vld_pre;
 logic signed [DW:0] pixel_data_out_gain_pre [0:1];
+logic signed [DW:0] pixel_data_out_gain_pre_shift [0:1];
 logic signed [DW:0] pixel_data_out_gain [0:1];
 logic [DW-1:0] pixel_data_out_pre [0:1];
 logic [DW-1:0] pixel_data[0:1];
@@ -55,9 +56,12 @@ assign uv_gain = (edge_data_abs <= fcs_edge[0])?    gain :
 
 assign pixel_data_out_gain_pre[0] = uv_gain * buffer_data_in_csc_cr;
 assign pixel_data_out_gain_pre[1] = uv_gain * buffer_data_in_csc_cb;
- 
-assign pixel_data_out_gain[0] = (pixel_data_out_gain_pre[0] >>> 8) + 8'd128;
-assign pixel_data_out_gain[1] = (pixel_data_out_gain_pre[1] >>> 8) + 8'd128;
+
+assign pixel_data_out_gain_pre_shift[0] = pixel_data_out_gain_pre[0] >>> 8 ;
+assign pixel_data_out_gain_pre_shift[1] = pixel_data_out_gain_pre[1] >>> 8 ;
+
+assign pixel_data_out_gain[0] = pixel_data_out_gain_pre_shift[0] + 8'd128;
+assign pixel_data_out_gain[1] = pixel_data_out_gain_pre_shift[1] + 8'd128;
 
 assign pixel_data_out_pre[0] = pixel_data_out_gain[0][DW]?  'd0 : ((pixel_data_out_gain[0] > fcs_clip)?   fcs_clip : pixel_data_out_gain[0]);
 assign pixel_data_out_pre[1] = pixel_data_out_gain[1][DW]?  'd0 : ((pixel_data_out_gain[1] > fcs_clip)?   fcs_clip : pixel_data_out_gain[1]);

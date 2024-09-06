@@ -9,8 +9,8 @@ module hsc#(
     input                      rstn                  ,
     input                      hsc_en                ,
     //input           [DW-1:0]   hue                   ,
-    input           [DW-1:0]   hue_cos               ,
-    input           [DW-1:0]   hue_sin               ,
+    input signed    [DW:0]     hue_cos               ,
+    input signed    [DW:0]     hue_sin               ,
     input           [DW-1:0]   saturation            , 
     input           [DW-1:0]   clip                  ,
     input                      pixel_data_in_vld     , 
@@ -26,7 +26,8 @@ logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt; 
 
 logic pixel_data_out_vld_pre;
-logic signed [DW:0] pixel_data_out_hue [0:1];
+logic signed [DW+8:0] pixel_data_out_hue [0:1];
+logic signed [DW:0] pixel_data_out_hue_shift [0:1];
 logic signed [DW:0] pixel_data_out_sat [0:1];
 logic signed [DW:0] pixel_data_out_pre [0:1];
 logic [DW-1:0] pixel_data[0:1];
@@ -52,11 +53,14 @@ assign hsc_data[1] = (pixel_data[1] - 8'd128) * hue_cos + (pixel_data[0] - 8'd12
 assign pixel_data_out_hue[0] = hsc_data[0] - 8'd128;
 assign pixel_data_out_hue[1] = hsc_data[1] - 8'd128;
 
-assign pixel_data_out_sat[0] = saturation * (pixel_data_out_hue[0] >>> 8) + 8'd128;
-assign pixel_data_out_sat[1] = saturation * (pixel_data_out_hue[1] >>> 8) + 8'd128;
+assign pixel_data_out_hue_shift[0] = pixel_data_out_hue[0] >>> 8;
+assign pixel_data_out_hue_shift[1] = pixel_data_out_hue[1] >>> 8;
 
-assign pixel_data_out_pre[0] = pixel_data_out_sat[0][DW]?   'd0 : ((pixel_data_out_pre[0] > clip)?  clip : pixel_data_out_pre[0]);
-assign pixel_data_out_pre[1] = pixel_data_out_sat[1][DW]?   'd0 : ((pixel_data_out_pre[1] > clip)?  clip : pixel_data_out_pre[1]);
+assign pixel_data_out_sat[0] = saturation * pixel_data_out_hue_shift[0] + 8'd128;
+assign pixel_data_out_sat[1] = saturation * pixel_data_out_hue_shift[1] + 8'd128;
+
+assign pixel_data_out_pre[0] = pixel_data_out_sat[0][DW]?   'd0 : ((pixel_data_out_sat[0] > clip)?  clip : pixel_data_out_sat[0]);
+assign pixel_data_out_pre[1] = pixel_data_out_sat[1][DW]?   'd0 : ((pixel_data_out_sat[1] > clip)?  clip : pixel_data_out_sat[1]);
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn) begin

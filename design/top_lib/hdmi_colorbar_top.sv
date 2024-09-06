@@ -216,8 +216,8 @@ assign eeh_emclip[1] = 64	;
 assign bcc_brightness = 10      ;
 assign bcc_contrast = 10        ;
 assign bcc_clip = 255       ;
-assign fcs_edge[0] = 64     ;
-assign fcs_edge[1] = 32     ;
+assign fcs_edge[0] = 32     ;
+assign fcs_edge[1] = 64     ;
 assign fcs_gain = 32        ;
 assign fcs_intercept = 2    ;
 assign fcs_slop = 3         ;
@@ -704,7 +704,7 @@ hsc #(
 );
 
 logic [DW/3-1:0] pixel_data_hsc_cr_ff1;
-logic [DW/3-1:0] pixel_data_hsc_cb_ff1
+logic [DW/3-1:0] pixel_data_hsc_cb_ff1;
 logic pixel_data_vld_hsc_ff1;
 always_ff@(posedge pixel_clk or negedge rst_pix_n) begin
     if(~rst_pix_n) begin

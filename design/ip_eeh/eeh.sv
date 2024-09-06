@@ -65,7 +65,7 @@ genvar y;
 generate 
     for(x=0;x<3;x=x+1) begin
         for(y=0;y<5;y=y+1) begin    // pad((1,1),(2,2))
-            assign array[x][y] = ( (x<1 && v_cnt < (1-x)) || (v_cnt > V+1-x) || (y<2 && h_cnt < (2-y)) || (h_cnt > (H+2-y)))?   'd0 : shift_reg[2*H+4-(x*H+y)] ;
+            assign array[x][y] = ( (x<1 && v_cnt < (1-x)) || (v_cnt > (V-1)+1-x) || (y<2 && h_cnt < (2-y)) || (h_cnt > (H-1)+2-y))?   'd0 : shift_reg[2*H+4-(x*H+y)] ;
             assign em_img_wght[x][y] = edge_filter[x][y]*$signed(array[x][y]);
         end 
     end

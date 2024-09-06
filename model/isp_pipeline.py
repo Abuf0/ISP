@@ -390,7 +390,7 @@ f = open("./pipeline_data/bcc_data.csv","w+")
 
 brightness = 10 # [-255,255]
 contrast = 10/pow(2,5)  # [-32,128]
-bcc_clip = 250
+bcc_clip = 255
 
 obj = BCC(ee_data, brightness, contrast, bcc_clip)
 bcc_data = obj.execute()
@@ -439,7 +439,7 @@ f = open("./pipeline_data/hsc_data.csv","w+")
 
 hue = 128
 saturation = 256
-hsc_clip = 250
+hsc_clip = 255
 
 obj = HSC(fcs_data,hue,saturation,hsc_clip)
 hsc_data = obj.execute()
@@ -451,9 +451,17 @@ for y in range(raw_h):
         f.write("(%d,%d): hsc=%s (fcs=%s)\n"%(y,x,str(hsc_data[y,x,:]),str(fcs_data[y,x,:])))
 
 print(50*'-' + '\n Hue Saturation Control Done......')
+f.close()
+
+f = open("./pipeline_data/yuv_out_data.csv","w+")
 
 yum_out = np.empty((raw_h,raw_w,3),dtype=np.uint8)
 yum_out[:,:,0] = bcc_data
 yum_out[:,:,1:3] = hsc_data
+
+for y in range(raw_h):
+    for x in range(raw_w):
+        f.write("(%d,%d): %d-%d-%d\n"%(y,x,yum_out[y,x,0],yum_out[y,x,1],yum_out[y,x,2]))
+
 cv2.imwrite('./pipeline_data/yuv_img_out.jpg',yum_out)
 f.close()
