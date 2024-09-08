@@ -69,3 +69,12 @@
     - <TODO: check rtl coefiency>
     - <TODO: check yuv_out effect>
     - <TODO：change raw img>
+
+- 2024/9/8
+    - modify fcs & hsc algo
+        - <TODO: modify rtl>
+    - checked yuv_out
+    - changed raw img and changed cfgs
+    - modify veodio dis/drv module
+    - <TODO: figure out algo meanings and methods>
+    - <TODO: with previos TODO>

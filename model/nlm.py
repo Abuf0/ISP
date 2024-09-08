@@ -48,24 +48,15 @@ class NLM:
                         wmax = w
                     sweight = sweight + w
                     average = average + w * img[start_y, start_x]
-                    f1.write(str(w))
-                    f1.write("(%d,%d:%d)"%(start_y,start_x,img[start_y,start_x]))
-                    f1.write(", ")
-                    #f1.write(str(x))
-                    #f1.write("\n")
-                #f1.write("(%d,%d):\n"%(j,i))
-                #f1.write("dist=")
-                #f1.write("\n")
-                #f1.write(str(int(dist)))
-                #f1.write(" , ")
-            f1.write("\n")
-        f1.write("sw=%s, avg=%s, wmax=%s\n"%(str(sweight),str(average),str(wmax)))
-        f1.write('\ncenter\n:')
-        f1.write(str(center_w))
-        f1.write("\n")
-        f1.write("\n")
-                #f1.write(str(w))
-                #f1.write("sw=%d, avg=%d, wmax=%d\n"%(sweight,average,wmax))
+                    #f1.write(str(w))
+                    #f1.write("(%d,%d:%d)"%(start_y,start_x,img[start_y,start_x]))
+                    #f1.write(", ")
+            #f1.write("\n")
+        #1.write("sw=%s, avg=%s, wmax=%s\n"%(str(sweight),str(average),str(wmax)))
+        #1.write('\ncenter\n:')
+        #1.write(str(center_w))
+        #1.write("\n")
+        #1.write("\n")
         return sweight, average, wmax
 
     def execute(self):
@@ -91,7 +82,7 @@ class NLM:
         return self.clipping()
 
 
-f1 = open("./pipeline_data/nlm_p.csv","w+")
+#f1 = open("./pipeline_data/nlm_p.csv","w+")
 
 # nlm_h = 10
 # nlm_clip = 255

@@ -2,8 +2,15 @@
 module hdmi_colorbar_top_tb();
 // hdmi_colorbar_top Parameters
 parameter PERIOD  = 10;
+parameter DW  = 24  ;
+parameter H   = 128 ;
+parameter V   = 72  ;
+parameter HW  = 11  ;
+parameter VW  = 10  ;
 
+// Defines
 `define SIM
+//`define FPGA
 
 // hdmi_colorbar_top Inputs
 logic   sys_clk                              = 0 ;
@@ -24,11 +31,11 @@ begin
 end
 
 hdmi_colorbar_top #(
-    .DW  (24    ),
-    .H   (128   ),
-    .V   (72    ),
-    .HW  (11    ),
-    .VW  (10    )    
+    .DW  (DW    ),
+    .H   (H     ),
+    .V   (V     ),
+    .HW  (HW    ),
+    .VW  (VW    )    
 ) u_hdmi_colorbar_top (
     .sys_clk                 ( sys_clk            ),
     .sys_rst_n               ( sys_rst_n          ),

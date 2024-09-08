@@ -21,7 +21,10 @@
 //----------------------------------------------------------------------------------------
 //****************************************************************************************//
 
-module video_driver(
+module video_driver#(
+    parameter H_DISP = 1280 ,
+    parameter V_DISP = 720
+)(
     input           pixel_clk,
     input           sys_rst_n,
     
@@ -36,6 +39,7 @@ module video_driver(
     output  [10:0]  pixel_ypos    //���ص�������
 );
 
+parameter LEN = $clog2(H_DISP*V_DISP);
 //parameter define
 
 //1280*720 �ֱ���ʱ�����
@@ -51,21 +55,21 @@ module video_driver(
 //parameter  V_FRONT  =  11'd5;    //����ʾǰ��
 //parameter  V_TOTAL  =  11'd750;  //��ɨ������
 
-parameter  H_SYNC   =  11'd4;   //��ͬ��
-parameter  H_BACK   =  11'd22;  //����ʾ����
-parameter  H_DISP   =  11'd128; //����Ч����
-parameter  H_FRONT  =  11'd11;  //����ʾǰ��
-parameter  H_TOTAL  =  11'd165; //��ɨ������
+parameter  H_SYNC   =  40  *(1280/H_DISP)  ;   
+parameter  H_BACK   =  220 *(1280/H_DISP)  ;  
+//parameter  H_DISP   =  11'd128; 
+parameter  H_FRONT  =  110  *(1280/H_DISP) ;  
+parameter  H_TOTAL  =  H_SYNC+H_BACK+H_FRONT+H_DISP  ; 
 
-parameter  V_SYNC   =  11'd5;    //��ͬ��
-parameter  V_BACK   =  11'd2;   //����ʾ����
-parameter  V_DISP   =  11'd72;  //����Ч����
-parameter  V_FRONT  =  11'd5;    //����ʾǰ��
-parameter  V_TOTAL  =  11'd84;  //��ɨ������
+parameter  V_SYNC   =  5   *(720/V_DISP) ;   
+parameter  V_BACK   =  20  *(720/V_DISP)  ;   
+//parameter  V_DISP   =  11'd72 ;
+parameter  V_FRONT  =  5   *(720/V_DISP) ;   
+parameter  V_TOTAL  =  V_SYNC+V_BACK+V_FRONT+V_DISP   ;  
 
 //reg define
-reg  [10:0] cnt_h;
-reg  [10:0] cnt_v;
+reg  [LEN-1:0] cnt_h;
+reg  [LEN-1:0] cnt_v;
 
 //wire define
 wire       video_en;
@@ -101,24 +105,24 @@ assign pixel_ypos = data_req ? (cnt_v - (V_SYNC + V_BACK - 1'b1)) : 11'd0;
 //�м�����������ʱ�Ӽ���
 always @(posedge pixel_clk or negedge sys_rst_n) begin
     if (!sys_rst_n)
-        cnt_h <= 11'd0;
+        cnt_h <= 'd0;
     else begin
         if(cnt_h < H_TOTAL - 1'b1)
             cnt_h <= cnt_h + 1'b1;
         else 
-            cnt_h <= 11'd0;
+            cnt_h <= 'd0;
     end
 end
 
 //�����������м���
 always @(posedge pixel_clk or negedge sys_rst_n) begin
     if (!sys_rst_n)
-        cnt_v <= 11'd0;
+        cnt_v <= 'd0;
     else if(cnt_h == H_TOTAL - 1'b1) begin
         if(cnt_v < V_TOTAL - 1'b1)
             cnt_v <= cnt_v + 1'b1;
         else 
-            cnt_v <= 11'd0;
+            cnt_v <= 'd0;
     end
 end
 

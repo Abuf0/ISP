@@ -23,6 +23,7 @@ class FCS:
         img_c = self.img.shape[2]
         fcs_img = np.empty((img_h, img_w, img_c), np.int16)
         print(self.fcs_edge[0])
+        '''
         for y in range(img_h):
             for x in range(img_w):
                 if np.abs(self.edgemap[y,x]) <= self.fcs_edge[0]:
@@ -32,6 +33,18 @@ class FCS:
                 else:
                     uvgain = 0
                 fcs_img[y,x,:] = uvgain * (self.img[y,x,:]) / 256 + 128
+        '''
+        for y in range(img_h):
+            for x in range(img_w):
+                if np.abs(self.edgemap[y,x]) <= self.fcs_edge[0]:
+                    uvgain = self.gain
+                    fcs_img[y,x,:] = self.img[y,x,:]
+                elif np.abs(self.edgemap[y,x]) > self.fcs_edge[0] and np.abs(self.edgemap[y,x]) < self.fcs_edge[1]:
+                    uvgain = self.intercept - self.slope * self.edgemap[y,x]
+                    fcs_img[y,x,:] = uvgain * (self.img[y,x,:]) / 256 + 128
+                else:
+                    uvgain = 0
+                    fcs_img[y,x,:] = uvgain * self.img[y,x,:]
         self.img = fcs_img
         return self.clipping()
 

@@ -272,7 +272,10 @@ crgu crgu_inst(
 `endif
 
 //������Ƶ��ʾ����ģ��
-video_driver u_video_driver(
+video_driver #(
+    .H_DISP(H   ),
+    .V_DISP(V   )
+)u_video_driver(
     .pixel_clk      (pixel_clk),
     .sys_rst_n      (rst_pix_n),
 
@@ -290,7 +293,10 @@ video_driver u_video_driver(
     assign pixel_data_out = pixel_data_rgb[BCC+1];  // TODO
 
 //������Ƶ��ʾģ��
-video_display  u_video_display(
+video_display #(
+    .H_DISP(H   ),
+    .V_DISP(V   )
+) u_video_display(
     .pixel_clk          (pixel_clk          ),
     .sys_rst_n          (rst_pix_n          ),
 

@@ -21,7 +21,10 @@
 //----------------------------------------------------------------------------------------
 //****************************************************************************************//
 
-module  video_display(
+module  video_display#(
+    parameter H_DISP = 1280 ,
+    parameter V_DISP = 720
+)(
     input                pixel_clk,
     input                sys_rst_n,
     
@@ -40,8 +43,10 @@ module  video_display(
 //parameter define
 //parameter  H_DISP = 11'd1280;                       //�ֱ��ʡ�����
 //parameter  V_DISP = 11'd720;                        //�ֱ��ʡ�����
-parameter  H_DISP = 11'd128;    
-parameter  V_DISP = 11'd72;     
+//parameter  H_DISP = 11'd128;    
+//parameter  V_DISP = 11'd72;    
+parameter MSIZE = H_DISP * V_DISP; 
+parameter MLEN = $clog2(MSIZE);
 
 localparam WHITE  = 24'b11111111_11111111_11111111;  //RGB888 ��ɫ
 localparam BLACK  = 24'b00000000_00000000_00000000;  //RGB888 ��ɫ
@@ -52,9 +57,9 @@ localparam BLUE   = 24'b00000000_00000000_11111111;  //RGB888 ��ɫ
 //*****************************************************
 //**                    main code
 //*****************************************************
-reg [15:0] mem [0:9215];
-reg [12:0] mem_addr;
-reg [12:0] mem_addr_ff1;
+reg [15:0] mem [0:MSIZE-1];
+reg [MLEN-1:0] mem_addr;
+reg [MLEN-1:0] mem_addr_ff1;
 
 assign mem_addr = (pixel_ypos==0)?  pixel_xpos : (pixel_xpos)+(pixel_ypos-1)*H_DISP;
 initial begin
@@ -79,7 +84,7 @@ always @(posedge pixel_clk or negedge sys_rst_n) begin
         //    pixel_data <= GREEN;
         //else 
         //    pixel_data <= BLUE;
-        if(mem_addr < 9215 && (mem_addr_ff1 != mem_addr) && ~(mem_addr!=1 && mem_addr_ff1==0))
+        if(mem_addr < MSIZE-1 && (mem_addr_ff1 != mem_addr) && ~(mem_addr!=1 && mem_addr_ff1==0))
             pixel_data <= {8'd0,mem[mem_addr_ff1]};
         else 
             pixel_data <= BLACK;
@@ -90,7 +95,7 @@ always @(posedge pixel_clk or negedge sys_rst_n) begin
     if (!sys_rst_n)
         pixel_data_vld <= 1'b0;
     else begin
-        if(mem_addr < 9215 && (mem_addr_ff1 != mem_addr) && ~(mem_addr!=1 && mem_addr_ff1==0))
+        if(mem_addr < MSIZE-1 && (mem_addr_ff1 != mem_addr) && ~(mem_addr!=1 && mem_addr_ff1==0))
             pixel_data_vld <= 1'b1;
         else 
             pixel_data_vld <= 1'b0;
@@ -105,16 +110,16 @@ always @(posedge pixel_clk or negedge sys_rst_n) begin
 end
 
 // TODO
-reg [13:0] rd_addr;
-reg [13:0] wt_addr;
+reg [MLEN-1:0] rd_addr;
+reg [MLEN-1:0] wt_addr;
 
 always@(posedge pixel_clk or negedge sys_rst_n) begin
     if(~sys_rst_n)
-        rd_addr <= 14'd0;
+        rd_addr <= 'd0;
     else if(rd_rst)
-        rd_addr <= 14'd0;
+        rd_addr <= 'd0;
     else if(rd_en)
-        rd_addr <= (rd_addr==14'd9215)?   14'd0 : rd_addr+1'b1;
+        rd_addr <= (rd_addr==14'd9215)?   'd0 : rd_addr+1'b1;
 end
 
 always@(posedge pixel_clk or negedge sys_rst_n) begin
@@ -130,10 +135,10 @@ always@(posedge pixel_clk) begin
 end
 always@(posedge pixel_clk or negedge sys_rst_n) begin
     if(~sys_rst_n)
-        wt_addr <= 14'd0;
+        wt_addr <= 'd0;
     else if(wt_rst)
-        wt_addr <= 14'd0;
+        wt_addr <= 'd0;
     else if(wt_en)
-        wt_addr <= (wt_addr==14'd9215)?   14'd0 : wt_addr+1'b1;
+        wt_addr <= (wt_addr==MSIZE-1)?   'd0 : wt_addr+1'b1;
 end
 endmodule

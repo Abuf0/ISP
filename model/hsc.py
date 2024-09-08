@@ -38,10 +38,10 @@ class HSC:
                 f4.write('\t')
                 f4.write(str(self.saturation * (hsc_img[x,y,0] - 128) / 256))
                 f4.write('\n')
-        #hsc_img[:,:,0] = self.saturation * (self.img[:,:,0] - 128) / 256 + 128
-        #hsc_img[:,:,1] = self.saturation * (self.img[:,:,1] - 128) / 256 + 128
-        hsc_img[:,:,0] = self.saturation * (hsc_img[:,:,0] - 128) / 256 + 128
-        hsc_img[:,:,1] = self.saturation * (hsc_img[:,:,1] - 128) / 256 + 128
+        hsc_img[:,:,0] = self.saturation * (self.img[:,:,0] - 128) / 256 + 128
+        hsc_img[:,:,1] = self.saturation * (self.img[:,:,1] - 128) / 256 + 128
+        #hsc_img[:,:,0] = self.saturation * (hsc_img[:,:,0] - 128) / 256 + 128
+        #hsc_img[:,:,1] = self.saturation * (hsc_img[:,:,1] - 128) / 256 + 128
         for x in range(img_h):
             for y in range(img_w):
                 f4.write(str(hsc_img[x,y,0:2]))

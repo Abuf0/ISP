@@ -47,13 +47,13 @@ class EEH:
         print(img_pad.shape[0])
         print(img_pad.shape[1])
         tryy = np.zeros((4,4))
-        tryy_pad = np.pad(tryy, ((1, 1), (2, 2)), 'constant',constant_values = (-2,2))
+        tryy_pad = np.pad(tryy, ((1, 1), (2, 2)), 'constant')
         print(tryy_pad)
         for y in range(img_pad.shape[0] - 2):
             for x in range(img_pad.shape[1] - 4):
-                f3.write("(%d,%d):\n"%(y,x))
-                f3.write(str(np.multiply(img_pad[y:y+3, x:x+5], self.edge_filter[:, :])))
-                f3.write("\n")
+                #f3.write("(%d,%d):\n"%(y,x))
+                #f3.write(str(np.multiply(img_pad[y:y+3, x:x+5], self.edge_filter[:, :])))
+                #f3.write("\n")
                 em_img[y,x] = np.sum(np.multiply(img_pad[y:y+3, x:x+5], self.edge_filter[:, :])) / 8
                 ee_img[y,x] = img_pad[y+1,x+2] + self.emlut(em_img[y,x], self.thres, self.gain, self.emclip)
         self.img = ee_img
