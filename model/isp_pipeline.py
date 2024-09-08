@@ -122,7 +122,7 @@ ee_thres[1] = 64	    # Edge enhancement max threshold
 ee_emclip[0] = -64	    # Edge map min clip value
 ee_emclip[1] = 64	    # Edge map max clip value
 
-bcc_brightness = 20 # [-255,255]
+bcc_brightness = 10 # [-255,255]
 bcc_contrast = 20/pow(2,5)  # [-32,128]
 bcc_clip = 255
 
