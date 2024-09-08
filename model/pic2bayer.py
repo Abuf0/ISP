@@ -3,8 +3,8 @@ import numpy as np
 import cv2
 
 IMG_JPG_PATH = './img_house.jpg'
-NEW_WIDTH = 1280 # 1280
-NEW_HEIGHT = 720 # 720
+NEW_WIDTH = 128 # 1280
+NEW_HEIGHT = 72 # 720
 RESIZE_JPG_PATH = './img_rgb_resize.jpg'
 RESIZE_BAYER_PATH = './img_bayer_resize.jpg'
 BAYER_DATA_PATH = './img_bayer.txt'
