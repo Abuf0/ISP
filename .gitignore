@@ -3,3 +3,4 @@
 /pipeline_data/*.jpg
 *.jpg
 *.csv
+*.pyc
