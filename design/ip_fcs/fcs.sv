@@ -30,6 +30,7 @@ logic pixel_data_out_vld_pre;
 logic signed [DW:0] pixel_data_out_gain_pre [0:1];
 logic signed [DW:0] pixel_data_out_gain_pre_shift [0:1];
 logic signed [DW:0] pixel_data_out_gain [0:1];
+logic signed [DW:0] pixel_data_out_gain_mux [0:1];
 logic [DW-1:0] pixel_data_out_pre [0:1];
 logic [DW-1:0] pixel_data[0:1];
 logic signed [DW:0] edge_data;
@@ -63,8 +64,13 @@ assign pixel_data_out_gain_pre_shift[1] = pixel_data_out_gain_pre[1] >>> 8 ;
 assign pixel_data_out_gain[0] = pixel_data_out_gain_pre_shift[0] + 8'd128;
 assign pixel_data_out_gain[1] = pixel_data_out_gain_pre_shift[1] + 8'd128;
 
-assign pixel_data_out_pre[0] = pixel_data_out_gain[0][DW]?  'd0 : ((pixel_data_out_gain[0] > fcs_clip)?   fcs_clip : pixel_data_out_gain[0]);
-assign pixel_data_out_pre[1] = pixel_data_out_gain[1][DW]?  'd0 : ((pixel_data_out_gain[1] > fcs_clip)?   fcs_clip : pixel_data_out_gain[1]);
+assign pixel_data_out_gain_mux[0] = (edge_data_abs <= fcs_edge[0])?     {1'b0,buffer_data_in_csc_cr} :
+                                    (edge_data_abs >= fcs_edge[1])?     'sd0 : pixel_data_out_gain[0] ;
+assign pixel_data_out_gain_mux[1] = (edge_data_abs <= fcs_edge[0])?     {1'b0,buffer_data_in_csc_cb} :
+                                    (edge_data_abs >= fcs_edge[1])?     'sd0 : pixel_data_out_gain[1] ;
+
+assign pixel_data_out_pre[0] = pixel_data_out_gain_mux[0][DW]?  'd0 : ((pixel_data_out_gain_mux[0] > fcs_clip)?   fcs_clip : pixel_data_out_gain_mux[0]);
+assign pixel_data_out_pre[1] = pixel_data_out_gain_mux[1][DW]?  'd0 : ((pixel_data_out_gain_mux[1] > fcs_clip)?   fcs_clip : pixel_data_out_gain_mux[1]);
 
 always_ff@(posedge clk or negedge rstn) begin
     if(~rstn) begin

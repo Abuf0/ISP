@@ -55,16 +55,16 @@ parameter LEN = $clog2(H_DISP*V_DISP);
 //parameter  V_FRONT  =  11'd5;    //����ʾǰ��
 //parameter  V_TOTAL  =  11'd750;  //��ɨ������
 
-parameter  H_SYNC   =  40  *(1280/H_DISP)  ;   
-parameter  H_BACK   =  220 *(1280/H_DISP)  ;  
+parameter  H_SYNC   =  40  * H_DISP / 1280  ;   
+parameter  H_BACK   =  220 * H_DISP / 1280  ;  
 //parameter  H_DISP   =  11'd128; 
-parameter  H_FRONT  =  110  *(1280/H_DISP) ;  
+parameter  H_FRONT  =  110  * H_DISP / 1280 ;  
 parameter  H_TOTAL  =  H_SYNC+H_BACK+H_FRONT+H_DISP  ; 
 
-parameter  V_SYNC   =  5   *(720/V_DISP) ;   
-parameter  V_BACK   =  20  *(720/V_DISP)  ;   
+parameter  V_SYNC   =  5   * V_DISP /720  ;   
+parameter  V_BACK   =  20  * V_DISP /720  ;   
 //parameter  V_DISP   =  11'd72 ;
-parameter  V_FRONT  =  5   *(720/V_DISP) ;   
+parameter  V_FRONT  =  5   * V_DISP /720 ;   
 parameter  V_TOTAL  =  V_SYNC+V_BACK+V_FRONT+V_DISP   ;  
 
 //reg define

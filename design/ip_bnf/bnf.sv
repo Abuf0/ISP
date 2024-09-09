@@ -58,7 +58,7 @@ genvar y;
 generate 
     for(x=0;x<5;x=x+1) begin
         for(y=0;y<5;y=y+1) begin
-            assign array[x][y] = ( (x<2 && v_cnt < (2-x)) || (v_cnt > (V-1)+2-x) || (t<2 && h_cnt < (2-y)) || (h_cnt > (H-1)+2-y))?   'd0 : shift_reg[4*H+4-(x*H+y)];
+            assign array[x][y] = ( (x<2 && v_cnt < (2-x)) || (v_cnt > (V-1)+2-x) || (y<2 && h_cnt < (2-y)) || (h_cnt > (H-1)+2-y))?   'd0 : shift_reg[4*H+4-(x*H+y)];
         end 
     end
 endgenerate

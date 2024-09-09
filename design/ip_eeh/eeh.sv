@@ -24,7 +24,7 @@ logic [DW-1:0] shift_reg[0:2*H+4];
 logic [DW-1:0] array[0:2][0:4];
 
 logic signed [DW:0] em_img_wght [0:2][0:4];
-logic signed [DW+3:0] em_img_sum;
+logic signed [DW+4:0] em_img_sum;
 logic signed [DW:0] ee_img;
 logic signed [DW:0] em_img;
 logic signed [DW:0] em_lut;

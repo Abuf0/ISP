@@ -96,12 +96,12 @@ assign r[1] = (mac_arr[12]<<2) + mac_arr[12] - mac_arr[10] - mac_arr[6] - mac_ar
               ((mac_arr[2] + mac_arr[22])>>1) + ((mac_arr[11] + mac_arr[13])<<2);
 assign r[2] = (mac_arr[12]<<2) + mac_arr[12] - mac_arr[2] - mac_arr[6] - mac_arr[8] - mac_arr[22] - mac_arr[16] - mac_arr[18] +
               ((mac_arr[10] + mac_arr[14])>>1) + ((mac_arr[7] + mac_arr[17])<<2);
-assign r[3] = (mac_arr[12]<<2) + (mac_arr[12]<<1) - 3*(mac_arr[10] + mac_arr[2] + mac_arr[14] + mac_arr[22])>>1 +
-              (mac_arr[6] + mac_arr[8] + mac_arr[16] + mac_arr[18])<<1;
+assign r[3] = (mac_arr[12]<<2) + (mac_arr[12]<<1) - (3*(mac_arr[10] + mac_arr[2] + mac_arr[14] + mac_arr[22])>>1) +
+              ((mac_arr[6] + mac_arr[8] + mac_arr[16] + mac_arr[18])<<1);
               
 
 assign g[0] = (mac_arr[12]<<2) - mac_arr[2] - mac_arr[10] - mac_arr[22] - mac_arr[14] +
-              (mac_arr[17] + mac_arr[13] + mac_arr[7] + mac_arr[11])<<1;
+              ((mac_arr[17] + mac_arr[13] + mac_arr[7] + mac_arr[11])<<1);
 assign g[1] = mac_arr[12]<<3;
 assign g[2] = mac_arr[12]<<3;
 assign g[3] = g[0];

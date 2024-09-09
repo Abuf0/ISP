@@ -48,16 +48,18 @@ always_ff@(posedge clk or negedge rstn) begin
 end
 
 assign hsc_data[0] = (pixel_data[0] - 8'd128) * hue_cos + (pixel_data[1] - 8'd128) * hue_sin + 8'd128 ;
-assign hsc_data[1] = (pixel_data[1] - 8'd128) * hue_cos + (pixel_data[0] - 8'd128) * hue_sin + 8'd128 ;
+assign hsc_data[1] = (pixel_data[1] - 8'd128) * hue_cos - (pixel_data[0] - 8'd128) * hue_sin + 8'd128 ;
 
-assign pixel_data_out_hue[0] = hsc_data[0] - 8'd128;
-assign pixel_data_out_hue[1] = hsc_data[1] - 8'd128;
+//assign pixel_data_out_hue[0] = saturation * (hsc_data[0] - 8'd128);
+//assign pixel_data_out_hue[1] = saturation * (hsc_data[1] - 8'd128);
+assign pixel_data_out_hue[0] = saturation * (pixel_data[0] - 8'd128);
+assign pixel_data_out_hue[1] = saturation * (pixel_data[1] - 8'd128);
 
 assign pixel_data_out_hue_shift[0] = pixel_data_out_hue[0] >>> 8;
 assign pixel_data_out_hue_shift[1] = pixel_data_out_hue[1] >>> 8;
 
-assign pixel_data_out_sat[0] = saturation * pixel_data_out_hue_shift[0] + 8'd128;
-assign pixel_data_out_sat[1] = saturation * pixel_data_out_hue_shift[1] + 8'd128;
+assign pixel_data_out_sat[0] = pixel_data_out_hue_shift[0] + 8'd128;
+assign pixel_data_out_sat[1] = pixel_data_out_hue_shift[1] + 8'd128;
 
 assign pixel_data_out_pre[0] = pixel_data_out_sat[0][DW]?   'd0 : ((pixel_data_out_sat[0] > clip)?  clip : pixel_data_out_sat[0]);
 assign pixel_data_out_pre[1] = pixel_data_out_sat[1][DW]?   'd0 : ((pixel_data_out_sat[1] > clip)?  clip : pixel_data_out_sat[1]);
