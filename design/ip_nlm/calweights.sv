@@ -28,7 +28,11 @@ logic data_vld_ff1;
 
 logic [DW-1:0] LUT_EXP [0:1039]; //TODO
 initial begin
+    `ifdef FPGA
+    $readmemb("../../model/pipeline_data/lut_exp_bin.txt",LUT_EXP);
+    `else
     $readmemb("/ext3/home/wangyufei/Projects/6-ISP/design/ip_nlm/lut_exp_bin.txt",LUT_EXP);
+    `endif
 end
 
 genvar i;

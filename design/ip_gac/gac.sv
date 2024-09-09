@@ -27,8 +27,13 @@ logic [DW/3-1:0] lut_1 [0:255];
 
 // gamma is loaded
 initial begin
+    `ifdef FPGA
+    $readmemb("../../model/pipeline_data/lut_gamma_bin.txt",lut_0);
+    $readmemb("../../model/pipeline_data/lut_gamma_bin.txt",lut_1); 
+    `else
     $readmemb("/ext3/home/wangyufei/Projects/6-ISP/design/ip_gac/gamma_lut_0.txt",lut_0);
     $readmemb("/ext3/home/wangyufei/Projects/6-ISP/design/ip_gac/gamma_lut_1.txt",lut_1); 
+    `endif
 end
 
 logic [7:0] cnt;

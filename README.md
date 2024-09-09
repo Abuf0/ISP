@@ -78,3 +78,10 @@
     - modify veodio dis/drv module
     - <TODO: figure out algo meanings and methods>
     - <TODO: with previos TODO>
+
+- 2024/9/9
+    - modify fcs & hsc rtl
+    - checked rtl coeficiency
+    - add .gitignore file
+    - begin to bulid fpga env
+        - <TODO: PRJ env, read file path...>
