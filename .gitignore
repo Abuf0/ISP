@@ -1,0 +1,5 @@
+## ignore this file ##
+/pipeline_data/*.csv
+/pipeline_data/*.jpg
+*.jpg
+*.csv
