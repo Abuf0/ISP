@@ -1,0 +1,48 @@
+2024/9/10项目总结list
+	- CardiffC/CheseaA
+		○ crgu：
+			§ 问题现象：前仿中发现cmd_reset复位产生0ps毛刺，但复位功能不受影响；
+				□ 问题原因：cmd_reset的寄存器被自己DFF_Q输出复位了，产生一个0ps高电平毛刺；spyglass中会报RDC问题
+				□ 问题解决：将cmd_resetcmd_reset_d1打一拍后去产生复位，其中打拍寄存器的复位端接不受cmd_reset复位源控制的复位；
+			§ 寄存器ckgt：ChelseaA的寄存器时钟是6.5M系统时钟，为了降低功耗会做时钟门控，需要确保ckgt_en_case_list{通讯读写寄存器行为、efuse load寄存器行为……}的完整性；
+			
+		○ Pad：
+			§ PAD复用时需要注意封装（不一定能拉出来的PAD尽量不作significant功能pad的复用，比如CardiffC的SYNC）、工作场景（通讯相关的PAD无法复用给MPX、GPIO等）
+			§ PAD的驱动寄存器默认值：在scan下设最大，在工作模式下需要和PADer确认；
+		○ ana_mux：
+			§ AD信号需要关注是否能过电路逻辑，比如AD_PD_5v；
+			§ DA信号需要让模拟确认scan下敏感信号的scan值；
+		○ MPX：
+			§ 默认值避免时高频翻转信号；
+			§ 同时观测的信号尽量放在不同MPX上；
+			§ 需要确认重点观测信号，包括了da_stb_en类、clk_dbg类；其中供给产测做校准的clk_dbg需要和产测确认频率，决定是否分频输出；
+			§ MPX引脚不能复用通讯相关PAD；
+		○ intr：
+			§ 问题描述：CheseaA中fifo中断脉冲的放在intr中同步（6.5m32K），由于fifo中断产生频率很高，刚开始选用的sync_signal同步失败（一个pulse都同步不了），后来选用了pulse_sync（可以同步第一个pulse）；CardiffC中fifo的同步是在fifo内部做好的，送到intr的fifo中断已经是同步到32K的，所以同步丢失对于intr不可见。
+			§ 问题总结：对于module的input的行为要多做确认，尤其涉及CDC的；对于common cell建议补充文档，以供使用前查阅是否适合当前场景下采用；
+		○ efuse：
+			§ efuse数据存放地址需要跟系统达成一致；
+			§ efuse的datasheet稳定后，需要和系统和产测同事确认。
+			§ efuse的验证需要更关注EDA验证，同时需要维护fpga model和rtl行为一致；
+		
+	- Pacific GUS1
+		○ da毛刺
+			§ 问题描述：Tx打码的一组DA信号(drp/drn/q3)有毛刺
+			§ 问题分析：【继承代码】tx_drn_pos = ck_en?  value:  (width[0]?  ck_n:ck_p); 其中ck_en是组合逻辑输出，其余都是寄存器输出，且后半句mux不会产生毛刺；毛刺来源是ck_en≈状态AorBorCorD，在状态ABCD切换时，由于状态是多bit信号，会有短暂的非ABCD状态过渡，因而在ck_en上产生毛刺；
+			§ 问题解决：1. 修改ck_en，改为寄存器输出；2. 由于ABCD是连续切换的状态，因此修改ABCD的编码为gray码，避免该状态切换过程中毛刺的产生；基于改动量考虑，选择了2；
+		○ 动态门控问题【历史遗留bug】
+			§ 手动插ckgt时，尽量做用户可控的门控（通过寄存器使能）；根据内部信号做出的动态门控，ckgt_en窗口容易遗漏一些信号；例如信号pulseA作为拉低ckgt_en的信号，pulseA在某个模块中被delay或同步到pulseB去做一些事，此时动态门控会导致无法正确产生pulseB，引发功能bug；
+		○ 协调验证问题
+			§ 问题描述：tx打码时序
+			§ 问题来源：
+				1) 复用的ip有问题，由于前期太急，优先打补丁式修改，导致后面某些配置引发问题；
+				2) 不能太依赖DV，虽然一直催DV验证，但人力问题导致在freeze后才报bug（其中也有DV checker和约束没搞好的原因）
+			问题总结：
+				1) 前期要在完全摸清前任代码的基础上改动，考虑清楚再动手；
+				2) 对于自己没把握的设计，要很早就开始催DV动手；自己也要多跑一些case，尽量少回归几次；
+				3) 会抽象问题，如果没办法同质化处理，那就摊开来写，至少保证功能；
+		○ Memory wrap问题
+			§ 尽量把memory封装成wrap，便于DFT做MBIST时候迭代；
+		○ 需求确认问题，并保留证据
+		○ 后端改动及时告知（mem尺寸、timing path to check）
+		○ fpga分支的必要性
