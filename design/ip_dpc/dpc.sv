@@ -26,6 +26,8 @@ logic [DW-1:0] pixel_data_out_pre;
 logic [HW-1:0] h_cnt;
 logic [VW-1:0] v_cnt;
 
+logic [DW-1:0] abs_delta [0:7];
+
 logic init;
 
 genvar i;
@@ -117,10 +119,23 @@ assign mac_arr[6] = (v_cnt < V-2 && h_cnt > 'd1)? shift_reg[4]              : 'd
 assign mac_arr[7] = (v_cnt < V-2)?                shift_reg[2]              : 'd0 ;
 assign mac_arr[8] = (v_cnt < V-2 && h_cnt < H-2)? shift_reg[0]              : 'd0 ;
 
-assign correct_flag = dpc_en?  ($abs(mac_arr[0]-mac_arr[4]) > thres && $abs(mac_arr[1]-mac_arr[4]) > thres && $abs(mac_arr[2]-mac_arr[4]) > thres &&
-                                $abs(mac_arr[3]-mac_arr[4]) > thres && $abs(mac_arr[5]-mac_arr[4]) > thres &&
-                                $abs(mac_arr[6]-mac_arr[4]) > thres && $abs(mac_arr[7]-mac_arr[4]) > thres && $abs(mac_arr[8]-mac_arr[4]) > thres) : 0;
+assign abs_delta[0] = (mac_arr[0] > mac_arr[4])?    (mac_arr[0]-mac_arr[4]) : (mac_arr[4]-mac_arr[0]) ;
+assign abs_delta[1] = (mac_arr[1] > mac_arr[4])?    (mac_arr[1]-mac_arr[4]) : (mac_arr[4]-mac_arr[1]) ;
+assign abs_delta[2] = (mac_arr[2] > mac_arr[4])?    (mac_arr[2]-mac_arr[4]) : (mac_arr[4]-mac_arr[2]) ;
+assign abs_delta[3] = (mac_arr[3] > mac_arr[4])?    (mac_arr[3]-mac_arr[4]) : (mac_arr[4]-mac_arr[3]) ;
+assign abs_delta[4] = (mac_arr[5] > mac_arr[4])?    (mac_arr[5]-mac_arr[4]) : (mac_arr[4]-mac_arr[5]) ;
+assign abs_delta[5] = (mac_arr[6] > mac_arr[4])?    (mac_arr[6]-mac_arr[4]) : (mac_arr[4]-mac_arr[6]) ;
+assign abs_delta[6] = (mac_arr[7] > mac_arr[4])?    (mac_arr[7]-mac_arr[4]) : (mac_arr[4]-mac_arr[7]) ;
+assign abs_delta[7] = (mac_arr[8] > mac_arr[4])?    (mac_arr[8]-mac_arr[4]) : (mac_arr[4]-mac_arr[8]) ;
 
+
+//assign correct_flag = dpc_en?  ($abs(mac_arr[0]-mac_arr[4]) > thres && $abs(mac_arr[1]-mac_arr[4]) > thres && $abs(mac_arr[2]-mac_arr[4]) > thres &&
+//                                $abs(mac_arr[3]-mac_arr[4]) > thres && $abs(mac_arr[5]-mac_arr[4]) > thres &&
+//                                $abs(mac_arr[6]-mac_arr[4]) > thres && $abs(mac_arr[7]-mac_arr[4]) > thres && $abs(mac_arr[8]-mac_arr[4]) > thres) : 0;
+
+assign correct_flag = dpc_en?  ( (abs_delta[0] > thres) && (abs_delta[1] > thres) && (abs_delta[2] > thres) &&
+                                 (abs_delta[3] > thres) && (abs_delta[4] > thres) &&
+                                 (abs_delta[5] > thres) && (abs_delta[6] > thres) && (abs_delta[7] > thres) : 0;
 assign pixel_data_dpc = correct_flag?   ((mac_arr[1] + mac_arr[7] + mac_arr[3] + mac_arr[5])>>2) : mac_arr[4];
 
 
