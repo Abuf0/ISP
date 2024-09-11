@@ -85,3 +85,8 @@
     - add .gitignore file
     - begin to bulid fpga env
         - <TODO: PRJ env, read file path...>
+
+- 2024/9/10-11
+    - build syn env
+        - <TODO: size, freq issue; evaluate PPA>
+    - research AXI

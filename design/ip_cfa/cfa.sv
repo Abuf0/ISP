@@ -8,7 +8,7 @@ module cfa#(
     input                       clk                   ,
     input                       rstn                  ,
     input                       cfa_en                ,
-    input        [2:0]          bayer_pattern         ,  
+    input        [1:0]          bayer_pattern         ,  
     input        [DW-1:0]       cfa_clip              ,
     input        [DW-1:0]       pixel_data_in         ,
     input                       pixel_data_in_vld     ,

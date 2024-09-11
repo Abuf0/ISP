@@ -135,7 +135,7 @@ assign abs_delta[7] = (mac_arr[8] > mac_arr[4])?    (mac_arr[8]-mac_arr[4]) : (m
 
 assign correct_flag = dpc_en?  ( (abs_delta[0] > thres) && (abs_delta[1] > thres) && (abs_delta[2] > thres) &&
                                  (abs_delta[3] > thres) && (abs_delta[4] > thres) &&
-                                 (abs_delta[5] > thres) && (abs_delta[6] > thres) && (abs_delta[7] > thres) : 0;
+                                 (abs_delta[5] > thres) && (abs_delta[6] > thres) && (abs_delta[7] > thres) ) : 0;
 assign pixel_data_dpc = correct_flag?   ((mac_arr[1] + mac_arr[7] + mac_arr[3] + mac_arr[5])>>2) : mac_arr[4];
 
 

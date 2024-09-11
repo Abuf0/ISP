@@ -23,8 +23,8 @@
 
 module  hdmi_colorbar_top# (
     parameter DW = 24   ,
-    parameter H  = 1280 ,
-    parameter V  = 720  ,
+    parameter H  = 128  ,
+    parameter V  = 72   ,
     parameter HW = 11   ,
     parameter VW = 10   
 )(
@@ -38,6 +38,9 @@ module  hdmi_colorbar_top# (
    
 );
 parameter BW = 16;
+parameter CSC_FIFO_DEEPTH = 16 * H ;
+parameter BCC_FIFO_DEEPTH = 4 * H ;
+parameter 
 //wire define
 logic          pixel_clk;
 logic          pixel_clk_5x;
@@ -64,17 +67,17 @@ logic          video_vs;
 logic          video_de;
 logic  [23:0]  video_rgb;
 
-logic [DW-1:0] dpc_thres;
-logic [DW-1:0] dpc_clip;
+logic [BW-1:0] dpc_thres;
+logic [BW-1:0] dpc_clip;
 logic [1:0] bayer_pattern;
 logic [BW-1:0] blc_bias [0:3];
-logic [DW-1:0] blc_clip;
+logic [BW-1:0] blc_clip;
 logic [BW-1:0] awb_gain [0:3];
-logic [DW-1:0] awb_clip;
+logic [BW-1:0] awb_clip;
 logic [BW-1:0] cnf_gain [0:3];
-logic [DW-1:0] cnf_clip;
-logic [DW-1:0] cnf_thres;
-logic [DW-1:0] cfa_clip;
+logic [BW-1:0] cnf_clip;
+logic [BW-1:0] cnf_thres;
+logic [BW-1:0] cfa_clip;
 logic [DW-1:0] ccm_coef_r [0:3];
 logic [DW-1:0] ccm_coef_g [0:3];
 logic [DW-1:0] ccm_coef_b [0:3];
@@ -93,15 +96,15 @@ logic signed [DW:0] eeh_emclip [0:1];
 logic [DW-1:0] bcc_brightness;
 logic [DW-1:0] bcc_contrast ;
 logic [DW-1:0] bcc_clip      ;
-logic [DW-1:0] fcs_edge [0:1] ;
-logic [DW-1:0] fcs_gain       ;
-logic [DW-1:0] fcs_intercept  ;
-logic [DW-1:0] fcs_slop       ;
-logic [DW-1:0] fcs_clip       ;
-logic signed [DW:0] hue_cos          ;
-logic signed [DW:0] hue_sin          ;
-logic [DW-1:0] hsc_saturation   ;
-logic [DW-1:0] hsc_clip         ;
+logic [DW/3-1:0] fcs_edge [0:1] ;
+logic [DW/3-1:0] fcs_gain       ;
+logic [DW/3-1:0] fcs_intercept  ;
+logic [DW/3-1:0] fcs_slop       ;
+logic [DW/3-1:0] fcs_clip       ;
+logic signed [DW/3:0] hue_cos          ;
+logic signed [DW/3:0] hue_sin          ;
+logic [DW/3-1:0] hsc_saturation   ;
+logic [DW/3-1:0] hsc_clip         ;
 logic [DW/3-1:0] yuv_out [0:2]    ;
 logic yuv_out_vld               ;
 
@@ -265,8 +268,8 @@ assign rst_pix_n = sys_rst_n;
 crgu crgu_inst(
     .clk_in     (sys_clk        ),
     .rstn_in    (sys_rst_n      ),
-    .clk_out1   (pixel_clk      ),
-    .clk_out2   (pixel_clk_5x   ),
+    .clk_out1   (pixel_clk_5x   ),
+    .clk_out2   (pixel_clk      ),
     .rstn_out1  (rst_pix_n      )
 );
 `endif
@@ -353,8 +356,8 @@ blc #(
     .blc_en             (isp_enable[BLC]        ),   // TODO
     .bayer_pattern      (bayer_pattern          ), // TODO
     .bias               (blc_bias               ),
-    .alpha              ( 0                     ),
-    .beta               ( 0                     ),
+    .alpha              ( {BW{1'b0}}}           ),
+    .beta               ( {BW{1'b0}}}           ),
     .blc_clip           (blc_clip               ),
     .pixel_data_in_vld  (pixel_data_vld[BLC]    ), 
     .pixel_data_in      (pixel_data_bayer[BLC]  ),
@@ -498,7 +501,7 @@ gac #(
     .pixel_data_out_b    (pixel_data_rgb[GAC+1][DW-17:DW-24]  ),
     .gac_done            (                    ),
     .lut_din_vld         (1'b0                ),
-    .lut_din             (0                   ),           
+    .lut_din             ({DW/3{1'b0}}}         ),           
     .lut_dout            (                    )    
 );
 
@@ -529,8 +532,8 @@ csc #(
 );
 
 sync_fifo #(
-    .FIFO_DEEPTH(2048),
-    .FIFO_WIDTH (16  )
+    .FIFO_DEEPTH(CSC_FIFO_DEEPTH),
+    .FIFO_WIDTH (BW             )
 ) fifo_csc2fcs_inst(
     .clk                (pixel_clk                          ),
     .rstn               (rst_pix_n                          ),
@@ -545,7 +548,7 @@ sync_fifo #(
 // NLM module
 
 nlm #(
-    .DW  (BW   ),
+    .DW  (DW   ),
     .H   (H    ),
     .V   (V    ),
     .HW  (HW   ),
@@ -556,7 +559,7 @@ nlm #(
     .nlm_clip           (nlm_clip                ),
     .nlm_en             (isp_enable[NLM]         ), // TODO
     .pixel_data_in_vld  (pixel_data_vld[NLM]     ), 
-    .pixel_data_in      ({8'd0,pixel_data_rgb[NLM][DW-17:DW-24]}     ),
+    .pixel_data_in      ({16'd0,pixel_data_rgb[NLM][DW-17:DW-24]}     ),
     .pixel_data_out_vld (pixel_data_vld[NLM+1]   ),
     .pixel_data_out     (pixel_data_rgb[NLM+1]   ),
     .nlm_done           (                        )  // TODO
@@ -655,7 +658,7 @@ always_ff@(posedge pixel_clk or negedge rst_pix_n) begin
 end
 
 fcs #(
-    .DW  (DW   ),
+    .DW  (DW/3   ),
     .H   (H    ),
     .V   (V    ),
     .HW  (HW   ),
@@ -672,7 +675,7 @@ fcs #(
     //.pixel_data_in_vld      (pixel_data_vld[FCS]     ), 
     //.pixel_data_in_edgemap  (pixel_data_em           ),
     .pixel_data_in_vld      (pixel_data_in_vld_fcs_ff1), 
-    .pixel_data_in_edgemap  (pixel_data_em_ff1       ),
+    .pixel_data_in_edgemap  (pixel_data_em_ff1[DW/3:0]),
     //.buffer_data_in_ccs_y   (buffer_data_rgb_csc[DW-1:DW-8]  ),  // TODO
     .buffer_data_in_csc_cr  (buffer_data_rgb_csc[DW-9:DW-16] ),  // TODO
     .buffer_data_in_csc_cb  (buffer_data_rgb_csc[DW-1:DW-8]  ),  // TODO
@@ -686,7 +689,7 @@ fcs #(
 // HSC module
 
 hsc #(
-    .DW  (DW   ),
+    .DW  (DW/3   ),
     .H   (H    ),
     .V   (V    ),
     .HW  (HW   ),
@@ -729,8 +732,8 @@ end
 logic [7:0] buffer_data_bcc;
 
 sync_fifo #(
-    .FIFO_DEEPTH(512),
-    .FIFO_WIDTH (8  )
+    .FIFO_DEEPTH(BCC_FIFO_DEEPTH),
+    .FIFO_WIDTH (DW/3           )
 ) fifo_bcc2yuv_inst(
     .clk                (pixel_clk                          ),
     .rstn               (rst_pix_n                          ),

@@ -11,7 +11,7 @@ module cnf#(
     input        [DW-1:0]   thres                 ,
     input        [DW-1:0]   cnf_gain [0:3]        ,
     input        [DW-1:0]   cnf_clip              ,
-    input        [2:0]      bayer_pattern         ,  
+    input        [1:0]      bayer_pattern         ,  
     input        [DW-1:0]   pixel_data_in         ,
     input                   pixel_data_in_vld     ,
     output logic [DW-1:0]   pixel_data_out        ,
