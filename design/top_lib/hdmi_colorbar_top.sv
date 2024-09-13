@@ -30,7 +30,7 @@ module  hdmi_colorbar_top# (
 )(
     input        sys_clk        ,
     input        sys_rst_n      , 
-    input  [15:0]isp_enable     ,
+    //input  [15:0]isp_enable     ,
     output       tmds_clk_p     ,    // TMDS ʱ��ͨ��
     output       tmds_clk_n     ,
     output [2:0] tmds_data_p    ,   // TMDS ����ͨ��
@@ -67,6 +67,8 @@ logic          video_vs;
 logic          video_de;
 logic  [23:0]  video_rgb;
 
+// isp_top module config //
+logic [3:0]  isp_seq [0:15];   // ISP顺序，寄存器配置
 logic [BW-1:0] dpc_thres;
 logic [BW-1:0] dpc_clip;
 logic [1:0] bayer_pattern;
@@ -108,6 +110,40 @@ logic [DW/3-1:0] hsc_clip         ;
 logic [DW/3-1:0] yuv_out [0:2]    ;
 logic yuv_out_vld               ;
 
+parameter DPC_IND = 4'd0   ;
+parameter BLC_IND = 4'd1   ;
+parameter AAF_IND = 4'd2   ;
+parameter AWB_IND = 4'd3   ;
+parameter CNF_IND = 4'd4   ;
+parameter CFA_IND = 4'd5   ;
+parameter CCM_IND = 4'd6   ;
+parameter GAC_IND = 4'd7   ;
+parameter CSC_IND = 4'd8   ;
+parameter NLM_IND = 4'd9   ;
+parameter BNF_IND = 4'd10  ;
+parameter EEH_IND = 4'd11  ;
+parameter FCS_IND = 4'd12  ;
+parameter HSC_IND = 4'd13  ;
+parameter BCC_IND = 4'd15  ;
+
+// TODO -- replaced by regmap
+assign isp_enable = 16'h0000;
+assign isp_seq[DPC_IND] = DPC_IND;
+assign isp_seq[BLC_IND] = BLC_IND;
+assign isp_seq[AAF_IND] = AAF_IND;
+assign isp_seq[AWB_IND] = AWB_IND;
+assign isp_seq[CNF_IND] = CNF_IND;
+assign isp_seq[CFA_IND] = CFA_IND;
+assign isp_seq[CCM_IND] = CCM_IND;
+assign isp_seq[GAC_IND] = GAC_IND;
+assign isp_seq[CSC_IND] = CSC_IND;
+assign isp_seq[NLM_IND] = NLM_IND;
+assign isp_seq[BNF_IND] = BNF_IND;
+assign isp_seq[EEH_IND] = EEH_IND;
+assign isp_seq[FCS_IND] = FCS_IND;
+assign isp_seq[HSC_IND] = HSC_IND;
+assign isp_seq[BCC_IND] = BCC_IND;
+
 assign dpc_thres = 30;
 assign dpc_clip  = 250;
 assign bayer_pattern = 2'd0;
@@ -122,16 +158,15 @@ assign awb_gain[0] = 384;  // 1.5 << 8
 assign awb_gain[1] = 256;  // 1.0 << 8
 assign awb_gain[2] = 256;  // 1.0 << 8
 assign awb_gain[3] = 128;  // 0.5 << 8
-
 assign awb_clip = 250;
 
 assign cnf_gain[0] = 384;  // 1.5 << 8
 assign cnf_gain[1] = 256;  // 1.0 << 8
 assign cnf_gain[2] = 256;  // 1.0 << 8
 assign cnf_gain[3] = 128;  // 0.5 << 8
-
 assign cnf_clip = 250;
 assign cnf_thres = 0;
+
 assign cfa_clip = 250;
 
 assign ccm_coef_r[0] = 1024     ;
@@ -195,6 +230,7 @@ assign bnf_rthres[0] = 128  ;
 assign bnf_rthres[1] = 32   ;
 assign bnf_rthres[2] = 8	;    
 assign bnf_clip = 255	    ; 
+
 assign edge_filter[0][0] = -1;
 assign edge_filter[0][1] = 0 ; 	    
 assign edge_filter[0][2] = -1;
@@ -216,9 +252,11 @@ assign eeh_rthres[0] = 32	    ;
 assign eeh_rthres[1] = 64	    ; 
 assign eeh_emclip[0] = -64	;   
 assign eeh_emclip[1] = 64	;   
+
 assign bcc_brightness = 10      ;
 assign bcc_contrast = 10        ;
 assign bcc_clip = 255       ;
+
 assign fcs_edge[0] = 32     ;
 assign fcs_edge[1] = 64     ;
 assign fcs_gain = 32        ;
@@ -231,24 +269,8 @@ assign hue_sin        = 202;
 assign hsc_saturation = 256 ;
 assign hsc_clip       = 255 ;
 
-parameter DPC = 0   ;
-parameter BLC = 1   ;
-parameter AAF = 2   ;
-parameter AWB = 3   ;
-parameter CNF = 4   ;
-parameter CFA = 5   ;
-parameter CCM = 6   ;
-parameter GAC = 7   ;
-parameter CSC = 8   ;
-parameter NLM = 9   ;
-parameter BNF = 10  ;
-parameter EEH = 11  ;
-parameter FCS = 12  ;
-parameter HSC = 13  ;
-parameter BCC = 15  ;
+// TODO -- end
 
-
-//assign isp_enable = 16'h0000;
 //*****************************************************
 //**                    main code
 //*****************************************************
@@ -322,467 +344,64 @@ assign rd_en = 0;
 assign wt_en = 0;
 assign pixel_data_update = 'd0;
 
-// DPC module
-dpc #(
-    .DPC_MODE   (0   ), 
-    .DW         (BW   ),
-    .H          (H    ),
-    .V          (V    ),
-    .HW         (HW   ),
-    .VW         (VW   )
-) dpc_inst(
-    .clk                (pixel_clk               ),
-    .rstn               (rst_pix_n               ),
-    .dpc_en             (isp_enable[DPC]         ), // TODO
-    .thres              (dpc_thres               ),
-    .clip               (dpc_clip                ),
-    .pixel_data_in_vld  (pixel_data_vld[DPC]     ), // TODO
-    .pixel_data_in      (pixel_data_bayer[DPC]   ),
-    .pixel_data_out_vld (pixel_data_vld[DPC+1]   ),
-    .pixel_data_out     (pixel_data_bayer[DPC+1] )
-);
-assign pixel_data_bayer[DPC] = pixel_data_rgb[DPC][BW-1:0];
-
-// BLC module
-blc #(
-    .DW  (BW   ),
-    .H   (H    ),
-    .V   (V    ),
-    .HW  (HW   ),
-    .VW  (VW   )
-) blc_inst(
-    .clk                (pixel_clk              ),
-    .rstn               (rst_pix_n              ),
-    .blc_en             (isp_enable[BLC]        ),   // TODO
-    .bayer_pattern      (bayer_pattern          ), // TODO
-    .bias               (blc_bias               ),
-    .alpha              ( {BW{1'b0}}}           ),
-    .beta               ( {BW{1'b0}}}           ),
-    .blc_clip           (blc_clip               ),
-    .pixel_data_in_vld  (pixel_data_vld[BLC]    ), 
-    .pixel_data_in      (pixel_data_bayer[BLC]  ),
-    .pixel_data_out_vld (pixel_data_vld[BLC+1]  ),
-    .pixel_data_out     (pixel_data_bayer[BLC+1])
-);
-
-// AAF module
-aaf #(
-    .DW  (BW   ),
-    .H   (H    ),
-    .V   (V    ),
-    .HW  (HW   ),
-    .VW  (VW   )
-) aaf_inst(
-    .clk                (pixel_clk               ),
-    .rstn               (rst_pix_n               ),
-    .aaf_en             (isp_enable[AAF]         ), // TODO
-    .pixel_data_in_vld  (pixel_data_vld[AAF]     ), 
-    .pixel_data_in      (pixel_data_bayer[AAF]   ),
-    .pixel_data_out_vld (pixel_data_vld[AAF+1]   ),
-    .pixel_data_out     (pixel_data_bayer[AAF+1] ),
-    .aaf_done           (                        )  // TODO
-);
-
-// AWB module
-awb #(
-    .DW  (BW   ),
-    .H   (H    ),
-    .V   (V    ),
-    .HW  (HW   ),
-    .VW  (VW   )
-) awb_inst(
-    .clk                 (pixel_clk              ),
-    .rstn                (rst_pix_n              ),
-    .awb_en              (isp_enable[AWB]        ), // TODO
-    .bayer_pattern       (bayer_pattern          ), // TODO
-    .awb_gain            (awb_gain               ),
-    .awb_clip            (awb_clip               ), // TODO
-    .pixel_data_in       (pixel_data_bayer[AWB]  ),
-    .pixel_data_in_vld   (pixel_data_vld[AWB]    ),
-    .pixel_data_out      (pixel_data_bayer[AWB+1]),
-    .pixel_data_out_vld  (pixel_data_vld[AWB+1]  )//,
-    //.awb_done            (                       )  // TODO
-);
-
-// CNF module -- RGB
-cnf #(
-    .DW  (BW   ),
-    .H   (H    ),
-    .V   (V    ),
-    .HW  (HW   ),
-    .VW  (VW   )
-) cnf_inst(
-    .clk                 (pixel_clk              ),
-    .rstn                (rst_pix_n              ),
-    .cnf_en              (isp_enable[CNF]        ), // TODO
-    .thres               (cnf_thres              ), // TODO
-    .cnf_gain            (cnf_gain               ),
-    .bayer_pattern       (bayer_pattern          ), // TODO
-    .cnf_clip            (cnf_clip               ), // TODO
-    .pixel_data_in       (pixel_data_bayer[CNF]    ),
-    .pixel_data_in_vld   (pixel_data_vld[CNF]    ),
-    .pixel_data_out      (pixel_data_bayer[CNF+1]  ),
-    .pixel_data_out_vld  (pixel_data_vld[CNF+1]  ),
-    .cnf_done            (                       )  // TODO
-);
- 
-// CFA module
-logic [BW-1:0] pixel_data_rgb_cfa_r;
-logic [BW-1:0] pixel_data_rgb_cfa_g;
-logic [BW-1:0] pixel_data_rgb_cfa_b;
-cfa #(
-    .DW  (BW   ),
-    .H   (H    ),
-    .V   (V    ),
-    .HW  (HW   ),
-    .VW  (VW   )
-) cfa_inst(
-    .clk                 (pixel_clk              ),
-    .rstn                (rst_pix_n              ),
-    .cfa_en              (isp_enable[CFA]        ), // TODO
-    .bayer_pattern       (bayer_pattern          ), // TODO
-    .cfa_clip            (cfa_clip               ), // TODO
-    .pixel_data_in       (pixel_data_bayer[CFA]  ),
-    .pixel_data_in_vld   (pixel_data_vld[CFA]    ),
-    .pixel_data_out_r    (pixel_data_rgb_cfa_r   ),
-    .pixel_data_out_g    (pixel_data_rgb_cfa_g   ),
-    .pixel_data_out_b    (pixel_data_rgb_cfa_b   ),
-    .pixel_data_out_vld  (pixel_data_vld[CFA+1]  ),
-    .cfa_done            (                       )  // TODO
-);
-
-assign pixel_data_rgb[CFA+1] = {pixel_data_rgb_cfa_r[DW/3-1:0],pixel_data_rgb_cfa_g[DW/3-1:0],pixel_data_rgb_cfa_b[DW/3-1:0]};
-
-// CCM module
-
-ccm #(
+isp_top #(
     .DW  (DW   ),
+    .BW  (BW   ),
     .H   (H    ),
     .V   (V    ),
     .HW  (HW   ),
     .VW  (VW   )
-) ccm_inst(
-    .clk               (pixel_clk                              ),
-    .rstn              (rst_pix_n                              ),
-   .ccm_en             (isp_enable[CCM]                        ),
-   .ccm_coef_r         (ccm_coef_r                             ),
-   .ccm_coef_g         (ccm_coef_g                             ),
-   .ccm_coef_b         (ccm_coef_b                             ),
-   .pixel_data_in_vld  (pixel_data_vld[CCM]                 ), 
-   .pixel_data_in_r    (pixel_data_rgb[CCM][DW-1:DW-8]         ),
-   .pixel_data_in_g    (pixel_data_rgb[CCM][DW-9:DW-16]        ),
-   .pixel_data_in_b    (pixel_data_rgb[CCM][DW-17:DW-24]       ),
-   .pixel_data_out_vld (pixel_data_vld[CCM+1]                ),
-   .pixel_data_out_r   (pixel_data_rgb[CCM+1][DW-1:DW-8]       ),
-   .pixel_data_out_g   (pixel_data_rgb[CCM+1][DW-9:DW-16]      ),
-   .pixel_data_out_b   (pixel_data_rgb[CCM+1][DW-17:DW-24]     ),
-   .ccm_done           (                                       )   
+) isp_top_inst(
+    .clk                 ( pixel_clk          ),
+    .rstn                ( rst_pix_n          ),
+    .isp_enable          ( isp_enable         ),
+    .isp_seq             ( isp_seq            ),
+    .bayer_pattern       ( bayer_pattern      ),
+    .dpc_thres           ( dpc_thres          ),        
+    .dpc_clip            ( dpc_clip           ),        
+    .blc_bias            ( blc_bias           ),        
+    .blc_clip            ( blc_clip           ),        
+    .awb_gain            ( awb_gain           ),        
+    .awb_clip            ( awb_clip           ),        
+    .cnf_gain            ( cnf_gain           ),         
+    .cnf_clip            ( cnf_clip           ),         
+    .cnf_thres           ( cnf_thres          ),        
+    .cfa_clip            ( cfa_clip           ),        
+    .ccm_coef_r          ( ccm_coef_r         ),        
+    .ccm_coef_g          ( ccm_coef_g         ),        
+    .ccm_coef_b          ( ccm_coef_b         ),        
+    .csc_coef_r          ( csc_coef_r         ),        
+    .csc_coef_g          ( csc_coef_g         ),        
+    .csc_coef_b          ( csc_coef_b         ),        
+    .nlm_clip            ( nlm_clip           ),        
+    .bnf_dw              ( bnf_dw             ),        
+    .bnf_rw              ( bnf_rw             ),        
+    .bnf_rthres          ( bnf_rthres         ),        
+    .bnf_clip            ( bnf_clip           ),        
+    .edge_filter         ( edge_filter        ),        
+    .eeh_rthres          ( eeh_rthres         ),        
+    .eeh_gain            ( eeh_gain           ),        
+    .eeh_emclip          ( eeh_emclip         ),        
+    .bcc_brightness      ( bcc_brightness     ),               
+    .bcc_contrast        ( bcc_contrast       ),                
+    .bcc_clip            ( bcc_clip           ),                     
+    .fcs_edge            ( fcs_edge           ),             
+    .fcs_gain            ( fcs_gain           ),             
+    .fcs_intercept       ( fcs_intercept      ),            
+    .fcs_slop            ( fcs_slop           ),                     
+    .fcs_clip            ( fcs_clip           ),                     
+    .hue_cos             ( hue_cos            ),        
+    .hue_sin             ( hue_sin            ),        
+    .hsc_saturation      ( hsc_saturation     ),              
+    .hsc_clip            ( hsc_clip           ),                    
+    .pixel_data_in       ( pixel_data_in      ),                      
+    .pixel_data_in_vld   ( pixel_data_in_vld  ),            
+    .pixel_data_out      (          ),                 
+    .pixel_data_out_vld  (          ),             
+    .one_frame_done      (          ),                    
+    .ebd_data            (          )         
 );
 
-// GAC module
-
-gac #(
-    .DW  (DW   ),
-    .H   (H    ),
-    .V   (V    ),
-    .HW  (HW   ),
-    .VW  (VW   )
-) gac_inst(
-    .clk                 (pixel_clk              ),
-    .rstn                (rst_pix_n              ),
-    .gac_en              (isp_enable[GAC]     ),
-    .pixel_data_in_vld   (pixel_data_vld[GAC]              ),
-    .pixel_data_in_r     (pixel_data_rgb[GAC][DW-1:DW-8]      ),
-    .pixel_data_in_g     (pixel_data_rgb[GAC][DW-9:DW-16]     ),
-    .pixel_data_in_b     (pixel_data_rgb[GAC][DW-17:DW-24]    ),
-    .pixel_data_out_vld  (pixel_data_vld[GAC+1]             ),
-    .pixel_data_out_r    (pixel_data_rgb[GAC+1][DW-1:DW-8]    ),
-    .pixel_data_out_g    (pixel_data_rgb[GAC+1][DW-9:DW-16]   ),
-    .pixel_data_out_b    (pixel_data_rgb[GAC+1][DW-17:DW-24]  ),
-    .gac_done            (                    ),
-    .lut_din_vld         (1'b0                ),
-    .lut_din             ({DW/3{1'b0}}}         ),           
-    .lut_dout            (                    )    
-);
-
-// CSC module
-
-csc #(
-    .DW  (DW   ),
-    .H   (H    ),
-    .V   (V    ),
-    .HW  (HW   ),
-    .VW  (VW   )
-) csc_inst(
-    .clk                 (pixel_clk              ),
-    .rstn                (rst_pix_n              ),
-   .csc_en             (isp_enable[CSC]                        ),
-   .csc_coef_r         (csc_coef_r                             ),
-   .csc_coef_g         (csc_coef_g                             ),
-   .csc_coef_b         (csc_coef_b                             ),
-   .pixel_data_in_vld  (pixel_data_vld[CSC]                 ), 
-   .pixel_data_in_r    (pixel_data_rgb[CSC][DW-1:DW-8]         ),
-   .pixel_data_in_g    (pixel_data_rgb[CSC][DW-9:DW-16]        ),
-   .pixel_data_in_b    (pixel_data_rgb[CSC][DW-17:DW-24]       ),
-   .pixel_data_out_vld (pixel_data_vld[CSC+1]                ),
-   .pixel_data_out_r   (pixel_data_rgb[CSC+1][DW-1:DW-8]       ),
-   .pixel_data_out_g   (pixel_data_rgb[CSC+1][DW-9:DW-16]      ),
-   .pixel_data_out_b   (pixel_data_rgb[CSC+1][DW-17:DW-24]     ),
-   .csc_done           (                                       )   
-);
-
-sync_fifo #(
-    .FIFO_DEEPTH(CSC_FIFO_DEEPTH),
-    .FIFO_WIDTH (BW             )
-) fifo_csc2fcs_inst(
-    .clk                (pixel_clk                          ),
-    .rstn               (rst_pix_n                          ),
-    .wr_en              (pixel_data_vld[CSC+1]              ),
-    .rd_en              (pixel_data_vld[FCS]                ),
-    .wdata              (pixel_data_rgb[CSC+1][DW-1:DW-16]  ),
-    .rdata              (buffer_data_rgb_csc[DW-1:DW-16]    ),
-    .fifo_empty         (                                   ),
-    .fifo_full          (                                   )  
-);
-
-// NLM module
-
-nlm #(
-    .DW  (DW   ),
-    .H   (H    ),
-    .V   (V    ),
-    .HW  (HW   ),
-    .VW  (VW   )
-) nlm_inst(
-    .clk                (pixel_clk               ),
-    .rstn               (rst_pix_n               ),
-    .nlm_clip           (nlm_clip                ),
-    .nlm_en             (isp_enable[NLM]         ), // TODO
-    .pixel_data_in_vld  (pixel_data_vld[NLM]     ), 
-    .pixel_data_in      ({16'd0,pixel_data_rgb[NLM][DW-17:DW-24]}     ),
-    .pixel_data_out_vld (pixel_data_vld[NLM+1]   ),
-    .pixel_data_out     (pixel_data_rgb[NLM+1]   ),
-    .nlm_done           (                        )  // TODO
-);
-
-// BNF module
-
-bnf #(
-    .DW  (DW  ),
-    .H   (H   ),
-    .V   (V   ),
-    .HW  (HW  ),
-    .VW  (VW  )
-) bnf_inst(
-    .clk                (pixel_clk               ),
-    .rstn               (rst_pix_n               ),
-    .bnf_en             (isp_enable[BNF]         ), // TODO
-    //.dw                 (bnf_dw [0:4][0:4]       ), // TODO
-    //.rw                 (bnf_rw [0:3]            ), // TODO
-    //.rthres             (bnf_rthres [0:2]        ), // TODO
-    .dw                 (bnf_dw                  ), // TODO
-    .rw                 (bnf_rw                  ), // TODO
-    .rthres             (bnf_rthres              ), // TODO
-    .bnf_clip           (bnf_clip                ), // TODO
-    .pixel_data_in_vld  (pixel_data_vld[BNF]     ), 
-    .pixel_data_in      (pixel_data_rgb[BNF]     ),
-    .pixel_data_out_vld (pixel_data_vld[BNF+1]   ),
-    .pixel_data_out     (pixel_data_rgb[BNF+1]   ),
-    .bnf_done           (                        )  // TODO
-);
-
-// EEH module
-logic signed [DW:0] pixel_data_em;
-eeh #(
-    .DW  (DW   ),
-    .H   (H    ),
-    .V   (V    ),
-    .HW  (HW   ),
-    .VW  (VW   )
-) eeh_inst(
-    .clk                (pixel_clk               ),
-    .rstn               (rst_pix_n               ),
-    .eeh_en             (isp_enable[EEH]         ), // TODO
-    //.edge_filter        (edge_filter [0:2][0:4]  ), // TODO
-    //.eeh_clip           (eeh_clip [0:1]          ), // TODO 
-    //.eeh_rthres         (eeh_rthres [0:1]        ), // TODO
-    //.eeh_gain           (eeh_gain [0:1]          ), // TODO
-    .edge_filter        (edge_filter              ), // TODO
-    .eeh_clip           (eeh_emclip               ), // TODO
-    .eeh_rthres         (eeh_rthres               ), // TODO
-    .eeh_gain           (eeh_gain                ), // TODO 
-    .pixel_data_in_vld  (pixel_data_vld[EEH]     ), 
-    .pixel_data_in      (pixel_data_rgb[EEH]     ),
-    .pixel_data_out_vld (pixel_data_vld[EEH+1]   ),
-    .pixel_data_out_em  (pixel_data_em           ),
-    .pixel_data_out_ee  (pixel_data_rgb[BCC]     ),
-    .eeh_done           (                        )  // TODO
-);
-assign pixel_data_vld[BCC] = pixel_data_vld[EEH+1];
-
-// BCC module 
-bcc #(
-    .DW  (DW   ),
-    .H   (H    ),
-    .V   (V    ),
-    .HW  (HW   ),
-    .VW  (VW   )
-) bcc_inst(
-    .clk                (pixel_clk               ),
-    .rstn               (rst_pix_n               ),
-    .bcc_en             (isp_enable[BCC]         ), // TODO
-    .brightness         (bcc_brightness          ), // TODO
-    .contrast           (bcc_contrast            ), // TODO
-    .bcc_clip           (bcc_clip                ), // TODO   
-    .pixel_data_in_vld  (pixel_data_vld[BCC]     ), 
-    .pixel_data_in      (pixel_data_rgb[BCC]     ),
-    .pixel_data_out_vld (pixel_data_vld[BCC+1]   ),
-    .pixel_data_out     (pixel_data_rgb[BCC+1]   ),
-    .bcc_done           (                        )  // TODO
-);
-
-// FCS module
-//----- for fifo to buffer 1 clk
-logic pixel_data_in_vld_fcs_ff1;
-logic signed [DW:0] pixel_data_em_ff1;
-
-always_ff@(posedge pixel_clk or negedge rst_pix_n) begin
-    if(~rst_pix_n) begin
-        pixel_data_in_vld_fcs_ff1 <= 1'b0;
-        pixel_data_em_ff1 <= 'sd0;
-    end
-    else begin
-        pixel_data_in_vld_fcs_ff1 <= pixel_data_vld[FCS];
-        pixel_data_em_ff1 <= pixel_data_em;
-    end
-end
-
-fcs #(
-    .DW  (DW/3   ),
-    .H   (H    ),
-    .V   (V    ),
-    .HW  (HW   ),
-    .VW  (VW   )
-) fcs_inst(
-    .clk                    (pixel_clk               ),
-    .rstn                   (rst_pix_n               ),
-    .fcs_en                 (isp_enable[FCS]         ), // TODO
-    .fcs_edge               (fcs_edge [0:1]          ), // TODO
-    .gain                   (fcs_gain                ), // TODO
-    .intercept              (fcs_intercept           ), // TODO
-    .slop                   (fcs_slop                ), // TODO
-    .fcs_clip               (fcs_clip                ),
-    //.pixel_data_in_vld      (pixel_data_vld[FCS]     ), 
-    //.pixel_data_in_edgemap  (pixel_data_em           ),
-    .pixel_data_in_vld      (pixel_data_in_vld_fcs_ff1), 
-    .pixel_data_in_edgemap  (pixel_data_em_ff1[DW/3:0]),
-    //.buffer_data_in_ccs_y   (buffer_data_rgb_csc[DW-1:DW-8]  ),  // TODO
-    .buffer_data_in_csc_cr  (buffer_data_rgb_csc[DW-9:DW-16] ),  // TODO
-    .buffer_data_in_csc_cb  (buffer_data_rgb_csc[DW-1:DW-8]  ),  // TODO
-    .pixel_data_out_vld     (pixel_data_vld[FCS+1]      ),
-    //.pixel_data_out_y       (pixel_data_rgb[FCS+1][DW-1:DW-8]  ),
-    .pixel_data_out_cr      (pixel_data_rgb[FCS+1][DW-9:DW-16] ),
-    .pixel_data_out_cb      (pixel_data_rgb[FCS+1][DW-1:DW-8]  ),
-    .fcs_done               (                        )  // TODO
-);
-
-// HSC module
-
-hsc #(
-    .DW  (DW/3   ),
-    .H   (H    ),
-    .V   (V    ),
-    .HW  (HW   ),
-    .VW  (VW   )
-) hsc_inst(
-    .clk                    (pixel_clk               ),
-    .rstn                   (rst_pix_n               ),
-    .hsc_en                 (isp_enable[HSC]         ), // TODO
-    .hue_cos                (hue_cos                 ), // TODO
-    .hue_sin                (hue_sin                 ), // TODO
-    .saturation             (hsc_saturation          ), // TODO
-    .clip                   (hsc_clip                ), // TODO
-    .pixel_data_in_vld      (pixel_data_vld[HSC]     ),
-    .buffer_data_in_ccs_cr  (pixel_data_rgb[HSC][DW-9:DW-16] ),  // TODO
-    .buffer_data_in_ccs_cb  (pixel_data_rgb[HSC][DW-1:DW-8]  ),  // TODO
-    .pixel_data_out_vld     (pixel_data_vld[HSC+1]   ),
-    //.pixel_data_out         (pixel_data_rgb[HSC+1][DW-9:0]   ),
-    .pixel_data_out_cr      (pixel_data_rgb[HSC+1][DW-9:DW-16] ),
-    .pixel_data_out_cb      (pixel_data_rgb[HSC+1][DW-1:DW-8]  ),
-    .hsc_done               (                        )  // TODO
-);
-
-logic [DW/3-1:0] pixel_data_hsc_cr_ff1;
-logic [DW/3-1:0] pixel_data_hsc_cb_ff1;
-logic pixel_data_vld_hsc_ff1;
-always_ff@(posedge pixel_clk or negedge rst_pix_n) begin
-    if(~rst_pix_n) begin
-        pixel_data_hsc_cr_ff1   <= 'd0;
-        pixel_data_hsc_cb_ff1   <= 'd0;
-        pixel_data_vld_hsc_ff1  <= 'd0;
-    end
-    else begin
-        pixel_data_hsc_cr_ff1   <= pixel_data_rgb[HSC+1][DW-9:DW-16] ;
-        pixel_data_hsc_cb_ff1   <= pixel_data_rgb[HSC+1][DW-1:DW-8]  ;
-        pixel_data_vld_hsc_ff1  <= pixel_data_vld[HSC+1]    ;
-    end
-end
-
-
-logic [7:0] buffer_data_bcc;
-
-sync_fifo #(
-    .FIFO_DEEPTH(BCC_FIFO_DEEPTH),
-    .FIFO_WIDTH (DW/3           )
-) fifo_bcc2yuv_inst(
-    .clk                (pixel_clk                          ),
-    .rstn               (rst_pix_n                          ),
-    .wr_en              (pixel_data_vld[BCC+1]              ),
-    .rd_en              (pixel_data_vld[HSC+1]              ),
-    .wdata              (pixel_data_rgb[BCC+1][7:0]         ),
-    .rdata              (buffer_data_bcc                    ),
-    .fifo_empty         (                                   ),
-    .fifo_full          (                                   )  
-);
-
-
-logic [DW/3-1:0] yuv_out_pre[0:2];
-logic yuv_out_vld_pre;
-assign yuv_out_pre[0] = buffer_data_bcc[DW/3-1:0];
-assign yuv_out_pre[1] = pixel_data_hsc_cr_ff1;
-assign yuv_out_pre[2] = pixel_data_hsc_cb_ff1;
-assign yuv_out_vld_pre = pixel_data_vld_hsc_ff1;
-
-always_ff@(posedge pixel_clk or negedge rst_pix_n) begin
-    if(~rst_pix_n) begin
-        yuv_out[0]  <= 'd0 ;
-        yuv_out[1]  <= 'd0 ;
-        yuv_out[2]  <= 'd0 ;
-        yuv_out_vld <= 'd0 ;
-    end
-    else begin
-        yuv_out[0]  <= yuv_out_pre[0]  ;
-        yuv_out[1]  <= yuv_out_pre[1]  ;
-        yuv_out[2]  <= yuv_out_pre[2]  ;
-        yuv_out_vld <= yuv_out_vld_pre ;
-    end
-end
-
-`ifdef SIM
-integer file_yuv_out;
-initial begin
-    file_yuv_out = $fopen("./yuv_out_result.csv","w+");  // 初始化文件
-end
-
-always @(negedge pixel_clk) begin
-    if(yuv_out_vld) begin
-        $fwrite(file_yuv_out,"yuv=%d, cr=%d, cb=%d\n",yuv_out[0],yuv_out[1],yuv_out[2]);
-    end
-//     else begin
-//         $fclose(file);   // 这里一定要写，关闭文件读写
-//     end
-end
-`endif
 
 `ifdef  FPGA
 dvi_transmitter_top u_rgb2dvi_0(

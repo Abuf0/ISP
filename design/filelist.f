@@ -3,6 +3,9 @@
 /ext/home/wangyufei/Projects/6-ISP/design/top_lib/hdmi_colorbar_top.sv
 /ext/home/wangyufei/Projects/6-ISP/design/ip_video_driver/video_driver.v
 /ext/home/wangyufei/Projects/6-ISP/design/ip_video_display/video_display.v
+
+/ext/home/wangyufei/Projects/6-ISP/design/isp_top/isp_top.sv
+
 /ext/home/wangyufei/Projects/6-ISP/design/ip_dpc/dpc.sv
 /ext/home/wangyufei/Projects/6-ISP/design/ip_blc/blc.sv
 /ext/home/wangyufei/Projects/6-ISP/design/ip_aaf/aaf.sv

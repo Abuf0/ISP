@@ -16,7 +16,7 @@ parameter VW  = 10  ;
 logic   sys_clk                              = 0 ;
 logic   sys_rst_n                            = 0 ;
 
-logic [15:0] isp_enable = 16'h0;
+//logic [15:0] isp_enable = 16'h0;
 
 // hdmi_colorbar_top Outputs
 logic  tmds_clk_p                           ;
@@ -39,7 +39,7 @@ hdmi_colorbar_top #(
 ) u_hdmi_colorbar_top (
     .sys_clk                 ( sys_clk            ),
     .sys_rst_n               ( sys_rst_n          ),
-    .isp_enable              ( isp_enable         ),
+    //.isp_enable              ( isp_enable         ),
     .tmds_clk_p              ( tmds_clk_p         ),
     .tmds_clk_n              ( tmds_clk_n         ),
     .tmds_data_p             ( tmds_data_p        ),
@@ -49,7 +49,7 @@ hdmi_colorbar_top #(
 initial
 begin
     #(PERIOD*2) sys_rst_n  =  1;
-    #(PERIOD*2) isp_enable = 16'h0001;
+    //#(PERIOD*2) isp_enable = 16'h0001;
     repeat(100000) @(posedge sys_clk);
     $finish(2);
 end
