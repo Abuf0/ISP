@@ -90,3 +90,10 @@
     - build syn env
         - <TODO: size, freq issue; evaluate PPA>
     - research AXI
+
+- 2024/9/13
+    - remerge to isp_top
+    - research HW ISP datasheet --> cfg by I2C
+    - <TODO: i2c slave module>
+    - <TODO: crop module>
+    - <TODO: reg_top module>

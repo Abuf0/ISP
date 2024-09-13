@@ -5,14 +5,13 @@ module  isp_top# (
     parameter H  = 128  ,
     parameter V  = 72   ,
     parameter HW = 11   ,
-    parameter VW = 10   ,
-    
+    parameter VW = 10   
 )(
     input        clk                            ,
     input        rstn                           , 
     // ISP global parameter //
     input [15:0] isp_enable                     ,
-    input [3:0]  isp_seq [0:15]                 ,   // ISP顺序，寄存器配置
+    //input [3:0]  isp_seq [0:15]                 ,   // ISP顺序，寄存器配置
     input [1:0]  bayer_pattern                  ,
     // DPC module parameter //
     input [BW-1:0] dpc_thres                    ,
@@ -65,7 +64,7 @@ module  isp_top# (
     input [DW/3-1:0] hsc_saturation             ,
     input [DW/3-1:0] hsc_clip                   ,
     // ISP input //
-    input [BW-1:0] pixel_data_in                ,
+    input [DW-1:0] pixel_data_in                ,
     input          pixel_data_in_vld            ,
     // ISP output //
     output logic [DW-1:0] pixel_data_out        ,
@@ -74,24 +73,24 @@ module  isp_top# (
     output logic [15:0] ebd_data                    // 帧信息
 );
 
-local parameter CSC_FIFO_DEEPTH = 16 * H ;
-local parameter BCC_FIFO_DEEPTH = 4 * H ;
+localparam CSC_FIFO_DEEPTH = 16 * H ;
+localparam BCC_FIFO_DEEPTH = 4 * H ;
 // Fixed index
-local parameter DPC_IND = 4'd0   ;
-local parameter BLC_IND = 4'd1   ;
-local parameter AAF_IND = 4'd2   ;
-local parameter AWB_IND = 4'd3   ;
-local parameter CNF_IND = 4'd4   ;
-local parameter CFA_IND = 4'd5   ;
-local parameter CCM_IND = 4'd6   ;
-local parameter GAC_IND = 4'd7   ;
-local parameter CSC_IND = 4'd8   ;
-local parameter NLM_IND = 4'd9   ;
-local parameter BNF_IND = 4'd10  ;
-local parameter EEH_IND = 4'd11  ;
-local parameter FCS_IND = 4'd12  ;
-local parameter HSC_IND = 4'd13  ;
-local parameter BCC_IND = 4'd15  ;
+parameter DPC = 4'd0   ;
+parameter BLC = 4'd1   ;
+parameter AAF = 4'd2   ;
+parameter AWB = 4'd3   ;
+parameter CNF = 4'd4   ;
+parameter CFA = 4'd5   ;
+parameter CCM = 4'd6   ;
+parameter GAC = 4'd7   ;
+parameter CSC = 4'd8   ;
+parameter NLM = 4'd9   ;
+parameter BNF = 4'd10  ;
+parameter EEH = 4'd11  ;
+parameter FCS = 4'd12  ;
+parameter HSC = 4'd13  ;
+parameter BCC = 4'd15  ;
 
 logic  [BW-1:0]  pixel_data_bayer[0:16];
 logic  [DW-1:0]  pixel_data_rgb[0:16];
@@ -99,37 +98,9 @@ logic            pixel_data_vld[0:16];
 
 logic  [23:0]    buffer_data_rgb_csc;
 
-logic  [3:0]     DPC  ;
-logic  [3:0]     BLC  ;
-logic  [3:0]     AAF  ;
-logic  [3:0]     AWB  ;
-logic  [3:0]     CNF  ;
-logic  [3:0]     CFA  ;
-logic  [3:0]     CCM  ;
-logic  [3:0]     GAC  ;
-logic  [3:0]     CSC  ;
-logic  [3:0]     NLM  ;
-logic  [3:0]     BNF  ;
-logic  [3:0]     EEH  ;
-logic  [3:0]     FCS  ;
-logic  [3:0]     HSC  ;
-logic  [3:0]     BCC  ;
+logic [DW/3-1:0] yuv_out [0:2]    ;
+logic yuv_out_vld               ;
 
-assign DPC = isp_seq[DPC_IND] ;
-assign BLC = isp_seq[BLC_IND] ;
-assign AAF = isp_seq[AAF_IND] ;
-assign AWB = isp_seq[AWB_IND] ;
-assign CNF = isp_seq[CNF_IND] ;
-assign CFA = isp_seq[CFA_IND] ;
-assign CCM = isp_seq[CCM_IND] ;
-assign GAC = isp_seq[GAC_IND] ;
-assign CSC = isp_seq[CSC_IND] ;
-assign NLM = isp_seq[NLM_IND] ;
-assign BNF = isp_seq[BNF_IND] ;
-assign EEH = isp_seq[EEH_IND] ;
-assign FCS = isp_seq[FCS_IND] ;
-assign HSC = isp_seq[HSC_IND] ;
-assign BCC = isp_seq[BCC_IND] ;
 
 // DPC module
 dpc #(
@@ -150,7 +121,9 @@ dpc #(
     .pixel_data_out_vld (pixel_data_vld[DPC+1]   ),
     .pixel_data_out     (pixel_data_bayer[DPC+1] )
 );
+assign pixel_data_rgb[DPC] = pixel_data_in;
 assign pixel_data_bayer[DPC] = pixel_data_rgb[DPC][BW-1:0];
+assign pixel_data_vld[DPC] = pixel_data_in_vld;
 
 // BLC module
 blc #(
@@ -165,8 +138,8 @@ blc #(
     .blc_en             (isp_enable[BLC]        ),   // TODO
     .bayer_pattern      (bayer_pattern          ), // TODO
     .bias               (blc_bias               ),
-    .alpha              ( {BW{1'b0}}}           ),
-    .beta               ( {BW{1'b0}}}           ),
+    .alpha              ( {BW{1'b0}}            ),
+    .beta               ( {BW{1'b0}}            ),
     .blc_clip           (blc_clip               ),
     .pixel_data_in_vld  (pixel_data_vld[BLC]    ), 
     .pixel_data_in      (pixel_data_bayer[BLC]  ),
@@ -260,7 +233,7 @@ cfa #(
     .cfa_done            (                       )  // TODO
 );
 
-assign pixel_data_rgb[CFA+1] = {pixel_data_rgb_cfa_r[DW/3-1:0],pixel_data_rgb_cfa_g[DW/3-1:0],pixel_data_rgb_cfa_b
+assign pixel_data_rgb[CFA+1] = {pixel_data_rgb_cfa_r[DW/3-1:0],pixel_data_rgb_cfa_g[DW/3-1:0],pixel_data_rgb_cfa_b[DW/3-1:0]};
 
 // CCM module
 
@@ -310,7 +283,7 @@ gac #(
     .pixel_data_out_b    (pixel_data_rgb[GAC+1][DW-17:DW-24]  ),
     .gac_done            (                    ),
     .lut_din_vld         (1'b0                ),
-    .lut_din             ({DW/3{1'b0}}}         ),           
+    .lut_din             ({DW/3{1'b0}}          ),           
     .lut_dout            (                    )    
 );
 

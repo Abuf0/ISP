@@ -30,7 +30,6 @@ module  hdmi_colorbar_top# (
 )(
     input        sys_clk        ,
     input        sys_rst_n      , 
-    //input  [15:0]isp_enable     ,
     output       tmds_clk_p     ,    // TMDS ʱ��ͨ��
     output       tmds_clk_n     ,
     output [2:0] tmds_data_p    ,   // TMDS ����ͨ��
@@ -40,7 +39,7 @@ module  hdmi_colorbar_top# (
 parameter BW = 16;
 parameter CSC_FIFO_DEEPTH = 16 * H ;
 parameter BCC_FIFO_DEEPTH = 4 * H ;
-parameter 
+
 //wire define
 logic          pixel_clk;
 logic          pixel_clk_5x;
@@ -53,7 +52,7 @@ logic          pixel_data_vld[0:16];
 logic  [23:0]  buffer_data_rgb_csc;
 logic  [23:0]  pixel_data_w;
 logic  [BW-1:0]  pixel_data_bayer[0:16];
-//logic  [15:0]  isp_enable;
+logic  [15:0]  isp_enable;
 logic [DW-1:0] pixel_data_out;
 logic [DW-1:0] pixel_data_load   ;
 logic [DW-1:0] pixel_data_update ;
@@ -68,7 +67,7 @@ logic          video_de;
 logic  [23:0]  video_rgb;
 
 // isp_top module config //
-logic [3:0]  isp_seq [0:15];   // ISP顺序，寄存器配置
+//logic [3:0]  isp_seq [0:15];   // ISP顺序，寄存器配置
 logic [BW-1:0] dpc_thres;
 logic [BW-1:0] dpc_clip;
 logic [1:0] bayer_pattern;
@@ -107,42 +106,25 @@ logic signed [DW/3:0] hue_cos          ;
 logic signed [DW/3:0] hue_sin          ;
 logic [DW/3-1:0] hsc_saturation   ;
 logic [DW/3-1:0] hsc_clip         ;
-logic [DW/3-1:0] yuv_out [0:2]    ;
-logic yuv_out_vld               ;
 
-parameter DPC_IND = 4'd0   ;
-parameter BLC_IND = 4'd1   ;
-parameter AAF_IND = 4'd2   ;
-parameter AWB_IND = 4'd3   ;
-parameter CNF_IND = 4'd4   ;
-parameter CFA_IND = 4'd5   ;
-parameter CCM_IND = 4'd6   ;
-parameter GAC_IND = 4'd7   ;
-parameter CSC_IND = 4'd8   ;
-parameter NLM_IND = 4'd9   ;
-parameter BNF_IND = 4'd10  ;
-parameter EEH_IND = 4'd11  ;
-parameter FCS_IND = 4'd12  ;
-parameter HSC_IND = 4'd13  ;
-parameter BCC_IND = 4'd15  ;
+parameter DPC = 4'd0   ;
+parameter BLC = 4'd1   ;
+parameter AAF = 4'd2   ;
+parameter AWB = 4'd3   ;
+parameter CNF = 4'd4   ;
+parameter CFA = 4'd5   ;
+parameter CCM = 4'd6   ;
+parameter GAC = 4'd7   ;
+parameter CSC = 4'd8   ;
+parameter NLM = 4'd9   ;
+parameter BNF = 4'd10  ;
+parameter EEH = 4'd11  ;
+parameter FCS = 4'd12  ;
+parameter HSC = 4'd13  ;
+parameter BCC = 4'd15  ;
 
 // TODO -- replaced by regmap
 assign isp_enable = 16'h0000;
-assign isp_seq[DPC_IND] = DPC_IND;
-assign isp_seq[BLC_IND] = BLC_IND;
-assign isp_seq[AAF_IND] = AAF_IND;
-assign isp_seq[AWB_IND] = AWB_IND;
-assign isp_seq[CNF_IND] = CNF_IND;
-assign isp_seq[CFA_IND] = CFA_IND;
-assign isp_seq[CCM_IND] = CCM_IND;
-assign isp_seq[GAC_IND] = GAC_IND;
-assign isp_seq[CSC_IND] = CSC_IND;
-assign isp_seq[NLM_IND] = NLM_IND;
-assign isp_seq[BNF_IND] = BNF_IND;
-assign isp_seq[EEH_IND] = EEH_IND;
-assign isp_seq[FCS_IND] = FCS_IND;
-assign isp_seq[HSC_IND] = HSC_IND;
-assign isp_seq[BCC_IND] = BCC_IND;
 
 assign dpc_thres = 30;
 assign dpc_clip  = 250;
@@ -315,7 +297,7 @@ video_driver #(
     .pixel_data     (pixel_data_out)    // show dpc img
     );
 
-    assign pixel_data_out = pixel_data_rgb[BCC+1];  // TODO
+//    assign pixel_data_out = pixel_data_rgb[BCC+1];  // TODO
 
 //������Ƶ��ʾģ��
 video_display #(
@@ -394,8 +376,8 @@ isp_top #(
     .hue_sin             ( hue_sin            ),        
     .hsc_saturation      ( hsc_saturation     ),              
     .hsc_clip            ( hsc_clip           ),                    
-    .pixel_data_in       ( pixel_data_in      ),                      
-    .pixel_data_in_vld   ( pixel_data_in_vld  ),            
+    .pixel_data_in       ( pixel_data_rgb[0]  ),                      
+    .pixel_data_in_vld   ( pixel_data_vld[0]  ),            
     .pixel_data_out      (          ),                 
     .pixel_data_out_vld  (          ),             
     .one_frame_done      (          ),                    
