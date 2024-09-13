@@ -1,0 +1,10 @@
+hwif_in.dbg.CHIP_ID_H.ro_chip_id_h.next[15:0]
+hwif_in.dbg.CHIP_ID_ANA.ro_chip_id_ana.next[15:0]
+hwif_out.dbg.rg_efuse_ctrl0.rg_efuse_1.value[1:0]
+hwif_out.dbg.rg_efuse_ctrl0.rg_efuse_2.swmod
+hwif_out.dbg.rg_efuse_ctrl0.rg_efuse_3.swmod
+hwif_out.dbg.rg_efuse_ctrl0.rg_efuse_4.value[2:0]
+hwif_out.dbg.rg_efuse_ctrl0.rg_efuse_5.value[7:0]
+hwif_out.dbg.rg_error.rg_efuse_10.value[1:0]
+hwif_out.dbg.rg_error.rg_err_addr_overlap.value
+hwif_out.dbg.rg_error.rg_err_addr_flip.value
