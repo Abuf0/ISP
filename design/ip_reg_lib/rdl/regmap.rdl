@@ -1,68 +1,151 @@
 addrmap regmap {
-name = "pacific_top";
+name = "isp_top";
 default accesswidth = 16;
 default regwidth = 16;
 littleendian;
-	regfile dbg{
+	regfile isp_config{
 		reg {
 			field {
-				sw = r;
+				sw = rw;
+				hw = r;
+				desc = "ISP enable config";
+			} rg_isp_enable[15:0] = 0x0;
+		} isp_enable_cfg;
+		reg {
+			field {
+				sw = rw;
 				hw = w;
-				desc = "11111";
-			} ro_chip_id_h[15:0] = 0x020A;
-		} CHIP_ID_H @0x0000;
-		reg {
-			field {
-				sw = r;
-				hw = w;
-				desc = "22222";
-			} ro_chip_id_ana[15:0] = 0x0201;
-		} CHIP_ID_ANA @0x0004;
+				desc = "input bayer img pattern:<br/>
+						00: RGGB<br/>
+						01: TODO...";
+			} rg_bayer_pattern[1:0] = 0x0;
+		} bayer_pattern_cfg;
 		reg {
 			field {
 				sw = rw;
 				hw = r;
-				desc = "RW";
-			} rg_efuse_1[1:0] = 0x2;
-			field {
-				sw = w;
-				hw = na;
-				swmod = true;
-				desc = "W1C";
-			} rg_efuse_2[3:2] = 0x0;
-			field {
-				sw = w;
-				hw = na;
-				swmod = true;
-				desc = "WO";
-			} rg_efuse_3[4:4] = 0;
-			field {
-				sw = rw;
-				hw = r;
-				desc = "None";
-			} rg_efuse_4[7:5] = 0;
-			field {
-				sw = rw;
-				hw = r;
-				desc = "None";
-			} rg_efuse_5[15:8] = 0;
-		} rg_efuse_ctrl0 @0x0006;
+				desc = "Dead Pixel Correction threshold value";
+			} rg_dpc_thres[15:0] = 0x0;
+		} dpc_thres_cfg;
 		reg {
 			field {
 				sw = rw;
 				hw = r;
-				desc = "None";
-			} rg_efuse_10[1:0] = 0x2;
+				desc = "Dead Pixel Correction up-clip value";
+			} rg_dpc_clip[15:0] = 0x00ff;
+		} dpc_clip_cfg;
+		reg {
 			field {
 				sw = rw;
 				hw = r;
-				desc = "None";
-			} rg_err_addr_overlap[2:2] = 0x1;
+				desc = "Black Level Cancel bias value for channel_0";
+			} rg_blc_bias_0[15:0] = 0x0;
+		} blc_bias_0_cfg;
+		reg {
 			field {
 				sw = rw;
 				hw = r;
-				desc = "None";
-			} rg_err_addr_flip[3:3] = 0x1;
-		} rg_error @0x000e;
-	} dbg @0x0000;
+				desc = "Black Level Cancel bias value for channel_1";
+			} rg_blc_bias_1[15:0] = 0x0;
+		} blc_bias_1_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "Black Level Cancel bias value for channel_2";
+			} rg_blc_bias_2[15:0] = 0x0;
+		} blc_bias_2_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "Black Level Cancel bias value for channel_3";
+			} rg_blc_bias_3[15:0] = 0x0;
+		} blc_bias_3_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "Black Level Cancel up-clip value";
+			} rg_blc_clip[15:0] = 0x00ff;
+		} blc_clip_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "AWB gain value for channel_0";
+			} rg_awb_gain_0[15:0] = 0x100;
+		} awb_gain_0_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "AWB gain value for channel_1";
+			} rg_awb_gain_1[15:0] = 0x100;
+		} awb_gain_1_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "AWB gain value for channel_2";
+			} rg_awb_gain_2[15:0] = 0x100;
+		} awb_gain_2_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "AWB gain value for channel_3";
+			} rg_awb_gain_3[15:0] = 0x100;
+		} awb_gain_3_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "AWB gain up-clip value";
+			} rg_awb_clip[15:0] = 0x00ff;
+		} awb_clip_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CNF gain value for channel_0";
+			} rg_cnf_gain_0[15:0] = 0x100;
+		} cnf_gain_0_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CNF gain value for channel_1";
+			} rg_cnf_gain_1[15:0] = 0x100;
+		} cnf_gain_1_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CNF gain value for channel_2";
+			} rg_cnf_gain_2[15:0] = 0x100;
+		} cnf_gain_2_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CNF gain value for channel_3";
+			} rg_cnf_gain_3[15:0] = 0x100;
+		} cnf_gain_3_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CNF gain up-clip value";
+			} rg_cnf_clip[15:0] = 0x00ff;
+		} cnf_clip_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CNF threshold value";
+			} rg_cnf_thres[15:0] = 0x0;
+		} cnf_thres_cfg;
+
+	} isp_config @0x0000;
 };

@@ -5,3 +5,4 @@
 *.csv
 *.pyc
 /fpga/
+/design/ip_reg_lib/doc/

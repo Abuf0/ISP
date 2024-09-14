@@ -7,7 +7,7 @@ module regmap (
 
         input wire s_cpuif_req,
         input wire s_cpuif_req_is_wr,
-        input wire [3:0] s_cpuif_addr,
+        input wire [5:0] s_cpuif_addr,
         input wire [15:0] s_cpuif_wr_data,
         input wire [15:0] s_cpuif_wr_biten,
         output wire s_cpuif_req_stall_wr,
@@ -27,7 +27,7 @@ module regmap (
     //--------------------------------------------------------------------------
     logic cpuif_req;
     logic cpuif_req_is_wr;
-    logic [3:0] cpuif_addr;
+    logic [5:0] cpuif_addr;
     logic [15:0] cpuif_wr_data;
     logic [15:0] cpuif_wr_biten;
     logic cpuif_req_stall_wr;
@@ -67,11 +67,27 @@ module regmap (
     //--------------------------------------------------------------------------
     typedef struct {
         struct {
-            logic CHIP_ID_H;
-            logic CHIP_ID_ANA;
-            logic rg_efuse_ctrl0;
-            logic rg_error;
-        } dbg;
+            logic isp_enable_cfg;
+            logic bayer_pattern_cfg;
+            logic dpc_thres_cfg;
+            logic dpc_clip_cfg;
+            logic blc_bias_0_cfg;
+            logic blc_bias_1_cfg;
+            logic blc_bias_2_cfg;
+            logic blc_bias_3_cfg;
+            logic blc_clip_cfg;
+            logic awb_gain_0_cfg;
+            logic awb_gain_1_cfg;
+            logic awb_gain_2_cfg;
+            logic awb_gain_3_cfg;
+            logic awb_clip_cfg;
+            logic cnf_gain_0_cfg;
+            logic cnf_gain_1_cfg;
+            logic cnf_gain_2_cfg;
+            logic cnf_gain_3_cfg;
+            logic cnf_clip_cfg;
+            logic cnf_thres_cfg;
+        } isp_config;
     } decoded_reg_strb_t;
     decoded_reg_strb_t decoded_reg_strb;
     logic decoded_req;
@@ -80,10 +96,26 @@ module regmap (
     logic [15:0] decoded_wr_biten;
 
     always_comb begin
-        decoded_reg_strb.dbg.CHIP_ID_H = cpuif_req_masked & (cpuif_addr == 4'h0);
-        decoded_reg_strb.dbg.CHIP_ID_ANA = cpuif_req_masked & (cpuif_addr == 4'h4);
-        decoded_reg_strb.dbg.rg_efuse_ctrl0 = cpuif_req_masked & (cpuif_addr == 4'h6);
-        decoded_reg_strb.dbg.rg_error = cpuif_req_masked & (cpuif_addr == 4'he);
+        decoded_reg_strb.isp_config.isp_enable_cfg = cpuif_req_masked & (cpuif_addr == 6'h0);
+        decoded_reg_strb.isp_config.bayer_pattern_cfg = cpuif_req_masked & (cpuif_addr == 6'h2);
+        decoded_reg_strb.isp_config.dpc_thres_cfg = cpuif_req_masked & (cpuif_addr == 6'h4);
+        decoded_reg_strb.isp_config.dpc_clip_cfg = cpuif_req_masked & (cpuif_addr == 6'h6);
+        decoded_reg_strb.isp_config.blc_bias_0_cfg = cpuif_req_masked & (cpuif_addr == 6'h8);
+        decoded_reg_strb.isp_config.blc_bias_1_cfg = cpuif_req_masked & (cpuif_addr == 6'ha);
+        decoded_reg_strb.isp_config.blc_bias_2_cfg = cpuif_req_masked & (cpuif_addr == 6'hc);
+        decoded_reg_strb.isp_config.blc_bias_3_cfg = cpuif_req_masked & (cpuif_addr == 6'he);
+        decoded_reg_strb.isp_config.blc_clip_cfg = cpuif_req_masked & (cpuif_addr == 6'h10);
+        decoded_reg_strb.isp_config.awb_gain_0_cfg = cpuif_req_masked & (cpuif_addr == 6'h12);
+        decoded_reg_strb.isp_config.awb_gain_1_cfg = cpuif_req_masked & (cpuif_addr == 6'h14);
+        decoded_reg_strb.isp_config.awb_gain_2_cfg = cpuif_req_masked & (cpuif_addr == 6'h16);
+        decoded_reg_strb.isp_config.awb_gain_3_cfg = cpuif_req_masked & (cpuif_addr == 6'h18);
+        decoded_reg_strb.isp_config.awb_clip_cfg = cpuif_req_masked & (cpuif_addr == 6'h1a);
+        decoded_reg_strb.isp_config.cnf_gain_0_cfg = cpuif_req_masked & (cpuif_addr == 6'h1c);
+        decoded_reg_strb.isp_config.cnf_gain_1_cfg = cpuif_req_masked & (cpuif_addr == 6'h1e);
+        decoded_reg_strb.isp_config.cnf_gain_2_cfg = cpuif_req_masked & (cpuif_addr == 6'h20);
+        decoded_reg_strb.isp_config.cnf_gain_3_cfg = cpuif_req_masked & (cpuif_addr == 6'h22);
+        decoded_reg_strb.isp_config.cnf_clip_cfg = cpuif_req_masked & (cpuif_addr == 6'h24);
+        decoded_reg_strb.isp_config.cnf_thres_cfg = cpuif_req_masked & (cpuif_addr == 6'h26);
     end
 
     // Pass down signals to next stage
@@ -99,33 +131,125 @@ module regmap (
         struct {
             struct {
                 struct {
-                    logic [1:0] next;
+                    logic [15:0] next;
                     logic load_next;
-                } rg_efuse_1;
-                struct {
-                    logic [2:0] next;
-                    logic load_next;
-                } rg_efuse_4;
-                struct {
-                    logic [7:0] next;
-                    logic load_next;
-                } rg_efuse_5;
-            } rg_efuse_ctrl0;
+                } rg_isp_enable;
+            } isp_enable_cfg;
             struct {
                 struct {
                     logic [1:0] next;
                     logic load_next;
-                } rg_efuse_10;
+                } rg_bayer_pattern;
+            } bayer_pattern_cfg;
+            struct {
                 struct {
-                    logic next;
+                    logic [15:0] next;
                     logic load_next;
-                } rg_err_addr_overlap;
+                } rg_dpc_thres;
+            } dpc_thres_cfg;
+            struct {
                 struct {
-                    logic next;
+                    logic [15:0] next;
                     logic load_next;
-                } rg_err_addr_flip;
-            } rg_error;
-        } dbg;
+                } rg_dpc_clip;
+            } dpc_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_blc_bias_0;
+            } blc_bias_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_blc_bias_1;
+            } blc_bias_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_blc_bias_2;
+            } blc_bias_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_blc_bias_3;
+            } blc_bias_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_blc_clip;
+            } blc_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_awb_gain_0;
+            } awb_gain_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_awb_gain_1;
+            } awb_gain_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_awb_gain_2;
+            } awb_gain_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_awb_gain_3;
+            } awb_gain_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_awb_clip;
+            } awb_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_cnf_gain_0;
+            } cnf_gain_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_cnf_gain_1;
+            } cnf_gain_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_cnf_gain_2;
+            } cnf_gain_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_cnf_gain_3;
+            } cnf_gain_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_cnf_clip;
+            } cnf_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_cnf_thres;
+            } cnf_thres_cfg;
+        } isp_config;
     } field_combo_t;
     field_combo_t field_combo;
 
@@ -133,158 +257,530 @@ module regmap (
         struct {
             struct {
                 struct {
-                    logic [1:0] value;
-                } rg_efuse_1;
-                struct {
-                    logic [2:0] value;
-                } rg_efuse_4;
-                struct {
-                    logic [7:0] value;
-                } rg_efuse_5;
-            } rg_efuse_ctrl0;
+                    logic [15:0] value;
+                } rg_isp_enable;
+            } isp_enable_cfg;
             struct {
                 struct {
                     logic [1:0] value;
-                } rg_efuse_10;
+                } rg_bayer_pattern;
+            } bayer_pattern_cfg;
+            struct {
                 struct {
-                    logic value;
-                } rg_err_addr_overlap;
+                    logic [15:0] value;
+                } rg_dpc_thres;
+            } dpc_thres_cfg;
+            struct {
                 struct {
-                    logic value;
-                } rg_err_addr_flip;
-            } rg_error;
-        } dbg;
+                    logic [15:0] value;
+                } rg_dpc_clip;
+            } dpc_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_blc_bias_0;
+            } blc_bias_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_blc_bias_1;
+            } blc_bias_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_blc_bias_2;
+            } blc_bias_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_blc_bias_3;
+            } blc_bias_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_blc_clip;
+            } blc_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_awb_gain_0;
+            } awb_gain_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_awb_gain_1;
+            } awb_gain_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_awb_gain_2;
+            } awb_gain_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_awb_gain_3;
+            } awb_gain_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_awb_clip;
+            } awb_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_cnf_gain_0;
+            } cnf_gain_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_cnf_gain_1;
+            } cnf_gain_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_cnf_gain_2;
+            } cnf_gain_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_cnf_gain_3;
+            } cnf_gain_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_cnf_clip;
+            } cnf_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_cnf_thres;
+            } cnf_thres_cfg;
+        } isp_config;
     } field_storage_t;
     field_storage_t field_storage;
 
-    // Field: regmap.dbg.rg_efuse_ctrl0.rg_efuse_1
+    // Field: regmap.isp_config.isp_enable_cfg.rg_isp_enable
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.isp_enable_cfg.rg_isp_enable.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.isp_enable_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.isp_enable_cfg.rg_isp_enable.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.isp_enable_cfg.rg_isp_enable.next = next_c;
+        field_combo.isp_config.isp_enable_cfg.rg_isp_enable.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.isp_enable_cfg.rg_isp_enable.value <= 16'h0;
+        end else if(field_combo.isp_config.isp_enable_cfg.rg_isp_enable.load_next) begin
+            field_storage.isp_config.isp_enable_cfg.rg_isp_enable.value <= field_combo.isp_config.isp_enable_cfg.rg_isp_enable.next;
+        end
+    end
+    assign hwif_out.isp_config.isp_enable_cfg.rg_isp_enable.value = field_storage.isp_config.isp_enable_cfg.rg_isp_enable.value;
+    // Field: regmap.isp_config.bayer_pattern_cfg.rg_bayer_pattern
     always_comb begin
         automatic logic [1:0] next_c;
         automatic logic load_next_c;
-        next_c = field_storage.dbg.rg_efuse_ctrl0.rg_efuse_1.value;
+        next_c = field_storage.isp_config.bayer_pattern_cfg.rg_bayer_pattern.value;
         load_next_c = '0;
-        if(decoded_reg_strb.dbg.rg_efuse_ctrl0 && decoded_req_is_wr) begin // SW write
-            next_c = (field_storage.dbg.rg_efuse_ctrl0.rg_efuse_1.value & ~decoded_wr_biten[1:0]) | (decoded_wr_data[1:0] & decoded_wr_biten[1:0]);
+        if(decoded_reg_strb.isp_config.bayer_pattern_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bayer_pattern_cfg.rg_bayer_pattern.value & ~decoded_wr_biten[1:0]) | (decoded_wr_data[1:0] & decoded_wr_biten[1:0]);
+            load_next_c = '1;
+        end else begin // HW Write
+            next_c = hwif_in.isp_config.bayer_pattern_cfg.rg_bayer_pattern.next;
             load_next_c = '1;
         end
-        field_combo.dbg.rg_efuse_ctrl0.rg_efuse_1.next = next_c;
-        field_combo.dbg.rg_efuse_ctrl0.rg_efuse_1.load_next = load_next_c;
+        field_combo.isp_config.bayer_pattern_cfg.rg_bayer_pattern.next = next_c;
+        field_combo.isp_config.bayer_pattern_cfg.rg_bayer_pattern.load_next = load_next_c;
     end
     always_ff @(posedge clk or negedge arst_n) begin
         if(~arst_n) begin
-            field_storage.dbg.rg_efuse_ctrl0.rg_efuse_1.value <= 2'h2;
-        end else if(field_combo.dbg.rg_efuse_ctrl0.rg_efuse_1.load_next) begin
-            field_storage.dbg.rg_efuse_ctrl0.rg_efuse_1.value <= field_combo.dbg.rg_efuse_ctrl0.rg_efuse_1.next;
+            field_storage.isp_config.bayer_pattern_cfg.rg_bayer_pattern.value <= 2'h0;
+        end else if(field_combo.isp_config.bayer_pattern_cfg.rg_bayer_pattern.load_next) begin
+            field_storage.isp_config.bayer_pattern_cfg.rg_bayer_pattern.value <= field_combo.isp_config.bayer_pattern_cfg.rg_bayer_pattern.next;
         end
     end
-    assign hwif_out.dbg.rg_efuse_ctrl0.rg_efuse_1.value = field_storage.dbg.rg_efuse_ctrl0.rg_efuse_1.value;
-    assign hwif_out.dbg.rg_efuse_ctrl0.rg_efuse_2.swmod = decoded_reg_strb.dbg.rg_efuse_ctrl0 && decoded_req_is_wr;
-    assign hwif_out.dbg.rg_efuse_ctrl0.rg_efuse_3.swmod = decoded_reg_strb.dbg.rg_efuse_ctrl0 && decoded_req_is_wr;
-    // Field: regmap.dbg.rg_efuse_ctrl0.rg_efuse_4
+    // Field: regmap.isp_config.dpc_thres_cfg.rg_dpc_thres
     always_comb begin
-        automatic logic [2:0] next_c;
+        automatic logic [15:0] next_c;
         automatic logic load_next_c;
-        next_c = field_storage.dbg.rg_efuse_ctrl0.rg_efuse_4.value;
+        next_c = field_storage.isp_config.dpc_thres_cfg.rg_dpc_thres.value;
         load_next_c = '0;
-        if(decoded_reg_strb.dbg.rg_efuse_ctrl0 && decoded_req_is_wr) begin // SW write
-            next_c = (field_storage.dbg.rg_efuse_ctrl0.rg_efuse_4.value & ~decoded_wr_biten[7:5]) | (decoded_wr_data[7:5] & decoded_wr_biten[7:5]);
+        if(decoded_reg_strb.isp_config.dpc_thres_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.dpc_thres_cfg.rg_dpc_thres.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
             load_next_c = '1;
         end
-        field_combo.dbg.rg_efuse_ctrl0.rg_efuse_4.next = next_c;
-        field_combo.dbg.rg_efuse_ctrl0.rg_efuse_4.load_next = load_next_c;
+        field_combo.isp_config.dpc_thres_cfg.rg_dpc_thres.next = next_c;
+        field_combo.isp_config.dpc_thres_cfg.rg_dpc_thres.load_next = load_next_c;
     end
     always_ff @(posedge clk or negedge arst_n) begin
         if(~arst_n) begin
-            field_storage.dbg.rg_efuse_ctrl0.rg_efuse_4.value <= 3'h0;
-        end else if(field_combo.dbg.rg_efuse_ctrl0.rg_efuse_4.load_next) begin
-            field_storage.dbg.rg_efuse_ctrl0.rg_efuse_4.value <= field_combo.dbg.rg_efuse_ctrl0.rg_efuse_4.next;
+            field_storage.isp_config.dpc_thres_cfg.rg_dpc_thres.value <= 16'h0;
+        end else if(field_combo.isp_config.dpc_thres_cfg.rg_dpc_thres.load_next) begin
+            field_storage.isp_config.dpc_thres_cfg.rg_dpc_thres.value <= field_combo.isp_config.dpc_thres_cfg.rg_dpc_thres.next;
         end
     end
-    assign hwif_out.dbg.rg_efuse_ctrl0.rg_efuse_4.value = field_storage.dbg.rg_efuse_ctrl0.rg_efuse_4.value;
-    // Field: regmap.dbg.rg_efuse_ctrl0.rg_efuse_5
+    assign hwif_out.isp_config.dpc_thres_cfg.rg_dpc_thres.value = field_storage.isp_config.dpc_thres_cfg.rg_dpc_thres.value;
+    // Field: regmap.isp_config.dpc_clip_cfg.rg_dpc_clip
     always_comb begin
-        automatic logic [7:0] next_c;
+        automatic logic [15:0] next_c;
         automatic logic load_next_c;
-        next_c = field_storage.dbg.rg_efuse_ctrl0.rg_efuse_5.value;
+        next_c = field_storage.isp_config.dpc_clip_cfg.rg_dpc_clip.value;
         load_next_c = '0;
-        if(decoded_reg_strb.dbg.rg_efuse_ctrl0 && decoded_req_is_wr) begin // SW write
-            next_c = (field_storage.dbg.rg_efuse_ctrl0.rg_efuse_5.value & ~decoded_wr_biten[15:8]) | (decoded_wr_data[15:8] & decoded_wr_biten[15:8]);
+        if(decoded_reg_strb.isp_config.dpc_clip_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.dpc_clip_cfg.rg_dpc_clip.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
             load_next_c = '1;
         end
-        field_combo.dbg.rg_efuse_ctrl0.rg_efuse_5.next = next_c;
-        field_combo.dbg.rg_efuse_ctrl0.rg_efuse_5.load_next = load_next_c;
+        field_combo.isp_config.dpc_clip_cfg.rg_dpc_clip.next = next_c;
+        field_combo.isp_config.dpc_clip_cfg.rg_dpc_clip.load_next = load_next_c;
     end
     always_ff @(posedge clk or negedge arst_n) begin
         if(~arst_n) begin
-            field_storage.dbg.rg_efuse_ctrl0.rg_efuse_5.value <= 8'h0;
-        end else if(field_combo.dbg.rg_efuse_ctrl0.rg_efuse_5.load_next) begin
-            field_storage.dbg.rg_efuse_ctrl0.rg_efuse_5.value <= field_combo.dbg.rg_efuse_ctrl0.rg_efuse_5.next;
+            field_storage.isp_config.dpc_clip_cfg.rg_dpc_clip.value <= 16'hff;
+        end else if(field_combo.isp_config.dpc_clip_cfg.rg_dpc_clip.load_next) begin
+            field_storage.isp_config.dpc_clip_cfg.rg_dpc_clip.value <= field_combo.isp_config.dpc_clip_cfg.rg_dpc_clip.next;
         end
     end
-    assign hwif_out.dbg.rg_efuse_ctrl0.rg_efuse_5.value = field_storage.dbg.rg_efuse_ctrl0.rg_efuse_5.value;
-    // Field: regmap.dbg.rg_error.rg_efuse_10
+    assign hwif_out.isp_config.dpc_clip_cfg.rg_dpc_clip.value = field_storage.isp_config.dpc_clip_cfg.rg_dpc_clip.value;
+    // Field: regmap.isp_config.blc_bias_0_cfg.rg_blc_bias_0
     always_comb begin
-        automatic logic [1:0] next_c;
+        automatic logic [15:0] next_c;
         automatic logic load_next_c;
-        next_c = field_storage.dbg.rg_error.rg_efuse_10.value;
+        next_c = field_storage.isp_config.blc_bias_0_cfg.rg_blc_bias_0.value;
         load_next_c = '0;
-        if(decoded_reg_strb.dbg.rg_error && decoded_req_is_wr) begin // SW write
-            next_c = (field_storage.dbg.rg_error.rg_efuse_10.value & ~decoded_wr_biten[1:0]) | (decoded_wr_data[1:0] & decoded_wr_biten[1:0]);
+        if(decoded_reg_strb.isp_config.blc_bias_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.blc_bias_0_cfg.rg_blc_bias_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
             load_next_c = '1;
         end
-        field_combo.dbg.rg_error.rg_efuse_10.next = next_c;
-        field_combo.dbg.rg_error.rg_efuse_10.load_next = load_next_c;
+        field_combo.isp_config.blc_bias_0_cfg.rg_blc_bias_0.next = next_c;
+        field_combo.isp_config.blc_bias_0_cfg.rg_blc_bias_0.load_next = load_next_c;
     end
     always_ff @(posedge clk or negedge arst_n) begin
         if(~arst_n) begin
-            field_storage.dbg.rg_error.rg_efuse_10.value <= 2'h2;
-        end else if(field_combo.dbg.rg_error.rg_efuse_10.load_next) begin
-            field_storage.dbg.rg_error.rg_efuse_10.value <= field_combo.dbg.rg_error.rg_efuse_10.next;
+            field_storage.isp_config.blc_bias_0_cfg.rg_blc_bias_0.value <= 16'h0;
+        end else if(field_combo.isp_config.blc_bias_0_cfg.rg_blc_bias_0.load_next) begin
+            field_storage.isp_config.blc_bias_0_cfg.rg_blc_bias_0.value <= field_combo.isp_config.blc_bias_0_cfg.rg_blc_bias_0.next;
         end
     end
-    assign hwif_out.dbg.rg_error.rg_efuse_10.value = field_storage.dbg.rg_error.rg_efuse_10.value;
-    // Field: regmap.dbg.rg_error.rg_err_addr_overlap
+    assign hwif_out.isp_config.blc_bias_0_cfg.rg_blc_bias_0.value = field_storage.isp_config.blc_bias_0_cfg.rg_blc_bias_0.value;
+    // Field: regmap.isp_config.blc_bias_1_cfg.rg_blc_bias_1
     always_comb begin
-        automatic logic [0:0] next_c;
+        automatic logic [15:0] next_c;
         automatic logic load_next_c;
-        next_c = field_storage.dbg.rg_error.rg_err_addr_overlap.value;
+        next_c = field_storage.isp_config.blc_bias_1_cfg.rg_blc_bias_1.value;
         load_next_c = '0;
-        if(decoded_reg_strb.dbg.rg_error && decoded_req_is_wr) begin // SW write
-            next_c = (field_storage.dbg.rg_error.rg_err_addr_overlap.value & ~decoded_wr_biten[2:2]) | (decoded_wr_data[2:2] & decoded_wr_biten[2:2]);
+        if(decoded_reg_strb.isp_config.blc_bias_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.blc_bias_1_cfg.rg_blc_bias_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
             load_next_c = '1;
         end
-        field_combo.dbg.rg_error.rg_err_addr_overlap.next = next_c;
-        field_combo.dbg.rg_error.rg_err_addr_overlap.load_next = load_next_c;
+        field_combo.isp_config.blc_bias_1_cfg.rg_blc_bias_1.next = next_c;
+        field_combo.isp_config.blc_bias_1_cfg.rg_blc_bias_1.load_next = load_next_c;
     end
     always_ff @(posedge clk or negedge arst_n) begin
         if(~arst_n) begin
-            field_storage.dbg.rg_error.rg_err_addr_overlap.value <= 1'h1;
-        end else if(field_combo.dbg.rg_error.rg_err_addr_overlap.load_next) begin
-            field_storage.dbg.rg_error.rg_err_addr_overlap.value <= field_combo.dbg.rg_error.rg_err_addr_overlap.next;
+            field_storage.isp_config.blc_bias_1_cfg.rg_blc_bias_1.value <= 16'h0;
+        end else if(field_combo.isp_config.blc_bias_1_cfg.rg_blc_bias_1.load_next) begin
+            field_storage.isp_config.blc_bias_1_cfg.rg_blc_bias_1.value <= field_combo.isp_config.blc_bias_1_cfg.rg_blc_bias_1.next;
         end
     end
-    assign hwif_out.dbg.rg_error.rg_err_addr_overlap.value = field_storage.dbg.rg_error.rg_err_addr_overlap.value;
-    // Field: regmap.dbg.rg_error.rg_err_addr_flip
+    assign hwif_out.isp_config.blc_bias_1_cfg.rg_blc_bias_1.value = field_storage.isp_config.blc_bias_1_cfg.rg_blc_bias_1.value;
+    // Field: regmap.isp_config.blc_bias_2_cfg.rg_blc_bias_2
     always_comb begin
-        automatic logic [0:0] next_c;
+        automatic logic [15:0] next_c;
         automatic logic load_next_c;
-        next_c = field_storage.dbg.rg_error.rg_err_addr_flip.value;
+        next_c = field_storage.isp_config.blc_bias_2_cfg.rg_blc_bias_2.value;
         load_next_c = '0;
-        if(decoded_reg_strb.dbg.rg_error && decoded_req_is_wr) begin // SW write
-            next_c = (field_storage.dbg.rg_error.rg_err_addr_flip.value & ~decoded_wr_biten[3:3]) | (decoded_wr_data[3:3] & decoded_wr_biten[3:3]);
+        if(decoded_reg_strb.isp_config.blc_bias_2_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.blc_bias_2_cfg.rg_blc_bias_2.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
             load_next_c = '1;
         end
-        field_combo.dbg.rg_error.rg_err_addr_flip.next = next_c;
-        field_combo.dbg.rg_error.rg_err_addr_flip.load_next = load_next_c;
+        field_combo.isp_config.blc_bias_2_cfg.rg_blc_bias_2.next = next_c;
+        field_combo.isp_config.blc_bias_2_cfg.rg_blc_bias_2.load_next = load_next_c;
     end
     always_ff @(posedge clk or negedge arst_n) begin
         if(~arst_n) begin
-            field_storage.dbg.rg_error.rg_err_addr_flip.value <= 1'h1;
-        end else if(field_combo.dbg.rg_error.rg_err_addr_flip.load_next) begin
-            field_storage.dbg.rg_error.rg_err_addr_flip.value <= field_combo.dbg.rg_error.rg_err_addr_flip.next;
+            field_storage.isp_config.blc_bias_2_cfg.rg_blc_bias_2.value <= 16'h0;
+        end else if(field_combo.isp_config.blc_bias_2_cfg.rg_blc_bias_2.load_next) begin
+            field_storage.isp_config.blc_bias_2_cfg.rg_blc_bias_2.value <= field_combo.isp_config.blc_bias_2_cfg.rg_blc_bias_2.next;
         end
     end
-    assign hwif_out.dbg.rg_error.rg_err_addr_flip.value = field_storage.dbg.rg_error.rg_err_addr_flip.value;
+    assign hwif_out.isp_config.blc_bias_2_cfg.rg_blc_bias_2.value = field_storage.isp_config.blc_bias_2_cfg.rg_blc_bias_2.value;
+    // Field: regmap.isp_config.blc_bias_3_cfg.rg_blc_bias_3
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.blc_bias_3_cfg.rg_blc_bias_3.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.blc_bias_3_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.blc_bias_3_cfg.rg_blc_bias_3.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.blc_bias_3_cfg.rg_blc_bias_3.next = next_c;
+        field_combo.isp_config.blc_bias_3_cfg.rg_blc_bias_3.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.blc_bias_3_cfg.rg_blc_bias_3.value <= 16'h0;
+        end else if(field_combo.isp_config.blc_bias_3_cfg.rg_blc_bias_3.load_next) begin
+            field_storage.isp_config.blc_bias_3_cfg.rg_blc_bias_3.value <= field_combo.isp_config.blc_bias_3_cfg.rg_blc_bias_3.next;
+        end
+    end
+    assign hwif_out.isp_config.blc_bias_3_cfg.rg_blc_bias_3.value = field_storage.isp_config.blc_bias_3_cfg.rg_blc_bias_3.value;
+    // Field: regmap.isp_config.blc_clip_cfg.rg_blc_clip
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.blc_clip_cfg.rg_blc_clip.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.blc_clip_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.blc_clip_cfg.rg_blc_clip.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.blc_clip_cfg.rg_blc_clip.next = next_c;
+        field_combo.isp_config.blc_clip_cfg.rg_blc_clip.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.blc_clip_cfg.rg_blc_clip.value <= 16'hff;
+        end else if(field_combo.isp_config.blc_clip_cfg.rg_blc_clip.load_next) begin
+            field_storage.isp_config.blc_clip_cfg.rg_blc_clip.value <= field_combo.isp_config.blc_clip_cfg.rg_blc_clip.next;
+        end
+    end
+    assign hwif_out.isp_config.blc_clip_cfg.rg_blc_clip.value = field_storage.isp_config.blc_clip_cfg.rg_blc_clip.value;
+    // Field: regmap.isp_config.awb_gain_0_cfg.rg_awb_gain_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.awb_gain_0_cfg.rg_awb_gain_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.awb_gain_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.awb_gain_0_cfg.rg_awb_gain_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.awb_gain_0_cfg.rg_awb_gain_0.next = next_c;
+        field_combo.isp_config.awb_gain_0_cfg.rg_awb_gain_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.awb_gain_0_cfg.rg_awb_gain_0.value <= 16'h100;
+        end else if(field_combo.isp_config.awb_gain_0_cfg.rg_awb_gain_0.load_next) begin
+            field_storage.isp_config.awb_gain_0_cfg.rg_awb_gain_0.value <= field_combo.isp_config.awb_gain_0_cfg.rg_awb_gain_0.next;
+        end
+    end
+    assign hwif_out.isp_config.awb_gain_0_cfg.rg_awb_gain_0.value = field_storage.isp_config.awb_gain_0_cfg.rg_awb_gain_0.value;
+    // Field: regmap.isp_config.awb_gain_1_cfg.rg_awb_gain_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.awb_gain_1_cfg.rg_awb_gain_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.awb_gain_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.awb_gain_1_cfg.rg_awb_gain_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.awb_gain_1_cfg.rg_awb_gain_1.next = next_c;
+        field_combo.isp_config.awb_gain_1_cfg.rg_awb_gain_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.awb_gain_1_cfg.rg_awb_gain_1.value <= 16'h100;
+        end else if(field_combo.isp_config.awb_gain_1_cfg.rg_awb_gain_1.load_next) begin
+            field_storage.isp_config.awb_gain_1_cfg.rg_awb_gain_1.value <= field_combo.isp_config.awb_gain_1_cfg.rg_awb_gain_1.next;
+        end
+    end
+    assign hwif_out.isp_config.awb_gain_1_cfg.rg_awb_gain_1.value = field_storage.isp_config.awb_gain_1_cfg.rg_awb_gain_1.value;
+    // Field: regmap.isp_config.awb_gain_2_cfg.rg_awb_gain_2
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.awb_gain_2_cfg.rg_awb_gain_2.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.awb_gain_2_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.awb_gain_2_cfg.rg_awb_gain_2.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.awb_gain_2_cfg.rg_awb_gain_2.next = next_c;
+        field_combo.isp_config.awb_gain_2_cfg.rg_awb_gain_2.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.awb_gain_2_cfg.rg_awb_gain_2.value <= 16'h100;
+        end else if(field_combo.isp_config.awb_gain_2_cfg.rg_awb_gain_2.load_next) begin
+            field_storage.isp_config.awb_gain_2_cfg.rg_awb_gain_2.value <= field_combo.isp_config.awb_gain_2_cfg.rg_awb_gain_2.next;
+        end
+    end
+    assign hwif_out.isp_config.awb_gain_2_cfg.rg_awb_gain_2.value = field_storage.isp_config.awb_gain_2_cfg.rg_awb_gain_2.value;
+    // Field: regmap.isp_config.awb_gain_3_cfg.rg_awb_gain_3
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.awb_gain_3_cfg.rg_awb_gain_3.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.awb_gain_3_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.awb_gain_3_cfg.rg_awb_gain_3.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.awb_gain_3_cfg.rg_awb_gain_3.next = next_c;
+        field_combo.isp_config.awb_gain_3_cfg.rg_awb_gain_3.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.awb_gain_3_cfg.rg_awb_gain_3.value <= 16'h100;
+        end else if(field_combo.isp_config.awb_gain_3_cfg.rg_awb_gain_3.load_next) begin
+            field_storage.isp_config.awb_gain_3_cfg.rg_awb_gain_3.value <= field_combo.isp_config.awb_gain_3_cfg.rg_awb_gain_3.next;
+        end
+    end
+    assign hwif_out.isp_config.awb_gain_3_cfg.rg_awb_gain_3.value = field_storage.isp_config.awb_gain_3_cfg.rg_awb_gain_3.value;
+    // Field: regmap.isp_config.awb_clip_cfg.rg_awb_clip
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.awb_clip_cfg.rg_awb_clip.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.awb_clip_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.awb_clip_cfg.rg_awb_clip.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.awb_clip_cfg.rg_awb_clip.next = next_c;
+        field_combo.isp_config.awb_clip_cfg.rg_awb_clip.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.awb_clip_cfg.rg_awb_clip.value <= 16'hff;
+        end else if(field_combo.isp_config.awb_clip_cfg.rg_awb_clip.load_next) begin
+            field_storage.isp_config.awb_clip_cfg.rg_awb_clip.value <= field_combo.isp_config.awb_clip_cfg.rg_awb_clip.next;
+        end
+    end
+    assign hwif_out.isp_config.awb_clip_cfg.rg_awb_clip.value = field_storage.isp_config.awb_clip_cfg.rg_awb_clip.value;
+    // Field: regmap.isp_config.cnf_gain_0_cfg.rg_cnf_gain_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.cnf_gain_0_cfg.rg_cnf_gain_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.cnf_gain_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.cnf_gain_0_cfg.rg_cnf_gain_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.cnf_gain_0_cfg.rg_cnf_gain_0.next = next_c;
+        field_combo.isp_config.cnf_gain_0_cfg.rg_cnf_gain_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.cnf_gain_0_cfg.rg_cnf_gain_0.value <= 16'h100;
+        end else if(field_combo.isp_config.cnf_gain_0_cfg.rg_cnf_gain_0.load_next) begin
+            field_storage.isp_config.cnf_gain_0_cfg.rg_cnf_gain_0.value <= field_combo.isp_config.cnf_gain_0_cfg.rg_cnf_gain_0.next;
+        end
+    end
+    assign hwif_out.isp_config.cnf_gain_0_cfg.rg_cnf_gain_0.value = field_storage.isp_config.cnf_gain_0_cfg.rg_cnf_gain_0.value;
+    // Field: regmap.isp_config.cnf_gain_1_cfg.rg_cnf_gain_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.cnf_gain_1_cfg.rg_cnf_gain_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.cnf_gain_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.cnf_gain_1_cfg.rg_cnf_gain_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.cnf_gain_1_cfg.rg_cnf_gain_1.next = next_c;
+        field_combo.isp_config.cnf_gain_1_cfg.rg_cnf_gain_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.cnf_gain_1_cfg.rg_cnf_gain_1.value <= 16'h100;
+        end else if(field_combo.isp_config.cnf_gain_1_cfg.rg_cnf_gain_1.load_next) begin
+            field_storage.isp_config.cnf_gain_1_cfg.rg_cnf_gain_1.value <= field_combo.isp_config.cnf_gain_1_cfg.rg_cnf_gain_1.next;
+        end
+    end
+    assign hwif_out.isp_config.cnf_gain_1_cfg.rg_cnf_gain_1.value = field_storage.isp_config.cnf_gain_1_cfg.rg_cnf_gain_1.value;
+    // Field: regmap.isp_config.cnf_gain_2_cfg.rg_cnf_gain_2
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.cnf_gain_2_cfg.rg_cnf_gain_2.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.cnf_gain_2_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.cnf_gain_2_cfg.rg_cnf_gain_2.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.cnf_gain_2_cfg.rg_cnf_gain_2.next = next_c;
+        field_combo.isp_config.cnf_gain_2_cfg.rg_cnf_gain_2.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.cnf_gain_2_cfg.rg_cnf_gain_2.value <= 16'h100;
+        end else if(field_combo.isp_config.cnf_gain_2_cfg.rg_cnf_gain_2.load_next) begin
+            field_storage.isp_config.cnf_gain_2_cfg.rg_cnf_gain_2.value <= field_combo.isp_config.cnf_gain_2_cfg.rg_cnf_gain_2.next;
+        end
+    end
+    assign hwif_out.isp_config.cnf_gain_2_cfg.rg_cnf_gain_2.value = field_storage.isp_config.cnf_gain_2_cfg.rg_cnf_gain_2.value;
+    // Field: regmap.isp_config.cnf_gain_3_cfg.rg_cnf_gain_3
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.cnf_gain_3_cfg.rg_cnf_gain_3.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.cnf_gain_3_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.cnf_gain_3_cfg.rg_cnf_gain_3.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.cnf_gain_3_cfg.rg_cnf_gain_3.next = next_c;
+        field_combo.isp_config.cnf_gain_3_cfg.rg_cnf_gain_3.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.cnf_gain_3_cfg.rg_cnf_gain_3.value <= 16'h100;
+        end else if(field_combo.isp_config.cnf_gain_3_cfg.rg_cnf_gain_3.load_next) begin
+            field_storage.isp_config.cnf_gain_3_cfg.rg_cnf_gain_3.value <= field_combo.isp_config.cnf_gain_3_cfg.rg_cnf_gain_3.next;
+        end
+    end
+    assign hwif_out.isp_config.cnf_gain_3_cfg.rg_cnf_gain_3.value = field_storage.isp_config.cnf_gain_3_cfg.rg_cnf_gain_3.value;
+    // Field: regmap.isp_config.cnf_clip_cfg.rg_cnf_clip
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.cnf_clip_cfg.rg_cnf_clip.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.cnf_clip_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.cnf_clip_cfg.rg_cnf_clip.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.cnf_clip_cfg.rg_cnf_clip.next = next_c;
+        field_combo.isp_config.cnf_clip_cfg.rg_cnf_clip.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.cnf_clip_cfg.rg_cnf_clip.value <= 16'hff;
+        end else if(field_combo.isp_config.cnf_clip_cfg.rg_cnf_clip.load_next) begin
+            field_storage.isp_config.cnf_clip_cfg.rg_cnf_clip.value <= field_combo.isp_config.cnf_clip_cfg.rg_cnf_clip.next;
+        end
+    end
+    assign hwif_out.isp_config.cnf_clip_cfg.rg_cnf_clip.value = field_storage.isp_config.cnf_clip_cfg.rg_cnf_clip.value;
+    // Field: regmap.isp_config.cnf_thres_cfg.rg_cnf_thres
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.cnf_thres_cfg.rg_cnf_thres.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.cnf_thres_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.cnf_thres_cfg.rg_cnf_thres.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.cnf_thres_cfg.rg_cnf_thres.next = next_c;
+        field_combo.isp_config.cnf_thres_cfg.rg_cnf_thres.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.cnf_thres_cfg.rg_cnf_thres.value <= 16'h0;
+        end else if(field_combo.isp_config.cnf_thres_cfg.rg_cnf_thres.load_next) begin
+            field_storage.isp_config.cnf_thres_cfg.rg_cnf_thres.value <= field_combo.isp_config.cnf_thres_cfg.rg_cnf_thres.next;
+        end
+    end
+    assign hwif_out.isp_config.cnf_thres_cfg.rg_cnf_thres.value = field_storage.isp_config.cnf_thres_cfg.rg_cnf_thres.value;
 
     //--------------------------------------------------------------------------
     // Write response
@@ -302,17 +798,28 @@ module regmap (
     logic [15:0] readback_data;
 
     // Assign readback values to a flattened array
-    logic [15:0] readback_array[4];
-    assign readback_array[0][15:0] = (decoded_reg_strb.dbg.CHIP_ID_H && !decoded_req_is_wr) ? hwif_in.dbg.CHIP_ID_H.ro_chip_id_h.next : '0;
-    assign readback_array[1][15:0] = (decoded_reg_strb.dbg.CHIP_ID_ANA && !decoded_req_is_wr) ? hwif_in.dbg.CHIP_ID_ANA.ro_chip_id_ana.next : '0;
-    assign readback_array[2][1:0] = (decoded_reg_strb.dbg.rg_efuse_ctrl0 && !decoded_req_is_wr) ? field_storage.dbg.rg_efuse_ctrl0.rg_efuse_1.value : '0;
-    assign readback_array[2][4:2] = '0;
-    assign readback_array[2][7:5] = (decoded_reg_strb.dbg.rg_efuse_ctrl0 && !decoded_req_is_wr) ? field_storage.dbg.rg_efuse_ctrl0.rg_efuse_4.value : '0;
-    assign readback_array[2][15:8] = (decoded_reg_strb.dbg.rg_efuse_ctrl0 && !decoded_req_is_wr) ? field_storage.dbg.rg_efuse_ctrl0.rg_efuse_5.value : '0;
-    assign readback_array[3][1:0] = (decoded_reg_strb.dbg.rg_error && !decoded_req_is_wr) ? field_storage.dbg.rg_error.rg_efuse_10.value : '0;
-    assign readback_array[3][2:2] = (decoded_reg_strb.dbg.rg_error && !decoded_req_is_wr) ? field_storage.dbg.rg_error.rg_err_addr_overlap.value : '0;
-    assign readback_array[3][3:3] = (decoded_reg_strb.dbg.rg_error && !decoded_req_is_wr) ? field_storage.dbg.rg_error.rg_err_addr_flip.value : '0;
-    assign readback_array[3][15:4] = '0;
+    logic [15:0] readback_array[20];
+    assign readback_array[0][15:0] = (decoded_reg_strb.isp_config.isp_enable_cfg && !decoded_req_is_wr) ? field_storage.isp_config.isp_enable_cfg.rg_isp_enable.value : '0;
+    assign readback_array[1][1:0] = (decoded_reg_strb.isp_config.bayer_pattern_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bayer_pattern_cfg.rg_bayer_pattern.value : '0;
+    assign readback_array[1][15:2] = '0;
+    assign readback_array[2][15:0] = (decoded_reg_strb.isp_config.dpc_thres_cfg && !decoded_req_is_wr) ? field_storage.isp_config.dpc_thres_cfg.rg_dpc_thres.value : '0;
+    assign readback_array[3][15:0] = (decoded_reg_strb.isp_config.dpc_clip_cfg && !decoded_req_is_wr) ? field_storage.isp_config.dpc_clip_cfg.rg_dpc_clip.value : '0;
+    assign readback_array[4][15:0] = (decoded_reg_strb.isp_config.blc_bias_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.blc_bias_0_cfg.rg_blc_bias_0.value : '0;
+    assign readback_array[5][15:0] = (decoded_reg_strb.isp_config.blc_bias_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.blc_bias_1_cfg.rg_blc_bias_1.value : '0;
+    assign readback_array[6][15:0] = (decoded_reg_strb.isp_config.blc_bias_2_cfg && !decoded_req_is_wr) ? field_storage.isp_config.blc_bias_2_cfg.rg_blc_bias_2.value : '0;
+    assign readback_array[7][15:0] = (decoded_reg_strb.isp_config.blc_bias_3_cfg && !decoded_req_is_wr) ? field_storage.isp_config.blc_bias_3_cfg.rg_blc_bias_3.value : '0;
+    assign readback_array[8][15:0] = (decoded_reg_strb.isp_config.blc_clip_cfg && !decoded_req_is_wr) ? field_storage.isp_config.blc_clip_cfg.rg_blc_clip.value : '0;
+    assign readback_array[9][15:0] = (decoded_reg_strb.isp_config.awb_gain_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.awb_gain_0_cfg.rg_awb_gain_0.value : '0;
+    assign readback_array[10][15:0] = (decoded_reg_strb.isp_config.awb_gain_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.awb_gain_1_cfg.rg_awb_gain_1.value : '0;
+    assign readback_array[11][15:0] = (decoded_reg_strb.isp_config.awb_gain_2_cfg && !decoded_req_is_wr) ? field_storage.isp_config.awb_gain_2_cfg.rg_awb_gain_2.value : '0;
+    assign readback_array[12][15:0] = (decoded_reg_strb.isp_config.awb_gain_3_cfg && !decoded_req_is_wr) ? field_storage.isp_config.awb_gain_3_cfg.rg_awb_gain_3.value : '0;
+    assign readback_array[13][15:0] = (decoded_reg_strb.isp_config.awb_clip_cfg && !decoded_req_is_wr) ? field_storage.isp_config.awb_clip_cfg.rg_awb_clip.value : '0;
+    assign readback_array[14][15:0] = (decoded_reg_strb.isp_config.cnf_gain_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.cnf_gain_0_cfg.rg_cnf_gain_0.value : '0;
+    assign readback_array[15][15:0] = (decoded_reg_strb.isp_config.cnf_gain_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.cnf_gain_1_cfg.rg_cnf_gain_1.value : '0;
+    assign readback_array[16][15:0] = (decoded_reg_strb.isp_config.cnf_gain_2_cfg && !decoded_req_is_wr) ? field_storage.isp_config.cnf_gain_2_cfg.rg_cnf_gain_2.value : '0;
+    assign readback_array[17][15:0] = (decoded_reg_strb.isp_config.cnf_gain_3_cfg && !decoded_req_is_wr) ? field_storage.isp_config.cnf_gain_3_cfg.rg_cnf_gain_3.value : '0;
+    assign readback_array[18][15:0] = (decoded_reg_strb.isp_config.cnf_clip_cfg && !decoded_req_is_wr) ? field_storage.isp_config.cnf_clip_cfg.rg_cnf_clip.value : '0;
+    assign readback_array[19][15:0] = (decoded_reg_strb.isp_config.cnf_thres_cfg && !decoded_req_is_wr) ? field_storage.isp_config.cnf_thres_cfg.rg_cnf_thres.value : '0;
 
     // Reduce the array
     always_comb begin
@@ -320,7 +827,7 @@ module regmap (
         readback_done = decoded_req & ~decoded_req_is_wr;
         readback_err = '0;
         readback_data_var = '0;
-        for(int i=0; i<4; i++) readback_data_var |= readback_array[i];
+        for(int i=0; i<20; i++) readback_data_var |= readback_array[i];
         readback_data = readback_data_var;
     end
 
