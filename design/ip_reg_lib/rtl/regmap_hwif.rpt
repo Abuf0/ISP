@@ -1,5 +1,5 @@
-hwif_in.isp_config.bayer_pattern_cfg.rg_bayer_pattern.next[1:0]
 hwif_out.isp_config.isp_enable_cfg.rg_isp_enable.value[15:0]
+hwif_out.isp_config.bayer_pattern_cfg.rg_bayer_pattern.value[1:0]
 hwif_out.isp_config.dpc_thres_cfg.rg_dpc_thres.value[15:0]
 hwif_out.isp_config.dpc_clip_cfg.rg_dpc_clip.value[15:0]
 hwif_out.isp_config.blc_bias_0_cfg.rg_blc_bias_0.value[15:0]
@@ -111,3 +111,6 @@ hwif_out.isp_config.hue_cos_cfg.rg_hue_cos.value[15:0]
 hwif_out.isp_config.hue_sin_cfg.rg_hue_sin.value[15:0]
 hwif_out.isp_config.hsc_saturation_cfg.rg_hsc_saturation.value[15:0]
 hwif_out.isp_config.hsc_clip_cfg.rg_hsc_clip.value[15:0]
+hwif_out.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id.value[5:0]
+hwif_out.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id_en.value
+hwif_out.top_ctrl.clock_gate_cfg.rg_pixel_ckgt_en.value

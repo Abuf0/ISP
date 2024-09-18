@@ -134,7 +134,7 @@ always_ff@(posedge sda_clk_inv or negedge rst_restart_n) begin
         i2c_restart <= 1'b0;
 end
 
-assign dev_sel = rg_i2cs_id_en && (addr==rg_i2cs_id);  // TODO
+assign dev_sel = rg_i2cs_id_en && (addr=={rg_i2cs_id,i2cs_id0});  // TODO
 always_ff @(posedge scl_in or negedge rst_i2c_n) begin // clock edge
     if(~rst_i2c_n) 
         addr <= 7'd0;

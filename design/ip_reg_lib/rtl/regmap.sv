@@ -7,7 +7,7 @@ module regmap (
 
         input wire s_cpuif_req,
         input wire s_cpuif_req_is_wr,
-        input wire [7:0] s_cpuif_addr,
+        input wire [13:0] s_cpuif_addr,
         input wire [15:0] s_cpuif_wr_data,
         input wire [15:0] s_cpuif_wr_biten,
         output wire s_cpuif_req_stall_wr,
@@ -18,7 +18,6 @@ module regmap (
         output wire s_cpuif_wr_ack,
         output wire s_cpuif_wr_err,
 
-        input regmap_pkg::regmap__in_t hwif_in,
         output regmap_pkg::regmap__out_t hwif_out
     );
 
@@ -27,7 +26,7 @@ module regmap (
     //--------------------------------------------------------------------------
     logic cpuif_req;
     logic cpuif_req_is_wr;
-    logic [7:0] cpuif_addr;
+    logic [13:0] cpuif_addr;
     logic [15:0] cpuif_wr_data;
     logic [15:0] cpuif_wr_biten;
     logic cpuif_req_stall_wr;
@@ -181,6 +180,12 @@ module regmap (
             logic hsc_saturation_cfg;
             logic hsc_clip_cfg;
         } isp_config;
+        struct {
+            logic i2c_slave_id_cfg;
+        } i2c_ctrl;
+        struct {
+            logic clock_gate_cfg;
+        } top_ctrl;
     } decoded_reg_strb_t;
     decoded_reg_strb_t decoded_reg_strb;
     logic decoded_req;
@@ -189,119 +194,121 @@ module regmap (
     logic [15:0] decoded_wr_biten;
 
     always_comb begin
-        decoded_reg_strb.isp_config.isp_enable_cfg = cpuif_req_masked & (cpuif_addr == 8'h0);
-        decoded_reg_strb.isp_config.bayer_pattern_cfg = cpuif_req_masked & (cpuif_addr == 8'h2);
-        decoded_reg_strb.isp_config.dpc_thres_cfg = cpuif_req_masked & (cpuif_addr == 8'h4);
-        decoded_reg_strb.isp_config.dpc_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h6);
-        decoded_reg_strb.isp_config.blc_bias_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h8);
-        decoded_reg_strb.isp_config.blc_bias_1_cfg = cpuif_req_masked & (cpuif_addr == 8'ha);
-        decoded_reg_strb.isp_config.blc_bias_2_cfg = cpuif_req_masked & (cpuif_addr == 8'hc);
-        decoded_reg_strb.isp_config.blc_bias_3_cfg = cpuif_req_masked & (cpuif_addr == 8'he);
-        decoded_reg_strb.isp_config.blc_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h10);
-        decoded_reg_strb.isp_config.awb_gain_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h12);
-        decoded_reg_strb.isp_config.awb_gain_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h14);
-        decoded_reg_strb.isp_config.awb_gain_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h16);
-        decoded_reg_strb.isp_config.awb_gain_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h18);
-        decoded_reg_strb.isp_config.awb_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h1a);
-        decoded_reg_strb.isp_config.cnf_gain_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h1c);
-        decoded_reg_strb.isp_config.cnf_gain_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h1e);
-        decoded_reg_strb.isp_config.cnf_gain_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h20);
-        decoded_reg_strb.isp_config.cnf_gain_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h22);
-        decoded_reg_strb.isp_config.cnf_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h24);
-        decoded_reg_strb.isp_config.cnf_thres_cfg = cpuif_req_masked & (cpuif_addr == 8'h26);
-        decoded_reg_strb.isp_config.cfa_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h28);
-        decoded_reg_strb.isp_config.ccm_coef_r_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h2a);
-        decoded_reg_strb.isp_config.ccm_coef_r_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h2c);
-        decoded_reg_strb.isp_config.ccm_coef_r_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h2e);
-        decoded_reg_strb.isp_config.ccm_coef_r_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h30);
-        decoded_reg_strb.isp_config.ccm_coef_g_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h32);
-        decoded_reg_strb.isp_config.ccm_coef_g_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h34);
-        decoded_reg_strb.isp_config.ccm_coef_g_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h36);
-        decoded_reg_strb.isp_config.ccm_coef_g_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h38);
-        decoded_reg_strb.isp_config.ccm_coef_b_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h3a);
-        decoded_reg_strb.isp_config.ccm_coef_b_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h3c);
-        decoded_reg_strb.isp_config.ccm_coef_b_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h3e);
-        decoded_reg_strb.isp_config.ccm_coef_b_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h40);
-        decoded_reg_strb.isp_config.csc_coef_r_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h42);
-        decoded_reg_strb.isp_config.csc_coef_r_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h44);
-        decoded_reg_strb.isp_config.csc_coef_r_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h46);
-        decoded_reg_strb.isp_config.csc_coef_r_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h48);
-        decoded_reg_strb.isp_config.csc_coef_g_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h4a);
-        decoded_reg_strb.isp_config.csc_coef_g_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h4c);
-        decoded_reg_strb.isp_config.csc_coef_g_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h4e);
-        decoded_reg_strb.isp_config.csc_coef_g_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h50);
-        decoded_reg_strb.isp_config.csc_coef_b_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h52);
-        decoded_reg_strb.isp_config.csc_coef_b_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h54);
-        decoded_reg_strb.isp_config.csc_coef_b_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h56);
-        decoded_reg_strb.isp_config.csc_coef_b_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h58);
-        decoded_reg_strb.isp_config.nlm_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h5a);
-        decoded_reg_strb.isp_config.bnf_dw_00_cfg = cpuif_req_masked & (cpuif_addr == 8'h5c);
-        decoded_reg_strb.isp_config.bnf_dw_01_cfg = cpuif_req_masked & (cpuif_addr == 8'h5e);
-        decoded_reg_strb.isp_config.bnf_dw_02_cfg = cpuif_req_masked & (cpuif_addr == 8'h60);
-        decoded_reg_strb.isp_config.bnf_dw_03_cfg = cpuif_req_masked & (cpuif_addr == 8'h62);
-        decoded_reg_strb.isp_config.bnf_dw_04_cfg = cpuif_req_masked & (cpuif_addr == 8'h64);
-        decoded_reg_strb.isp_config.bnf_dw_10_cfg = cpuif_req_masked & (cpuif_addr == 8'h66);
-        decoded_reg_strb.isp_config.bnf_dw_11_cfg = cpuif_req_masked & (cpuif_addr == 8'h68);
-        decoded_reg_strb.isp_config.bnf_dw_12_cfg = cpuif_req_masked & (cpuif_addr == 8'h6a);
-        decoded_reg_strb.isp_config.bnf_dw_13_cfg = cpuif_req_masked & (cpuif_addr == 8'h6c);
-        decoded_reg_strb.isp_config.bnf_dw_14_cfg = cpuif_req_masked & (cpuif_addr == 8'h6e);
-        decoded_reg_strb.isp_config.bnf_dw_20_cfg = cpuif_req_masked & (cpuif_addr == 8'h70);
-        decoded_reg_strb.isp_config.bnf_dw_21_cfg = cpuif_req_masked & (cpuif_addr == 8'h72);
-        decoded_reg_strb.isp_config.bnf_dw_22_cfg = cpuif_req_masked & (cpuif_addr == 8'h74);
-        decoded_reg_strb.isp_config.bnf_dw_23_cfg = cpuif_req_masked & (cpuif_addr == 8'h76);
-        decoded_reg_strb.isp_config.bnf_dw_24_cfg = cpuif_req_masked & (cpuif_addr == 8'h78);
-        decoded_reg_strb.isp_config.bnf_dw_30_cfg = cpuif_req_masked & (cpuif_addr == 8'h7a);
-        decoded_reg_strb.isp_config.bnf_dw_31_cfg = cpuif_req_masked & (cpuif_addr == 8'h7c);
-        decoded_reg_strb.isp_config.bnf_dw_32_cfg = cpuif_req_masked & (cpuif_addr == 8'h7e);
-        decoded_reg_strb.isp_config.bnf_dw_33_cfg = cpuif_req_masked & (cpuif_addr == 8'h80);
-        decoded_reg_strb.isp_config.bnf_dw_34_cfg = cpuif_req_masked & (cpuif_addr == 8'h82);
-        decoded_reg_strb.isp_config.bnf_dw_40_cfg = cpuif_req_masked & (cpuif_addr == 8'h84);
-        decoded_reg_strb.isp_config.bnf_dw_41_cfg = cpuif_req_masked & (cpuif_addr == 8'h86);
-        decoded_reg_strb.isp_config.bnf_dw_42_cfg = cpuif_req_masked & (cpuif_addr == 8'h88);
-        decoded_reg_strb.isp_config.bnf_dw_43_cfg = cpuif_req_masked & (cpuif_addr == 8'h8a);
-        decoded_reg_strb.isp_config.bnf_dw_44_cfg = cpuif_req_masked & (cpuif_addr == 8'h8c);
-        decoded_reg_strb.isp_config.bnf_rw_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h8e);
-        decoded_reg_strb.isp_config.bnf_rw_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h90);
-        decoded_reg_strb.isp_config.bnf_rw_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h92);
-        decoded_reg_strb.isp_config.bnf_rw_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h94);
-        decoded_reg_strb.isp_config.bnf_rthres_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h96);
-        decoded_reg_strb.isp_config.bnf_rthres_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h98);
-        decoded_reg_strb.isp_config.bnf_rthres_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h9a);
-        decoded_reg_strb.isp_config.bnf_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h9c);
-        decoded_reg_strb.isp_config.edge_filter_00_cfg = cpuif_req_masked & (cpuif_addr == 8'h9e);
-        decoded_reg_strb.isp_config.edge_filter_01_cfg = cpuif_req_masked & (cpuif_addr == 8'ha0);
-        decoded_reg_strb.isp_config.edge_filter_02_cfg = cpuif_req_masked & (cpuif_addr == 8'ha2);
-        decoded_reg_strb.isp_config.edge_filter_03_cfg = cpuif_req_masked & (cpuif_addr == 8'ha4);
-        decoded_reg_strb.isp_config.edge_filter_04_cfg = cpuif_req_masked & (cpuif_addr == 8'ha6);
-        decoded_reg_strb.isp_config.edge_filter_10_cfg = cpuif_req_masked & (cpuif_addr == 8'ha8);
-        decoded_reg_strb.isp_config.edge_filter_11_cfg = cpuif_req_masked & (cpuif_addr == 8'haa);
-        decoded_reg_strb.isp_config.edge_filter_12_cfg = cpuif_req_masked & (cpuif_addr == 8'hac);
-        decoded_reg_strb.isp_config.edge_filter_13_cfg = cpuif_req_masked & (cpuif_addr == 8'hae);
-        decoded_reg_strb.isp_config.edge_filter_14_cfg = cpuif_req_masked & (cpuif_addr == 8'hb0);
-        decoded_reg_strb.isp_config.edge_filter_20_cfg = cpuif_req_masked & (cpuif_addr == 8'hb2);
-        decoded_reg_strb.isp_config.edge_filter_21_cfg = cpuif_req_masked & (cpuif_addr == 8'hb4);
-        decoded_reg_strb.isp_config.edge_filter_22_cfg = cpuif_req_masked & (cpuif_addr == 8'hb6);
-        decoded_reg_strb.isp_config.edge_filter_23_cfg = cpuif_req_masked & (cpuif_addr == 8'hb8);
-        decoded_reg_strb.isp_config.edge_filter_24_cfg = cpuif_req_masked & (cpuif_addr == 8'hba);
-        decoded_reg_strb.isp_config.eeh_gain_0_cfg = cpuif_req_masked & (cpuif_addr == 8'hbc);
-        decoded_reg_strb.isp_config.eeh_gain_1_cfg = cpuif_req_masked & (cpuif_addr == 8'hbe);
-        decoded_reg_strb.isp_config.eeh_rthres_0_cfg = cpuif_req_masked & (cpuif_addr == 8'hc0);
-        decoded_reg_strb.isp_config.eeh_rthres_1_cfg = cpuif_req_masked & (cpuif_addr == 8'hc2);
-        decoded_reg_strb.isp_config.eeh_emclip_0_cfg = cpuif_req_masked & (cpuif_addr == 8'hc4);
-        decoded_reg_strb.isp_config.eeh_emclip_1_cfg = cpuif_req_masked & (cpuif_addr == 8'hc6);
-        decoded_reg_strb.isp_config.bcc_brightness_cfg = cpuif_req_masked & (cpuif_addr == 8'hc8);
-        decoded_reg_strb.isp_config.bcc_constrast_cfg = cpuif_req_masked & (cpuif_addr == 8'hca);
-        decoded_reg_strb.isp_config.bcc_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'hcc);
-        decoded_reg_strb.isp_config.fcs_edge_0_cfg = cpuif_req_masked & (cpuif_addr == 8'hce);
-        decoded_reg_strb.isp_config.fcs_edge_1_cfg = cpuif_req_masked & (cpuif_addr == 8'hd0);
-        decoded_reg_strb.isp_config.fcs_gain_cfg = cpuif_req_masked & (cpuif_addr == 8'hd2);
-        decoded_reg_strb.isp_config.fcs_intercept_cfg = cpuif_req_masked & (cpuif_addr == 8'hd4);
-        decoded_reg_strb.isp_config.fcs_slop_cfg = cpuif_req_masked & (cpuif_addr == 8'hd6);
-        decoded_reg_strb.isp_config.fcs_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'hd8);
-        decoded_reg_strb.isp_config.hue_cos_cfg = cpuif_req_masked & (cpuif_addr == 8'hda);
-        decoded_reg_strb.isp_config.hue_sin_cfg = cpuif_req_masked & (cpuif_addr == 8'hdc);
-        decoded_reg_strb.isp_config.hsc_saturation_cfg = cpuif_req_masked & (cpuif_addr == 8'hde);
-        decoded_reg_strb.isp_config.hsc_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'he0);
+        decoded_reg_strb.isp_config.isp_enable_cfg = cpuif_req_masked & (cpuif_addr == 14'h0);
+        decoded_reg_strb.isp_config.bayer_pattern_cfg = cpuif_req_masked & (cpuif_addr == 14'h2);
+        decoded_reg_strb.isp_config.dpc_thres_cfg = cpuif_req_masked & (cpuif_addr == 14'h4);
+        decoded_reg_strb.isp_config.dpc_clip_cfg = cpuif_req_masked & (cpuif_addr == 14'h6);
+        decoded_reg_strb.isp_config.blc_bias_0_cfg = cpuif_req_masked & (cpuif_addr == 14'h8);
+        decoded_reg_strb.isp_config.blc_bias_1_cfg = cpuif_req_masked & (cpuif_addr == 14'ha);
+        decoded_reg_strb.isp_config.blc_bias_2_cfg = cpuif_req_masked & (cpuif_addr == 14'hc);
+        decoded_reg_strb.isp_config.blc_bias_3_cfg = cpuif_req_masked & (cpuif_addr == 14'he);
+        decoded_reg_strb.isp_config.blc_clip_cfg = cpuif_req_masked & (cpuif_addr == 14'h10);
+        decoded_reg_strb.isp_config.awb_gain_0_cfg = cpuif_req_masked & (cpuif_addr == 14'h12);
+        decoded_reg_strb.isp_config.awb_gain_1_cfg = cpuif_req_masked & (cpuif_addr == 14'h14);
+        decoded_reg_strb.isp_config.awb_gain_2_cfg = cpuif_req_masked & (cpuif_addr == 14'h16);
+        decoded_reg_strb.isp_config.awb_gain_3_cfg = cpuif_req_masked & (cpuif_addr == 14'h18);
+        decoded_reg_strb.isp_config.awb_clip_cfg = cpuif_req_masked & (cpuif_addr == 14'h1a);
+        decoded_reg_strb.isp_config.cnf_gain_0_cfg = cpuif_req_masked & (cpuif_addr == 14'h1c);
+        decoded_reg_strb.isp_config.cnf_gain_1_cfg = cpuif_req_masked & (cpuif_addr == 14'h1e);
+        decoded_reg_strb.isp_config.cnf_gain_2_cfg = cpuif_req_masked & (cpuif_addr == 14'h20);
+        decoded_reg_strb.isp_config.cnf_gain_3_cfg = cpuif_req_masked & (cpuif_addr == 14'h22);
+        decoded_reg_strb.isp_config.cnf_clip_cfg = cpuif_req_masked & (cpuif_addr == 14'h24);
+        decoded_reg_strb.isp_config.cnf_thres_cfg = cpuif_req_masked & (cpuif_addr == 14'h26);
+        decoded_reg_strb.isp_config.cfa_clip_cfg = cpuif_req_masked & (cpuif_addr == 14'h28);
+        decoded_reg_strb.isp_config.ccm_coef_r_0_cfg = cpuif_req_masked & (cpuif_addr == 14'h2a);
+        decoded_reg_strb.isp_config.ccm_coef_r_1_cfg = cpuif_req_masked & (cpuif_addr == 14'h2c);
+        decoded_reg_strb.isp_config.ccm_coef_r_2_cfg = cpuif_req_masked & (cpuif_addr == 14'h2e);
+        decoded_reg_strb.isp_config.ccm_coef_r_3_cfg = cpuif_req_masked & (cpuif_addr == 14'h30);
+        decoded_reg_strb.isp_config.ccm_coef_g_0_cfg = cpuif_req_masked & (cpuif_addr == 14'h32);
+        decoded_reg_strb.isp_config.ccm_coef_g_1_cfg = cpuif_req_masked & (cpuif_addr == 14'h34);
+        decoded_reg_strb.isp_config.ccm_coef_g_2_cfg = cpuif_req_masked & (cpuif_addr == 14'h36);
+        decoded_reg_strb.isp_config.ccm_coef_g_3_cfg = cpuif_req_masked & (cpuif_addr == 14'h38);
+        decoded_reg_strb.isp_config.ccm_coef_b_0_cfg = cpuif_req_masked & (cpuif_addr == 14'h3a);
+        decoded_reg_strb.isp_config.ccm_coef_b_1_cfg = cpuif_req_masked & (cpuif_addr == 14'h3c);
+        decoded_reg_strb.isp_config.ccm_coef_b_2_cfg = cpuif_req_masked & (cpuif_addr == 14'h3e);
+        decoded_reg_strb.isp_config.ccm_coef_b_3_cfg = cpuif_req_masked & (cpuif_addr == 14'h40);
+        decoded_reg_strb.isp_config.csc_coef_r_0_cfg = cpuif_req_masked & (cpuif_addr == 14'h42);
+        decoded_reg_strb.isp_config.csc_coef_r_1_cfg = cpuif_req_masked & (cpuif_addr == 14'h44);
+        decoded_reg_strb.isp_config.csc_coef_r_2_cfg = cpuif_req_masked & (cpuif_addr == 14'h46);
+        decoded_reg_strb.isp_config.csc_coef_r_3_cfg = cpuif_req_masked & (cpuif_addr == 14'h48);
+        decoded_reg_strb.isp_config.csc_coef_g_0_cfg = cpuif_req_masked & (cpuif_addr == 14'h4a);
+        decoded_reg_strb.isp_config.csc_coef_g_1_cfg = cpuif_req_masked & (cpuif_addr == 14'h4c);
+        decoded_reg_strb.isp_config.csc_coef_g_2_cfg = cpuif_req_masked & (cpuif_addr == 14'h4e);
+        decoded_reg_strb.isp_config.csc_coef_g_3_cfg = cpuif_req_masked & (cpuif_addr == 14'h50);
+        decoded_reg_strb.isp_config.csc_coef_b_0_cfg = cpuif_req_masked & (cpuif_addr == 14'h52);
+        decoded_reg_strb.isp_config.csc_coef_b_1_cfg = cpuif_req_masked & (cpuif_addr == 14'h54);
+        decoded_reg_strb.isp_config.csc_coef_b_2_cfg = cpuif_req_masked & (cpuif_addr == 14'h56);
+        decoded_reg_strb.isp_config.csc_coef_b_3_cfg = cpuif_req_masked & (cpuif_addr == 14'h58);
+        decoded_reg_strb.isp_config.nlm_clip_cfg = cpuif_req_masked & (cpuif_addr == 14'h5a);
+        decoded_reg_strb.isp_config.bnf_dw_00_cfg = cpuif_req_masked & (cpuif_addr == 14'h5c);
+        decoded_reg_strb.isp_config.bnf_dw_01_cfg = cpuif_req_masked & (cpuif_addr == 14'h5e);
+        decoded_reg_strb.isp_config.bnf_dw_02_cfg = cpuif_req_masked & (cpuif_addr == 14'h60);
+        decoded_reg_strb.isp_config.bnf_dw_03_cfg = cpuif_req_masked & (cpuif_addr == 14'h62);
+        decoded_reg_strb.isp_config.bnf_dw_04_cfg = cpuif_req_masked & (cpuif_addr == 14'h64);
+        decoded_reg_strb.isp_config.bnf_dw_10_cfg = cpuif_req_masked & (cpuif_addr == 14'h66);
+        decoded_reg_strb.isp_config.bnf_dw_11_cfg = cpuif_req_masked & (cpuif_addr == 14'h68);
+        decoded_reg_strb.isp_config.bnf_dw_12_cfg = cpuif_req_masked & (cpuif_addr == 14'h6a);
+        decoded_reg_strb.isp_config.bnf_dw_13_cfg = cpuif_req_masked & (cpuif_addr == 14'h6c);
+        decoded_reg_strb.isp_config.bnf_dw_14_cfg = cpuif_req_masked & (cpuif_addr == 14'h6e);
+        decoded_reg_strb.isp_config.bnf_dw_20_cfg = cpuif_req_masked & (cpuif_addr == 14'h70);
+        decoded_reg_strb.isp_config.bnf_dw_21_cfg = cpuif_req_masked & (cpuif_addr == 14'h72);
+        decoded_reg_strb.isp_config.bnf_dw_22_cfg = cpuif_req_masked & (cpuif_addr == 14'h74);
+        decoded_reg_strb.isp_config.bnf_dw_23_cfg = cpuif_req_masked & (cpuif_addr == 14'h76);
+        decoded_reg_strb.isp_config.bnf_dw_24_cfg = cpuif_req_masked & (cpuif_addr == 14'h78);
+        decoded_reg_strb.isp_config.bnf_dw_30_cfg = cpuif_req_masked & (cpuif_addr == 14'h7a);
+        decoded_reg_strb.isp_config.bnf_dw_31_cfg = cpuif_req_masked & (cpuif_addr == 14'h7c);
+        decoded_reg_strb.isp_config.bnf_dw_32_cfg = cpuif_req_masked & (cpuif_addr == 14'h7e);
+        decoded_reg_strb.isp_config.bnf_dw_33_cfg = cpuif_req_masked & (cpuif_addr == 14'h80);
+        decoded_reg_strb.isp_config.bnf_dw_34_cfg = cpuif_req_masked & (cpuif_addr == 14'h82);
+        decoded_reg_strb.isp_config.bnf_dw_40_cfg = cpuif_req_masked & (cpuif_addr == 14'h84);
+        decoded_reg_strb.isp_config.bnf_dw_41_cfg = cpuif_req_masked & (cpuif_addr == 14'h86);
+        decoded_reg_strb.isp_config.bnf_dw_42_cfg = cpuif_req_masked & (cpuif_addr == 14'h88);
+        decoded_reg_strb.isp_config.bnf_dw_43_cfg = cpuif_req_masked & (cpuif_addr == 14'h8a);
+        decoded_reg_strb.isp_config.bnf_dw_44_cfg = cpuif_req_masked & (cpuif_addr == 14'h8c);
+        decoded_reg_strb.isp_config.bnf_rw_0_cfg = cpuif_req_masked & (cpuif_addr == 14'h8e);
+        decoded_reg_strb.isp_config.bnf_rw_1_cfg = cpuif_req_masked & (cpuif_addr == 14'h90);
+        decoded_reg_strb.isp_config.bnf_rw_2_cfg = cpuif_req_masked & (cpuif_addr == 14'h92);
+        decoded_reg_strb.isp_config.bnf_rw_3_cfg = cpuif_req_masked & (cpuif_addr == 14'h94);
+        decoded_reg_strb.isp_config.bnf_rthres_0_cfg = cpuif_req_masked & (cpuif_addr == 14'h96);
+        decoded_reg_strb.isp_config.bnf_rthres_1_cfg = cpuif_req_masked & (cpuif_addr == 14'h98);
+        decoded_reg_strb.isp_config.bnf_rthres_2_cfg = cpuif_req_masked & (cpuif_addr == 14'h9a);
+        decoded_reg_strb.isp_config.bnf_clip_cfg = cpuif_req_masked & (cpuif_addr == 14'h9c);
+        decoded_reg_strb.isp_config.edge_filter_00_cfg = cpuif_req_masked & (cpuif_addr == 14'h9e);
+        decoded_reg_strb.isp_config.edge_filter_01_cfg = cpuif_req_masked & (cpuif_addr == 14'ha0);
+        decoded_reg_strb.isp_config.edge_filter_02_cfg = cpuif_req_masked & (cpuif_addr == 14'ha2);
+        decoded_reg_strb.isp_config.edge_filter_03_cfg = cpuif_req_masked & (cpuif_addr == 14'ha4);
+        decoded_reg_strb.isp_config.edge_filter_04_cfg = cpuif_req_masked & (cpuif_addr == 14'ha6);
+        decoded_reg_strb.isp_config.edge_filter_10_cfg = cpuif_req_masked & (cpuif_addr == 14'ha8);
+        decoded_reg_strb.isp_config.edge_filter_11_cfg = cpuif_req_masked & (cpuif_addr == 14'haa);
+        decoded_reg_strb.isp_config.edge_filter_12_cfg = cpuif_req_masked & (cpuif_addr == 14'hac);
+        decoded_reg_strb.isp_config.edge_filter_13_cfg = cpuif_req_masked & (cpuif_addr == 14'hae);
+        decoded_reg_strb.isp_config.edge_filter_14_cfg = cpuif_req_masked & (cpuif_addr == 14'hb0);
+        decoded_reg_strb.isp_config.edge_filter_20_cfg = cpuif_req_masked & (cpuif_addr == 14'hb2);
+        decoded_reg_strb.isp_config.edge_filter_21_cfg = cpuif_req_masked & (cpuif_addr == 14'hb4);
+        decoded_reg_strb.isp_config.edge_filter_22_cfg = cpuif_req_masked & (cpuif_addr == 14'hb6);
+        decoded_reg_strb.isp_config.edge_filter_23_cfg = cpuif_req_masked & (cpuif_addr == 14'hb8);
+        decoded_reg_strb.isp_config.edge_filter_24_cfg = cpuif_req_masked & (cpuif_addr == 14'hba);
+        decoded_reg_strb.isp_config.eeh_gain_0_cfg = cpuif_req_masked & (cpuif_addr == 14'hbc);
+        decoded_reg_strb.isp_config.eeh_gain_1_cfg = cpuif_req_masked & (cpuif_addr == 14'hbe);
+        decoded_reg_strb.isp_config.eeh_rthres_0_cfg = cpuif_req_masked & (cpuif_addr == 14'hc0);
+        decoded_reg_strb.isp_config.eeh_rthres_1_cfg = cpuif_req_masked & (cpuif_addr == 14'hc2);
+        decoded_reg_strb.isp_config.eeh_emclip_0_cfg = cpuif_req_masked & (cpuif_addr == 14'hc4);
+        decoded_reg_strb.isp_config.eeh_emclip_1_cfg = cpuif_req_masked & (cpuif_addr == 14'hc6);
+        decoded_reg_strb.isp_config.bcc_brightness_cfg = cpuif_req_masked & (cpuif_addr == 14'hc8);
+        decoded_reg_strb.isp_config.bcc_constrast_cfg = cpuif_req_masked & (cpuif_addr == 14'hca);
+        decoded_reg_strb.isp_config.bcc_clip_cfg = cpuif_req_masked & (cpuif_addr == 14'hcc);
+        decoded_reg_strb.isp_config.fcs_edge_0_cfg = cpuif_req_masked & (cpuif_addr == 14'hce);
+        decoded_reg_strb.isp_config.fcs_edge_1_cfg = cpuif_req_masked & (cpuif_addr == 14'hd0);
+        decoded_reg_strb.isp_config.fcs_gain_cfg = cpuif_req_masked & (cpuif_addr == 14'hd2);
+        decoded_reg_strb.isp_config.fcs_intercept_cfg = cpuif_req_masked & (cpuif_addr == 14'hd4);
+        decoded_reg_strb.isp_config.fcs_slop_cfg = cpuif_req_masked & (cpuif_addr == 14'hd6);
+        decoded_reg_strb.isp_config.fcs_clip_cfg = cpuif_req_masked & (cpuif_addr == 14'hd8);
+        decoded_reg_strb.isp_config.hue_cos_cfg = cpuif_req_masked & (cpuif_addr == 14'hda);
+        decoded_reg_strb.isp_config.hue_sin_cfg = cpuif_req_masked & (cpuif_addr == 14'hdc);
+        decoded_reg_strb.isp_config.hsc_saturation_cfg = cpuif_req_masked & (cpuif_addr == 14'hde);
+        decoded_reg_strb.isp_config.hsc_clip_cfg = cpuif_req_masked & (cpuif_addr == 14'he0);
+        decoded_reg_strb.i2c_ctrl.i2c_slave_id_cfg = cpuif_req_masked & (cpuif_addr == 14'h2000);
+        decoded_reg_strb.top_ctrl.clock_gate_cfg = cpuif_req_masked & (cpuif_addr == 14'h3000);
     end
 
     // Pass down signals to next stage
@@ -994,6 +1001,26 @@ module regmap (
                 } rg_hsc_clip;
             } hsc_clip_cfg;
         } isp_config;
+        struct {
+            struct {
+                struct {
+                    logic [5:0] next;
+                    logic load_next;
+                } rg_i2cs_id;
+                struct {
+                    logic next;
+                    logic load_next;
+                } rg_i2cs_id_en;
+            } i2c_slave_id_cfg;
+        } i2c_ctrl;
+        struct {
+            struct {
+                struct {
+                    logic next;
+                    logic load_next;
+                } rg_pixel_ckgt_en;
+            } clock_gate_cfg;
+        } top_ctrl;
     } field_combo_t;
     field_combo_t field_combo;
 
@@ -1565,6 +1592,23 @@ module regmap (
                 } rg_hsc_clip;
             } hsc_clip_cfg;
         } isp_config;
+        struct {
+            struct {
+                struct {
+                    logic [5:0] value;
+                } rg_i2cs_id;
+                struct {
+                    logic value;
+                } rg_i2cs_id_en;
+            } i2c_slave_id_cfg;
+        } i2c_ctrl;
+        struct {
+            struct {
+                struct {
+                    logic value;
+                } rg_pixel_ckgt_en;
+            } clock_gate_cfg;
+        } top_ctrl;
     } field_storage_t;
     field_storage_t field_storage;
 
@@ -1598,9 +1642,6 @@ module regmap (
         if(decoded_reg_strb.isp_config.bayer_pattern_cfg && decoded_req_is_wr) begin // SW write
             next_c = (field_storage.isp_config.bayer_pattern_cfg.rg_bayer_pattern.value & ~decoded_wr_biten[1:0]) | (decoded_wr_data[1:0] & decoded_wr_biten[1:0]);
             load_next_c = '1;
-        end else begin // HW Write
-            next_c = hwif_in.isp_config.bayer_pattern_cfg.rg_bayer_pattern.next;
-            load_next_c = '1;
         end
         field_combo.isp_config.bayer_pattern_cfg.rg_bayer_pattern.next = next_c;
         field_combo.isp_config.bayer_pattern_cfg.rg_bayer_pattern.load_next = load_next_c;
@@ -1612,6 +1653,7 @@ module regmap (
             field_storage.isp_config.bayer_pattern_cfg.rg_bayer_pattern.value <= field_combo.isp_config.bayer_pattern_cfg.rg_bayer_pattern.next;
         end
     end
+    assign hwif_out.isp_config.bayer_pattern_cfg.rg_bayer_pattern.value = field_storage.isp_config.bayer_pattern_cfg.rg_bayer_pattern.value;
     // Field: regmap.isp_config.dpc_thres_cfg.rg_dpc_thres
     always_comb begin
         automatic logic [15:0] next_c;
@@ -3943,6 +3985,69 @@ module regmap (
         end
     end
     assign hwif_out.isp_config.hsc_clip_cfg.rg_hsc_clip.value = field_storage.isp_config.hsc_clip_cfg.rg_hsc_clip.value;
+    // Field: regmap.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id
+    always_comb begin
+        automatic logic [5:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.i2c_ctrl.i2c_slave_id_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id.value & ~decoded_wr_biten[5:0]) | (decoded_wr_data[5:0] & decoded_wr_biten[5:0]);
+            load_next_c = '1;
+        end
+        field_combo.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id.next = next_c;
+        field_combo.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id.value <= 6'ha;
+        end else if(field_combo.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id.load_next) begin
+            field_storage.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id.value <= field_combo.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id.next;
+        end
+    end
+    assign hwif_out.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id.value = field_storage.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id.value;
+    // Field: regmap.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id_en
+    always_comb begin
+        automatic logic [0:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id_en.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.i2c_ctrl.i2c_slave_id_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id_en.value & ~decoded_wr_biten[6:6]) | (decoded_wr_data[6:6] & decoded_wr_biten[6:6]);
+            load_next_c = '1;
+        end
+        field_combo.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id_en.next = next_c;
+        field_combo.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id_en.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id_en.value <= 1'h1;
+        end else if(field_combo.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id_en.load_next) begin
+            field_storage.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id_en.value <= field_combo.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id_en.next;
+        end
+    end
+    assign hwif_out.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id_en.value = field_storage.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id_en.value;
+    // Field: regmap.top_ctrl.clock_gate_cfg.rg_pixel_ckgt_en
+    always_comb begin
+        automatic logic [0:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.top_ctrl.clock_gate_cfg.rg_pixel_ckgt_en.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.top_ctrl.clock_gate_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.top_ctrl.clock_gate_cfg.rg_pixel_ckgt_en.value & ~decoded_wr_biten[0:0]) | (decoded_wr_data[0:0] & decoded_wr_biten[0:0]);
+            load_next_c = '1;
+        end
+        field_combo.top_ctrl.clock_gate_cfg.rg_pixel_ckgt_en.next = next_c;
+        field_combo.top_ctrl.clock_gate_cfg.rg_pixel_ckgt_en.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.top_ctrl.clock_gate_cfg.rg_pixel_ckgt_en.value <= 1'h0;
+        end else if(field_combo.top_ctrl.clock_gate_cfg.rg_pixel_ckgt_en.load_next) begin
+            field_storage.top_ctrl.clock_gate_cfg.rg_pixel_ckgt_en.value <= field_combo.top_ctrl.clock_gate_cfg.rg_pixel_ckgt_en.next;
+        end
+    end
+    assign hwif_out.top_ctrl.clock_gate_cfg.rg_pixel_ckgt_en.value = field_storage.top_ctrl.clock_gate_cfg.rg_pixel_ckgt_en.value;
 
     //--------------------------------------------------------------------------
     // Write response
@@ -3960,7 +4065,7 @@ module regmap (
     logic [15:0] readback_data;
 
     // Assign readback values to a flattened array
-    logic [15:0] readback_array[113];
+    logic [15:0] readback_array[115];
     assign readback_array[0][15:0] = (decoded_reg_strb.isp_config.isp_enable_cfg && !decoded_req_is_wr) ? field_storage.isp_config.isp_enable_cfg.rg_isp_enable.value : '0;
     assign readback_array[1][1:0] = (decoded_reg_strb.isp_config.bayer_pattern_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bayer_pattern_cfg.rg_bayer_pattern.value : '0;
     assign readback_array[1][15:2] = '0;
@@ -4090,6 +4195,11 @@ module regmap (
     assign readback_array[110][15:0] = (decoded_reg_strb.isp_config.hue_sin_cfg && !decoded_req_is_wr) ? field_storage.isp_config.hue_sin_cfg.rg_hue_sin.value : '0;
     assign readback_array[111][15:0] = (decoded_reg_strb.isp_config.hsc_saturation_cfg && !decoded_req_is_wr) ? field_storage.isp_config.hsc_saturation_cfg.rg_hsc_saturation.value : '0;
     assign readback_array[112][15:0] = (decoded_reg_strb.isp_config.hsc_clip_cfg && !decoded_req_is_wr) ? field_storage.isp_config.hsc_clip_cfg.rg_hsc_clip.value : '0;
+    assign readback_array[113][5:0] = (decoded_reg_strb.i2c_ctrl.i2c_slave_id_cfg && !decoded_req_is_wr) ? field_storage.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id.value : '0;
+    assign readback_array[113][6:6] = (decoded_reg_strb.i2c_ctrl.i2c_slave_id_cfg && !decoded_req_is_wr) ? field_storage.i2c_ctrl.i2c_slave_id_cfg.rg_i2cs_id_en.value : '0;
+    assign readback_array[113][15:7] = '0;
+    assign readback_array[114][0:0] = (decoded_reg_strb.top_ctrl.clock_gate_cfg && !decoded_req_is_wr) ? field_storage.top_ctrl.clock_gate_cfg.rg_pixel_ckgt_en.value : '0;
+    assign readback_array[114][15:1] = '0;
 
     // Reduce the array
     always_comb begin
@@ -4097,7 +4207,7 @@ module regmap (
         readback_done = decoded_req & ~decoded_req_is_wr;
         readback_err = '0;
         readback_data_var = '0;
-        for(int i=0; i<113; i++) readback_data_var |= readback_array[i];
+        for(int i=0; i<115; i++) readback_data_var |= readback_array[i];
         readback_data = readback_data_var;
     end
 

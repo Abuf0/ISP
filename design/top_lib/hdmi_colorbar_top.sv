@@ -30,6 +30,9 @@ module  hdmi_colorbar_top# (
 )(
     input        sys_clk        ,
     input        sys_rst_n      , 
+    input        scl_in         ,
+    input        sda_in         ,
+    output       sda_out        ,
     output       tmds_clk_p     ,    // TMDS ʱ��ͨ��
     output       tmds_clk_n     ,
     output [2:0] tmds_data_p    ,   // TMDS ����ͨ��
@@ -45,6 +48,12 @@ logic          pixel_clk;
 logic          pixel_clk_5x;
 logic          clk_locked;
 logic          rst_pix_n;
+logic          clk_i2c;
+logic          rstn_i2c;
+logic          pixel_icg_enable;
+
+logic          sda_oe;
+
 logic  [10:0]  pixel_xpos_w;
 logic  [10:0]  pixel_ypos_w;
 logic  [DW-1:0]  pixel_data_rgb[0:16];
@@ -52,7 +61,6 @@ logic          pixel_data_vld[0:16];
 logic  [23:0]  buffer_data_rgb_csc;
 logic  [23:0]  pixel_data_w;
 logic  [BW-1:0]  pixel_data_bayer[0:16];
-logic  [15:0]  isp_enable;
 logic [DW-1:0] pixel_data_out;
 logic [DW-1:0] pixel_data_load   ;
 logic [DW-1:0] pixel_data_update ;
@@ -61,51 +69,76 @@ logic          rd_en             ;
 logic          wt_rst            ;
 logic          wt_en             ;
 
-logic          video_hs;
-logic          video_vs;
-logic          video_de;
-logic  [23:0]  video_rgb;
+logic          video_hs         ;
+logic          video_vs         ;
+logic          video_de         ;
+logic  [23:0]  video_rgb        ;
 
 // isp_top module config //
 //logic [3:0]  isp_seq [0:15];   // ISP顺序，寄存器配置
-logic [BW-1:0] dpc_thres;
-logic [BW-1:0] dpc_clip;
-logic [1:0] bayer_pattern;
-logic [BW-1:0] blc_bias [0:3];
-logic [BW-1:0] blc_clip;
-logic [BW-1:0] awb_gain [0:3];
-logic [BW-1:0] awb_clip;
-logic [BW-1:0] cnf_gain [0:3];
-logic [BW-1:0] cnf_clip;
-logic [BW-1:0] cnf_thres;
-logic [BW-1:0] cfa_clip;
-logic [DW-1:0] ccm_coef_r [0:3];
-logic [DW-1:0] ccm_coef_g [0:3];
-logic [DW-1:0] ccm_coef_b [0:3];
-logic signed [DW-1:0] csc_coef_r [0:3];
-logic signed [DW-1:0] csc_coef_g [0:3];
-logic signed [DW-1:0] csc_coef_b [0:3];
-logic [DW-1:0] nlm_clip;
-logic [DW-1:0] bnf_dw [0:4][0:4];   
-logic [DW-1:0] bnf_rw [0:3]     ;     
-logic [DW-1:0] bnf_rthres [0:2]   ;   
-logic [DW-1:0] bnf_clip     ;         
-logic signed [4:0] edge_filter [0:2][0:4] ;
-logic [DW-1:0] eeh_rthres [0:1] ;      
-logic [DW-1:0] eeh_gain [0:1]  ; 
-logic signed [DW:0] eeh_emclip [0:1];      
-logic [DW-1:0] bcc_brightness;
-logic [DW-1:0] bcc_contrast ;
-logic [DW-1:0] bcc_clip      ;
-logic [DW/3-1:0] fcs_edge [0:1] ;
-logic [DW/3-1:0] fcs_gain       ;
-logic [DW/3-1:0] fcs_intercept  ;
-logic [DW/3-1:0] fcs_slop       ;
-logic [DW/3-1:0] fcs_clip       ;
-logic signed [DW/3:0] hue_cos          ;
-logic signed [DW/3:0] hue_sin          ;
-logic [DW/3-1:0] hsc_saturation   ;
-logic [DW/3-1:0] hsc_clip         ;
+logic  [15:0]  rg_isp_enable                    ;
+logic [BW-1:0] rg_dpc_thres                     ;
+logic [BW-1:0] rg_dpc_clip                      ;
+logic [1:0]    rg_bayer_pattern                 ;
+logic [BW-1:0] rg_blc_bias [0:3]                ;
+logic [BW-1:0] rg_blc_clip                      ;
+logic [BW-1:0] rg_awb_gain [0:3]                ;
+logic [BW-1:0] rg_awb_clip                      ;
+logic [BW-1:0] rg_cnf_gain [0:3]                ;
+logic [BW-1:0] rg_cnf_clip                      ;
+logic [BW-1:0] rg_cnf_thres                     ;
+logic [BW-1:0] rg_cfa_clip                      ;
+logic [DW-1:0] rg_ccm_coef_r [0:3]              ;
+logic [DW-1:0] rg_ccm_coef_g [0:3]              ;
+logic [DW-1:0] rg_ccm_coef_b [0:3]              ;
+logic signed [DW-1:0] rg_csc_coef_r [0:3]       ;
+logic signed [DW-1:0] rg_csc_coef_g [0:3]       ;
+logic signed [DW-1:0] rg_csc_coef_b [0:3]       ;
+logic [DW-1:0] rg_nlm_clip                      ;
+logic [DW-1:0] rg_bnf_dw [0:4][0:4]             ;   
+logic [DW-1:0] rg_bnf_rw [0:3]                  ;     
+logic [DW-1:0] rg_bnf_rthres [0:2]              ;   
+logic [DW-1:0] rg_bnf_clip                      ;         
+logic signed [4:0] rg_edge_filter [0:2][0:4]    ;
+logic [DW-1:0]      rg_eeh_rthres [0:1]         ;      
+logic [DW-1:0]      rg_eeh_gain [0:1]           ; 
+logic signed [DW:0] rg_eeh_emclip [0:1]         ;      
+logic [DW-1:0] rg_bcc_brightness                ;
+logic [DW-1:0] rg_bcc_contrast                  ;
+logic [DW-1:0] rg_bcc_clip                      ;
+logic [DW/3-1:0] rg_fcs_edge [0:1]              ;
+logic [DW/3-1:0] rg_fcs_gain                    ;
+logic [DW/3-1:0] rg_fcs_intercept               ;
+logic [DW/3-1:0] rg_fcs_slop                    ;
+logic [DW/3-1:0] rg_fcs_clip                    ;
+logic signed [DW/3:0] rg_hue_cos                ;
+logic signed [DW/3:0] rg_hue_sin                ;
+logic [DW/3-1:0] rg_hsc_saturation              ;
+logic [DW/3-1:0] rg_hsc_clip                    ;
+
+logic [5:0]      rg_i2cs_id          ;
+logic            rg_i2cs_id_en       ;
+logic [15:0]     reg_rdata           ;
+logic [15:0]     reg_addr            ;
+logic [15:0]     reg_wdata           ;
+logic            reg_wr_en           ;
+logic            reg_rd_en           ;
+
+logic            rg_pixel_ckgt_en     ;
+
+logic            s_cpuif_req          ;
+logic            s_cpuif_req_is_wr    ;
+logic [11:0]     s_cpuif_addr         ;
+logic [15:0]     s_cpuif_wr_data      ;
+logic [15:0]     s_cpuif_wr_biten     ;
+logic            s_cpuif_req_stall_wr ;
+logic            s_cpuif_req_stall_rd ;
+logic            s_cpuif_rd_ack       ;
+logic            s_cpuif_rd_err       ;
+logic  [15:0]    s_cpuif_rd_data      ;
+logic            s_cpuif_wr_ack       ;
+logic            s_cpuif_wr_err       ;
+
 
 parameter DPC = 4'd0   ;
 parameter BLC = 4'd1   ;
@@ -123,6 +156,7 @@ parameter FCS = 4'd12  ;
 parameter HSC = 4'd13  ;
 parameter BCC = 4'd15  ;
 
+/*
 // TODO -- replaced by regmap
 assign isp_enable = 16'h0000;
 
@@ -252,31 +286,48 @@ assign hsc_saturation = 256 ;
 assign hsc_clip       = 255 ;
 
 // TODO -- end
+*/
 
 //*****************************************************
 //**                    main code
 //*****************************************************
 
 `ifdef FPGA
-//����MMCM/PLL IP��
+logic pixel_clk_alon;
+logic pixel_clk_5x_alon;
+logic enable_latch;
 clk_wiz_0  clk_wiz_0(
     .clk_in1        (sys_clk),
-    .clk_out1       (pixel_clk),        //����ʱ��
-    .clk_out2       (pixel_clk_5x),     //5������ʱ��
+    .clk_out1       (pixel_clk_alon),        //����ʱ��
+    .clk_out2       (pixel_clk_5x_alon),     //5������ʱ��
     
     .reset          (~sys_rst_n), 
     .locked         (clk_locked)
 );
 assign rst_pix_n = sys_rst_n;
+assign clk_i2c = scl_in;
+assign pixel_clk = pixel_clk_alon & enable_latch;
+assign pixel_clk_5x = pixel_clk_5x_alon & enable_latch;
+alawys@(*) begin
+    if(~pixel_clk_alon)
+        enable_latch <= pixel_icg_enable;
+end
+
 `else
 crgu crgu_inst(
-    .clk_in     (sys_clk        ),
-    .rstn_in    (sys_rst_n      ),
-    .clk_out1   (pixel_clk_5x   ),
-    .clk_out2   (pixel_clk      ),
-    .rstn_out1  (rst_pix_n      )
+    .clk_in         (sys_clk            ),
+    .rstn_in        (sys_rst_n          ),
+    .scl_in         (scl_in             ),
+    .pixel_icg_en   (pixel_icg_enable   ),  // sys domain
+    .clk_out1       (pixel_clk_5x       ),
+    .clk_out2       (pixel_clk          ),
+    .clk_i2c        (clk_i2c            ),
+    .rstn_out1      (rst_pix_n          ),
+    .rstn_i2c       (rstn_i2c           )
 );
 `endif
+
+assign pixel_icg_enable = rg_pixel_ckgt_en;
 
 //������Ƶ��ʾ����ģ��
 video_driver #(
@@ -326,24 +377,6 @@ assign rd_en = 0;
 assign wt_en = 0;
 assign pixel_data_update = 'd0;
 
-/*
-i2c_slave_top i2c_slave_top_inst(
-    input clk                       ,
-    input rstn                      ,
-    input scl_in                    ,
-    input sda_in                    ,
-    output logic sda_out            ,
-    input [5:0] rg_i2cs_id          ,
-    input rg_i2cs_id_en             ,
-    input i2cs_id0                  ,
-    input [15:0] reg_rdata          ,
-    output logic [15:0] reg_addr    ,
-    output logic [15:0] reg_wdata   ,
-    output logic reg_wr_en          ,
-    output logic reg_rd_en          ,
-    output logic cmd_reset_i2c      
-);
-*/
 
 isp_top #(
     .DW  (DW   ),
@@ -355,52 +388,134 @@ isp_top #(
 ) isp_top_inst(
     .clk                 ( pixel_clk          ),
     .rstn                ( rst_pix_n          ),
-    .isp_enable          ( isp_enable         ),
-    .isp_seq             ( isp_seq            ),
-    .bayer_pattern       ( bayer_pattern      ),
-    .dpc_thres           ( dpc_thres          ),        
-    .dpc_clip            ( dpc_clip           ),        
-    .blc_bias            ( blc_bias           ),        
-    .blc_clip            ( blc_clip           ),        
-    .awb_gain            ( awb_gain           ),        
-    .awb_clip            ( awb_clip           ),        
-    .cnf_gain            ( cnf_gain           ),         
-    .cnf_clip            ( cnf_clip           ),         
-    .cnf_thres           ( cnf_thres          ),        
-    .cfa_clip            ( cfa_clip           ),        
-    .ccm_coef_r          ( ccm_coef_r         ),        
-    .ccm_coef_g          ( ccm_coef_g         ),        
-    .ccm_coef_b          ( ccm_coef_b         ),        
-    .csc_coef_r          ( csc_coef_r         ),        
-    .csc_coef_g          ( csc_coef_g         ),        
-    .csc_coef_b          ( csc_coef_b         ),        
-    .nlm_clip            ( nlm_clip           ),        
-    .bnf_dw              ( bnf_dw             ),        
-    .bnf_rw              ( bnf_rw             ),        
-    .bnf_rthres          ( bnf_rthres         ),        
-    .bnf_clip            ( bnf_clip           ),        
-    .edge_filter         ( edge_filter        ),        
-    .eeh_rthres          ( eeh_rthres         ),        
-    .eeh_gain            ( eeh_gain           ),        
-    .eeh_emclip          ( eeh_emclip         ),        
-    .bcc_brightness      ( bcc_brightness     ),               
-    .bcc_contrast        ( bcc_contrast       ),                
-    .bcc_clip            ( bcc_clip           ),                     
-    .fcs_edge            ( fcs_edge           ),             
-    .fcs_gain            ( fcs_gain           ),             
-    .fcs_intercept       ( fcs_intercept      ),            
-    .fcs_slop            ( fcs_slop           ),                     
-    .fcs_clip            ( fcs_clip           ),                     
-    .hue_cos             ( hue_cos            ),        
-    .hue_sin             ( hue_sin            ),        
-    .hsc_saturation      ( hsc_saturation     ),              
-    .hsc_clip            ( hsc_clip           ),                    
+    .isp_enable          ( rg_isp_enable      ),
+    .bayer_pattern       ( rg_bayer_pattern   ),
+    .dpc_thres           ( rg_dpc_thres       ),        
+    .dpc_clip            ( rg_dpc_clip        ),        
+    .blc_bias            ( rg_blc_bias        ),        
+    .blc_clip            ( rg_blc_clip        ),        
+    .awb_gain            ( rg_awb_gain        ),        
+    .awb_clip            ( rg_awb_clip        ),        
+    .cnf_gain            ( rg_cnf_gain        ),         
+    .cnf_clip            ( rg_cnf_clip        ),         
+    .cnf_thres           ( rg_cnf_thres       ),        
+    .cfa_clip            ( rg_cfa_clip        ),        
+    .ccm_coef_r          ( rg_ccm_coef_r      ),        
+    .ccm_coef_g          ( rg_ccm_coef_g      ),        
+    .ccm_coef_b          ( rg_ccm_coef_b      ),        
+    .csc_coef_r          ( rg_csc_coef_r      ),        
+    .csc_coef_g          ( rg_csc_coef_g      ),        
+    .csc_coef_b          ( rg_csc_coef_b      ),        
+    .nlm_clip            ( rg_nlm_clip        ),        
+    .bnf_dw              ( rg_bnf_dw          ),        
+    .bnf_rw              ( rg_bnf_rw          ),        
+    .bnf_rthres          ( rg_bnf_rthres      ),        
+    .bnf_clip            ( rg_bnf_clip        ),        
+    .edge_filter         ( rg_edge_filter     ),        
+    .eeh_rthres          ( rg_eeh_rthres      ),        
+    .eeh_gain            ( rg_eeh_gain        ),        
+    .eeh_emclip          ( rg_eeh_emclip      ),        
+    .bcc_brightness      ( rg_bcc_brightness  ),               
+    .bcc_contrast        ( rg_bcc_contrast    ),                
+    .bcc_clip            ( rg_bcc_clip        ),                     
+    .fcs_edge            ( rg_fcs_edge        ),             
+    .fcs_gain            ( rg_fcs_gain        ),             
+    .fcs_intercept       ( rg_fcs_intercept   ),            
+    .fcs_slop            ( rg_fcs_slop        ),                     
+    .fcs_clip            ( rg_fcs_clip        ),                     
+    .hue_cos             ( rg_hue_cos         ),        
+    .hue_sin             ( rg_hue_sin         ),        
+    .hsc_saturation      ( rg_hsc_saturation  ),              
+    .hsc_clip            ( rg_hsc_clip        ),                    
     .pixel_data_in       ( pixel_data_rgb[0]  ),                      
     .pixel_data_in_vld   ( pixel_data_vld[0]  ),            
     .pixel_data_out      (          ),                 
     .pixel_data_out_vld  (          ),             
     .one_frame_done      (          ),                    
     .ebd_data            (          )         
+);
+
+assign s_cpuif_req = reg_rd_en | reg_wr_en;
+assign s_cpuif_req_is_wr = reg_wr_en;
+assign s_cpuif_addr = reg_addr;
+assign s_cpuif_wr_data = reg_wdata;
+assign s_cpuif_wr_biten = 2'b11;
+assign reg_rdata = s_cpuif_rd_data;
+
+i2c_slave_top i2c_slave_top_inst(
+    .clk             ( pixel_clk     ), 
+    .rstn            ( rst_pix_n     ), 
+    .scl_in          ( scl_in        ), 
+    .sda_in          ( sda_in        ), 
+    .sda_out         ( sda_out       ), 
+    .rg_i2cs_id      ( rg_i2cs_id    ), 
+    .rg_i2cs_id_en   ( rg_i2cs_id_en ), 
+    .i2cs_id0        ( 1'b0          ), // TODO
+    .reg_rdata       ( reg_rdata     ), 
+    .reg_addr        ( reg_addr      ),    
+    .reg_wdata       ( reg_wdata     ),    
+    .reg_wr_en       ( reg_wr_en     ), 
+    .reg_rd_en       ( reg_rd_en     ), 
+    .cmd_reset_i2c   (  )     
+);
+
+reg_top reg_top_inst(
+.clk                       ( pixel_clk_5x         ),  // or pixel_clk
+.arst_n                    ( rst_pix_n            ),  
+.s_cpuif_req               ( s_cpuif_req          ),  
+.s_cpuif_req_is_wr         ( s_cpuif_req_is_wr    ),  
+.s_cpuif_addr              ( s_cpuif_addr         ),  
+.s_cpuif_wr_data           ( s_cpuif_wr_data      ),  
+.s_cpuif_wr_biten          ( s_cpuif_wr_biten     ),  
+.s_cpuif_req_stall_wr      ( s_cpuif_req_stall_wr ),  
+.s_cpuif_req_stall_rd      ( s_cpuif_req_stall_rd ),  
+.s_cpuif_rd_ack            ( s_cpuif_rd_ack       ), 
+.s_cpuif_rd_err            ( s_cpuif_rd_err       ), 
+.s_cpuif_rd_data           ( s_cpuif_rd_data      ),  
+.s_cpuif_wr_ack            ( s_cpuif_wr_ack       ),  
+.s_cpuif_wr_err            ( s_cpuif_wr_err       ),  
+.rg_isp_enable             ( rg_isp_enable        ),
+.rg_bayer_pattern          ( rg_bayer_pattern     ),
+.rg_dpc_thres              ( rg_dpc_thres         ),       
+.rg_dpc_clip               ( rg_dpc_clip          ),       
+.rg_blc_bias               ( rg_blc_bias          ),       
+.rg_blc_clip               ( rg_blc_clip          ),       
+.rg_awb_gain               ( rg_awb_gain          ),       
+.rg_awb_clip               ( rg_awb_clip          ),       
+.rg_cnf_gain               ( rg_cnf_gain          ),       
+.rg_cnf_clip               ( rg_cnf_clip          ),       
+.rg_cnf_thres              ( rg_cnf_thres         ),       
+.rg_cfa_clip               ( rg_cfa_clip          ),       
+.rg_ccm_coef_r             ( rg_ccm_coef_r        ),       
+.rg_ccm_coef_g             ( rg_ccm_coef_g        ),       
+.rg_ccm_coef_b             ( rg_ccm_coef_b        ),       
+.rg_csc_coef_r             ( rg_csc_coef_r        ),       
+.rg_csc_coef_g             ( rg_csc_coef_g        ),       
+.rg_csc_coef_b             ( rg_csc_coef_b        ),       
+.rg_nlm_clip               ( rg_nlm_clip          ),       
+.rg_bnf_dw                 ( rg_bnf_dw            ),       
+.rg_bnf_rw                 ( rg_bnf_rw            ),       
+.rg_bnf_rthres             ( rg_bnf_rthres        ),       
+.rg_bnf_clip               ( rg_bnf_clip          ),       
+.rg_edge_filter            ( rg_edge_filter       ),       
+.rg_eeh_rthres             ( rg_eeh_rthres        ),       
+.rg_eeh_gain               ( rg_eeh_gain          ),       
+.rg_eeh_emclip             ( rg_eeh_emclip        ),       
+.rg_bcc_brightness         ( rg_bcc_brightness    ),       
+.rg_bcc_contrast           ( rg_bcc_contrast      ),       
+.rg_bcc_clip               ( rg_bcc_clip          ),       
+.rg_fcs_edge               ( rg_fcs_edge          ),       
+.rg_fcs_gain               ( rg_fcs_gain          ),       
+.rg_fcs_intercept          ( rg_fcs_intercept     ),       
+.rg_fcs_slop               ( rg_fcs_slop          ),       
+.rg_fcs_clip               ( rg_fcs_clip          ),       
+.rg_hue_cos                ( rg_hue_cos           ),       
+.rg_hue_sin                ( rg_hue_sin           ),       
+.rg_hsc_saturation         ( rg_hsc_saturation    ),       
+.rg_hsc_clip               ( rg_hsc_clip          ),
+.rg_i2cs_id                ( rg_i2cs_id           ), 
+.rg_i2cs_id_en             ( rg_i2cs_id_en        ),
+.rg_pixel_ckgt_en          ( rg_pixel_ckgt_en     )       
 );
 
 

@@ -4,23 +4,7 @@
 package regmap_pkg;
 
     localparam REGMAP_DATA_WIDTH = 16;
-    localparam REGMAP_MIN_ADDR_WIDTH = 8;
-
-    typedef struct {
-        logic [1:0] next;
-    } regmap__isp_config__bayer_pattern_cfg__rg_bayer_pattern__in_t;
-
-    typedef struct {
-        regmap__isp_config__bayer_pattern_cfg__rg_bayer_pattern__in_t rg_bayer_pattern;
-    } regmap__isp_config__bayer_pattern_cfg__in_t;
-
-    typedef struct {
-        regmap__isp_config__bayer_pattern_cfg__in_t bayer_pattern_cfg;
-    } regmap__isp_config__in_t;
-
-    typedef struct {
-        regmap__isp_config__in_t isp_config;
-    } regmap__in_t;
+    localparam REGMAP_MIN_ADDR_WIDTH = 14;
 
     typedef struct {
         logic [15:0] value;
@@ -29,6 +13,14 @@ package regmap_pkg;
     typedef struct {
         regmap__isp_config__isp_enable_cfg__rg_isp_enable__out_t rg_isp_enable;
     } regmap__isp_config__isp_enable_cfg__out_t;
+
+    typedef struct {
+        logic [1:0] value;
+    } regmap__isp_config__bayer_pattern_cfg__rg_bayer_pattern__out_t;
+
+    typedef struct {
+        regmap__isp_config__bayer_pattern_cfg__rg_bayer_pattern__out_t rg_bayer_pattern;
+    } regmap__isp_config__bayer_pattern_cfg__out_t;
 
     typedef struct {
         logic [15:0] value;
@@ -920,6 +912,7 @@ package regmap_pkg;
 
     typedef struct {
         regmap__isp_config__isp_enable_cfg__out_t isp_enable_cfg;
+        regmap__isp_config__bayer_pattern_cfg__out_t bayer_pattern_cfg;
         regmap__isp_config__dpc_thres_cfg__out_t dpc_thres_cfg;
         regmap__isp_config__dpc_clip_cfg__out_t dpc_clip_cfg;
         regmap__isp_config__blc_bias_0_cfg__out_t blc_bias_0_cfg;
@@ -1034,6 +1027,37 @@ package regmap_pkg;
     } regmap__isp_config__out_t;
 
     typedef struct {
+        logic [5:0] value;
+    } regmap__i2c_control__i2c_slave_id_cfg__rg_i2cs_id__out_t;
+
+    typedef struct {
+        logic value;
+    } regmap__i2c_control__i2c_slave_id_cfg__rg_i2cs_id_en__out_t;
+
+    typedef struct {
+        regmap__i2c_control__i2c_slave_id_cfg__rg_i2cs_id__out_t rg_i2cs_id;
+        regmap__i2c_control__i2c_slave_id_cfg__rg_i2cs_id_en__out_t rg_i2cs_id_en;
+    } regmap__i2c_control__i2c_slave_id_cfg__out_t;
+
+    typedef struct {
+        regmap__i2c_control__i2c_slave_id_cfg__out_t i2c_slave_id_cfg;
+    } regmap__i2c_control__out_t;
+
+    typedef struct {
+        logic value;
+    } regmap__top_control__clock_gate_cfg__rg_pixel_ckgt_en__out_t;
+
+    typedef struct {
+        regmap__top_control__clock_gate_cfg__rg_pixel_ckgt_en__out_t rg_pixel_ckgt_en;
+    } regmap__top_control__clock_gate_cfg__out_t;
+
+    typedef struct {
+        regmap__top_control__clock_gate_cfg__out_t clock_gate_cfg;
+    } regmap__top_control__out_t;
+
+    typedef struct {
         regmap__isp_config__out_t isp_config;
+        regmap__i2c_control__out_t i2c_ctrl;
+        regmap__top_control__out_t top_ctrl;
     } regmap__out_t;
 endpackage
