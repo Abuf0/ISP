@@ -4,7 +4,7 @@
 package regmap_pkg;
 
     localparam REGMAP_DATA_WIDTH = 16;
-    localparam REGMAP_MIN_ADDR_WIDTH = 6;
+    localparam REGMAP_MIN_ADDR_WIDTH = 8;
 
     typedef struct {
         logic [1:0] next;
@@ -175,6 +175,750 @@ package regmap_pkg;
     } regmap__isp_config__cnf_thres_cfg__out_t;
 
     typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__cfa_clip_cfg__rg_cfa_clip__out_t;
+
+    typedef struct {
+        regmap__isp_config__cfa_clip_cfg__rg_cfa_clip__out_t rg_cfa_clip;
+    } regmap__isp_config__cfa_clip_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__ccm_coef_r_0_cfg__rg_ccm_coef_r_0__out_t;
+
+    typedef struct {
+        regmap__isp_config__ccm_coef_r_0_cfg__rg_ccm_coef_r_0__out_t rg_ccm_coef_r_0;
+    } regmap__isp_config__ccm_coef_r_0_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__ccm_coef_r_1_cfg__rg_ccm_coef_r_1__out_t;
+
+    typedef struct {
+        regmap__isp_config__ccm_coef_r_1_cfg__rg_ccm_coef_r_1__out_t rg_ccm_coef_r_1;
+    } regmap__isp_config__ccm_coef_r_1_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__ccm_coef_r_2_cfg__rg_ccm_coef_r_2__out_t;
+
+    typedef struct {
+        regmap__isp_config__ccm_coef_r_2_cfg__rg_ccm_coef_r_2__out_t rg_ccm_coef_r_2;
+    } regmap__isp_config__ccm_coef_r_2_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__ccm_coef_r_3_cfg__rg_ccm_coef_r_3__out_t;
+
+    typedef struct {
+        regmap__isp_config__ccm_coef_r_3_cfg__rg_ccm_coef_r_3__out_t rg_ccm_coef_r_3;
+    } regmap__isp_config__ccm_coef_r_3_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__ccm_coef_g_0_cfg__rg_ccm_coef_g_0__out_t;
+
+    typedef struct {
+        regmap__isp_config__ccm_coef_g_0_cfg__rg_ccm_coef_g_0__out_t rg_ccm_coef_g_0;
+    } regmap__isp_config__ccm_coef_g_0_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__ccm_coef_g_1_cfg__rg_ccm_coef_g_1__out_t;
+
+    typedef struct {
+        regmap__isp_config__ccm_coef_g_1_cfg__rg_ccm_coef_g_1__out_t rg_ccm_coef_g_1;
+    } regmap__isp_config__ccm_coef_g_1_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__ccm_coef_g_2_cfg__rg_ccm_coef_g_2__out_t;
+
+    typedef struct {
+        regmap__isp_config__ccm_coef_g_2_cfg__rg_ccm_coef_g_2__out_t rg_ccm_coef_g_2;
+    } regmap__isp_config__ccm_coef_g_2_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__ccm_coef_g_3_cfg__rg_ccm_coef_g_3__out_t;
+
+    typedef struct {
+        regmap__isp_config__ccm_coef_g_3_cfg__rg_ccm_coef_g_3__out_t rg_ccm_coef_g_3;
+    } regmap__isp_config__ccm_coef_g_3_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__ccm_coef_b_0_cfg__rg_ccm_coef_b_0__out_t;
+
+    typedef struct {
+        regmap__isp_config__ccm_coef_b_0_cfg__rg_ccm_coef_b_0__out_t rg_ccm_coef_b_0;
+    } regmap__isp_config__ccm_coef_b_0_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__ccm_coef_b_1_cfg__rg_ccm_coef_b_1__out_t;
+
+    typedef struct {
+        regmap__isp_config__ccm_coef_b_1_cfg__rg_ccm_coef_b_1__out_t rg_ccm_coef_b_1;
+    } regmap__isp_config__ccm_coef_b_1_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__ccm_coef_b_2_cfg__rg_ccm_coef_b_2__out_t;
+
+    typedef struct {
+        regmap__isp_config__ccm_coef_b_2_cfg__rg_ccm_coef_b_2__out_t rg_ccm_coef_b_2;
+    } regmap__isp_config__ccm_coef_b_2_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__ccm_coef_b_3_cfg__rg_ccm_coef_b_3__out_t;
+
+    typedef struct {
+        regmap__isp_config__ccm_coef_b_3_cfg__rg_ccm_coef_b_3__out_t rg_ccm_coef_b_3;
+    } regmap__isp_config__ccm_coef_b_3_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__csc_coef_r_0_cfg__rg_csc_coef_r_0__out_t;
+
+    typedef struct {
+        regmap__isp_config__csc_coef_r_0_cfg__rg_csc_coef_r_0__out_t rg_csc_coef_r_0;
+    } regmap__isp_config__csc_coef_r_0_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__csc_coef_r_1_cfg__rg_csc_coef_r_1__out_t;
+
+    typedef struct {
+        regmap__isp_config__csc_coef_r_1_cfg__rg_csc_coef_r_1__out_t rg_csc_coef_r_1;
+    } regmap__isp_config__csc_coef_r_1_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__csc_coef_r_2_cfg__rg_csc_coef_r_2__out_t;
+
+    typedef struct {
+        regmap__isp_config__csc_coef_r_2_cfg__rg_csc_coef_r_2__out_t rg_csc_coef_r_2;
+    } regmap__isp_config__csc_coef_r_2_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__csc_coef_r_3_cfg__rg_csc_coef_r_3__out_t;
+
+    typedef struct {
+        regmap__isp_config__csc_coef_r_3_cfg__rg_csc_coef_r_3__out_t rg_csc_coef_r_3;
+    } regmap__isp_config__csc_coef_r_3_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__csc_coef_g_0_cfg__rg_csc_coef_g_0__out_t;
+
+    typedef struct {
+        regmap__isp_config__csc_coef_g_0_cfg__rg_csc_coef_g_0__out_t rg_csc_coef_g_0;
+    } regmap__isp_config__csc_coef_g_0_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__csc_coef_g_1_cfg__rg_csc_coef_g_1__out_t;
+
+    typedef struct {
+        regmap__isp_config__csc_coef_g_1_cfg__rg_csc_coef_g_1__out_t rg_csc_coef_g_1;
+    } regmap__isp_config__csc_coef_g_1_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__csc_coef_g_2_cfg__rg_csc_coef_g_2__out_t;
+
+    typedef struct {
+        regmap__isp_config__csc_coef_g_2_cfg__rg_csc_coef_g_2__out_t rg_csc_coef_g_2;
+    } regmap__isp_config__csc_coef_g_2_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__csc_coef_g_3_cfg__rg_csc_coef_g_3__out_t;
+
+    typedef struct {
+        regmap__isp_config__csc_coef_g_3_cfg__rg_csc_coef_g_3__out_t rg_csc_coef_g_3;
+    } regmap__isp_config__csc_coef_g_3_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__csc_coef_b_0_cfg__rg_csc_coef_b_0__out_t;
+
+    typedef struct {
+        regmap__isp_config__csc_coef_b_0_cfg__rg_csc_coef_b_0__out_t rg_csc_coef_b_0;
+    } regmap__isp_config__csc_coef_b_0_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__csc_coef_b_1_cfg__rg_csc_coef_b_1__out_t;
+
+    typedef struct {
+        regmap__isp_config__csc_coef_b_1_cfg__rg_csc_coef_b_1__out_t rg_csc_coef_b_1;
+    } regmap__isp_config__csc_coef_b_1_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__csc_coef_b_2_cfg__rg_csc_coef_b_2__out_t;
+
+    typedef struct {
+        regmap__isp_config__csc_coef_b_2_cfg__rg_csc_coef_b_2__out_t rg_csc_coef_b_2;
+    } regmap__isp_config__csc_coef_b_2_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__csc_coef_b_3_cfg__rg_csc_coef_b_3__out_t;
+
+    typedef struct {
+        regmap__isp_config__csc_coef_b_3_cfg__rg_csc_coef_b_3__out_t rg_csc_coef_b_3;
+    } regmap__isp_config__csc_coef_b_3_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__nlm_clip_cfg__rg_nlm_clip__out_t;
+
+    typedef struct {
+        regmap__isp_config__nlm_clip_cfg__rg_nlm_clip__out_t rg_nlm_clip;
+    } regmap__isp_config__nlm_clip_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_00_cfg__rg_bnf_dw_00__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_00_cfg__rg_bnf_dw_00__out_t rg_bnf_dw_00;
+    } regmap__isp_config__bnf_dw_00_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_01_cfg__rg_bnf_dw_01__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_01_cfg__rg_bnf_dw_01__out_t rg_bnf_dw_01;
+    } regmap__isp_config__bnf_dw_01_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_02_cfg__rg_bnf_dw_02__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_02_cfg__rg_bnf_dw_02__out_t rg_bnf_dw_02;
+    } regmap__isp_config__bnf_dw_02_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_03_cfg__rg_bnf_dw_03__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_03_cfg__rg_bnf_dw_03__out_t rg_bnf_dw_03;
+    } regmap__isp_config__bnf_dw_03_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_04_cfg__rg_bnf_dw_04__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_04_cfg__rg_bnf_dw_04__out_t rg_bnf_dw_04;
+    } regmap__isp_config__bnf_dw_04_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_10_cfg__rg_bnf_dw_10__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_10_cfg__rg_bnf_dw_10__out_t rg_bnf_dw_10;
+    } regmap__isp_config__bnf_dw_10_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_11_cfg__rg_bnf_dw_11__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_11_cfg__rg_bnf_dw_11__out_t rg_bnf_dw_11;
+    } regmap__isp_config__bnf_dw_11_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_12_cfg__rg_bnf_dw_12__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_12_cfg__rg_bnf_dw_12__out_t rg_bnf_dw_12;
+    } regmap__isp_config__bnf_dw_12_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_13_cfg__rg_bnf_dw_13__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_13_cfg__rg_bnf_dw_13__out_t rg_bnf_dw_13;
+    } regmap__isp_config__bnf_dw_13_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_14_cfg__rg_bnf_dw_14__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_14_cfg__rg_bnf_dw_14__out_t rg_bnf_dw_14;
+    } regmap__isp_config__bnf_dw_14_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_20_cfg__rg_bnf_dw_20__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_20_cfg__rg_bnf_dw_20__out_t rg_bnf_dw_20;
+    } regmap__isp_config__bnf_dw_20_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_21_cfg__rg_bnf_dw_21__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_21_cfg__rg_bnf_dw_21__out_t rg_bnf_dw_21;
+    } regmap__isp_config__bnf_dw_21_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_22_cfg__rg_bnf_dw_22__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_22_cfg__rg_bnf_dw_22__out_t rg_bnf_dw_22;
+    } regmap__isp_config__bnf_dw_22_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_23_cfg__rg_bnf_dw_23__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_23_cfg__rg_bnf_dw_23__out_t rg_bnf_dw_23;
+    } regmap__isp_config__bnf_dw_23_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_24_cfg__rg_bnf_dw_24__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_24_cfg__rg_bnf_dw_24__out_t rg_bnf_dw_24;
+    } regmap__isp_config__bnf_dw_24_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_30_cfg__rg_bnf_dw_30__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_30_cfg__rg_bnf_dw_30__out_t rg_bnf_dw_30;
+    } regmap__isp_config__bnf_dw_30_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_31_cfg__rg_bnf_dw_31__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_31_cfg__rg_bnf_dw_31__out_t rg_bnf_dw_31;
+    } regmap__isp_config__bnf_dw_31_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_32_cfg__rg_bnf_dw_32__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_32_cfg__rg_bnf_dw_32__out_t rg_bnf_dw_32;
+    } regmap__isp_config__bnf_dw_32_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_33_cfg__rg_bnf_dw_33__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_33_cfg__rg_bnf_dw_33__out_t rg_bnf_dw_33;
+    } regmap__isp_config__bnf_dw_33_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_34_cfg__rg_bnf_dw_34__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_34_cfg__rg_bnf_dw_34__out_t rg_bnf_dw_34;
+    } regmap__isp_config__bnf_dw_34_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_40_cfg__rg_bnf_dw_40__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_40_cfg__rg_bnf_dw_40__out_t rg_bnf_dw_40;
+    } regmap__isp_config__bnf_dw_40_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_41_cfg__rg_bnf_dw_41__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_41_cfg__rg_bnf_dw_41__out_t rg_bnf_dw_41;
+    } regmap__isp_config__bnf_dw_41_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_42_cfg__rg_bnf_dw_42__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_42_cfg__rg_bnf_dw_42__out_t rg_bnf_dw_42;
+    } regmap__isp_config__bnf_dw_42_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_43_cfg__rg_bnf_dw_43__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_43_cfg__rg_bnf_dw_43__out_t rg_bnf_dw_43;
+    } regmap__isp_config__bnf_dw_43_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_dw_44_cfg__rg_bnf_dw_44__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_dw_44_cfg__rg_bnf_dw_44__out_t rg_bnf_dw_44;
+    } regmap__isp_config__bnf_dw_44_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_rw_0_cfg__rg_bnf_rw_0__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_rw_0_cfg__rg_bnf_rw_0__out_t rg_bnf_rw_0;
+    } regmap__isp_config__bnf_rw_0_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_rw_1_cfg__rg_bnf_rw_1__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_rw_1_cfg__rg_bnf_rw_1__out_t rg_bnf_rw_1;
+    } regmap__isp_config__bnf_rw_1_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_rw_2_cfg__rg_bnf_rw_2__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_rw_2_cfg__rg_bnf_rw_2__out_t rg_bnf_rw_2;
+    } regmap__isp_config__bnf_rw_2_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_rw_3_cfg__rg_bnf_rw_3__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_rw_3_cfg__rg_bnf_rw_3__out_t rg_bnf_rw_3;
+    } regmap__isp_config__bnf_rw_3_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_rthres_0_cfg__rg_bnf_rthres_0__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_rthres_0_cfg__rg_bnf_rthres_0__out_t rg_bnf_rthres_0;
+    } regmap__isp_config__bnf_rthres_0_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_rthres_1_cfg__rg_bnf_rthres_1__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_rthres_1_cfg__rg_bnf_rthres_1__out_t rg_bnf_rthres_1;
+    } regmap__isp_config__bnf_rthres_1_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_rthres_2_cfg__rg_bnf_rthres_2__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_rthres_2_cfg__rg_bnf_rthres_2__out_t rg_bnf_rthres_2;
+    } regmap__isp_config__bnf_rthres_2_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bnf_clip_cfg__rg_bnf_clip__out_t;
+
+    typedef struct {
+        regmap__isp_config__bnf_clip_cfg__rg_bnf_clip__out_t rg_bnf_clip;
+    } regmap__isp_config__bnf_clip_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_00_cfg__rg_edge_filter_00__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_00_cfg__rg_edge_filter_00__out_t rg_edge_filter_00;
+    } regmap__isp_config__edge_filter_00_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_01_cfg__rg_edge_filter_01__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_01_cfg__rg_edge_filter_01__out_t rg_edge_filter_01;
+    } regmap__isp_config__edge_filter_01_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_02_cfg__rg_edge_filter_02__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_02_cfg__rg_edge_filter_02__out_t rg_edge_filter_02;
+    } regmap__isp_config__edge_filter_02_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_03_cfg__rg_edge_filter_03__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_03_cfg__rg_edge_filter_03__out_t rg_edge_filter_03;
+    } regmap__isp_config__edge_filter_03_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_04_cfg__rg_edge_filter_04__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_04_cfg__rg_edge_filter_04__out_t rg_edge_filter_04;
+    } regmap__isp_config__edge_filter_04_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_10_cfg__rg_edge_filter_10__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_10_cfg__rg_edge_filter_10__out_t rg_edge_filter_10;
+    } regmap__isp_config__edge_filter_10_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_11_cfg__rg_edge_filter_11__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_11_cfg__rg_edge_filter_11__out_t rg_edge_filter_11;
+    } regmap__isp_config__edge_filter_11_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_12_cfg__rg_edge_filter_12__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_12_cfg__rg_edge_filter_12__out_t rg_edge_filter_12;
+    } regmap__isp_config__edge_filter_12_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_13_cfg__rg_edge_filter_13__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_13_cfg__rg_edge_filter_13__out_t rg_edge_filter_13;
+    } regmap__isp_config__edge_filter_13_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_14_cfg__rg_edge_filter_14__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_14_cfg__rg_edge_filter_14__out_t rg_edge_filter_14;
+    } regmap__isp_config__edge_filter_14_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_20_cfg__rg_edge_filter_20__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_20_cfg__rg_edge_filter_20__out_t rg_edge_filter_20;
+    } regmap__isp_config__edge_filter_20_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_21_cfg__rg_edge_filter_21__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_21_cfg__rg_edge_filter_21__out_t rg_edge_filter_21;
+    } regmap__isp_config__edge_filter_21_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_22_cfg__rg_edge_filter_22__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_22_cfg__rg_edge_filter_22__out_t rg_edge_filter_22;
+    } regmap__isp_config__edge_filter_22_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_23_cfg__rg_edge_filter_23__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_23_cfg__rg_edge_filter_23__out_t rg_edge_filter_23;
+    } regmap__isp_config__edge_filter_23_cfg__out_t;
+
+    typedef struct {
+        logic [4:0] value;
+    } regmap__isp_config__edge_filter_24_cfg__rg_edge_filter_24__out_t;
+
+    typedef struct {
+        regmap__isp_config__edge_filter_24_cfg__rg_edge_filter_24__out_t rg_edge_filter_24;
+    } regmap__isp_config__edge_filter_24_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__eeh_gain_0_cfg__rg_eeh_gain_0__out_t;
+
+    typedef struct {
+        regmap__isp_config__eeh_gain_0_cfg__rg_eeh_gain_0__out_t rg_eeh_gain_0;
+    } regmap__isp_config__eeh_gain_0_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__eeh_gain_1_cfg__rg_eeh_gain_1__out_t;
+
+    typedef struct {
+        regmap__isp_config__eeh_gain_1_cfg__rg_eeh_gain_1__out_t rg_eeh_gain_1;
+    } regmap__isp_config__eeh_gain_1_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__eeh_rthres_0_cfg__rg_eeh_rthres_0__out_t;
+
+    typedef struct {
+        regmap__isp_config__eeh_rthres_0_cfg__rg_eeh_rthres_0__out_t rg_eeh_rthres_0;
+    } regmap__isp_config__eeh_rthres_0_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__eeh_rthres_1_cfg__rg_eeh_rthres_1__out_t;
+
+    typedef struct {
+        regmap__isp_config__eeh_rthres_1_cfg__rg_eeh_rthres_1__out_t rg_eeh_rthres_1;
+    } regmap__isp_config__eeh_rthres_1_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__eeh_emclip_0_cfg__rg_eeh_emclip_0__out_t;
+
+    typedef struct {
+        regmap__isp_config__eeh_emclip_0_cfg__rg_eeh_emclip_0__out_t rg_eeh_emclip_0;
+    } regmap__isp_config__eeh_emclip_0_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__eeh_emclip_1_cfg__rg_eeh_emclip_1__out_t;
+
+    typedef struct {
+        regmap__isp_config__eeh_emclip_1_cfg__rg_eeh_emclip_1__out_t rg_eeh_emclip_1;
+    } regmap__isp_config__eeh_emclip_1_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bcc_brightness_cfg__rg_bcc_brightness__out_t;
+
+    typedef struct {
+        regmap__isp_config__bcc_brightness_cfg__rg_bcc_brightness__out_t rg_bcc_brightness;
+    } regmap__isp_config__bcc_brightness_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bcc_constrast_cfg__rg_bcc_constrast__out_t;
+
+    typedef struct {
+        regmap__isp_config__bcc_constrast_cfg__rg_bcc_constrast__out_t rg_bcc_constrast;
+    } regmap__isp_config__bcc_constrast_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__bcc_clip_cfg__rg_bcc_clip__out_t;
+
+    typedef struct {
+        regmap__isp_config__bcc_clip_cfg__rg_bcc_clip__out_t rg_bcc_clip;
+    } regmap__isp_config__bcc_clip_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__fcs_edge_0_cfg__rg_fcs_edge_0__out_t;
+
+    typedef struct {
+        regmap__isp_config__fcs_edge_0_cfg__rg_fcs_edge_0__out_t rg_fcs_edge_0;
+    } regmap__isp_config__fcs_edge_0_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__fcs_edge_1_cfg__rg_fcs_edge_1__out_t;
+
+    typedef struct {
+        regmap__isp_config__fcs_edge_1_cfg__rg_fcs_edge_1__out_t rg_fcs_edge_1;
+    } regmap__isp_config__fcs_edge_1_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__fcs_gain_cfg__rg_fcs_gain__out_t;
+
+    typedef struct {
+        regmap__isp_config__fcs_gain_cfg__rg_fcs_gain__out_t rg_fcs_gain;
+    } regmap__isp_config__fcs_gain_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__fcs_intercept_cfg__rg_fcs_intercept__out_t;
+
+    typedef struct {
+        regmap__isp_config__fcs_intercept_cfg__rg_fcs_intercept__out_t rg_fcs_intercept;
+    } regmap__isp_config__fcs_intercept_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__fcs_slop_cfg__rg_fcs_slop__out_t;
+
+    typedef struct {
+        regmap__isp_config__fcs_slop_cfg__rg_fcs_slop__out_t rg_fcs_slop;
+    } regmap__isp_config__fcs_slop_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__fcs_clip_cfg__rg_fcs_clip__out_t;
+
+    typedef struct {
+        regmap__isp_config__fcs_clip_cfg__rg_fcs_clip__out_t rg_fcs_clip;
+    } regmap__isp_config__fcs_clip_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__hue_cos_cfg__rg_hue_cos__out_t;
+
+    typedef struct {
+        regmap__isp_config__hue_cos_cfg__rg_hue_cos__out_t rg_hue_cos;
+    } regmap__isp_config__hue_cos_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__hue_sin_cfg__rg_hue_sin__out_t;
+
+    typedef struct {
+        regmap__isp_config__hue_sin_cfg__rg_hue_sin__out_t rg_hue_sin;
+    } regmap__isp_config__hue_sin_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__hsc_saturation_cfg__rg_hsc_saturation__out_t;
+
+    typedef struct {
+        regmap__isp_config__hsc_saturation_cfg__rg_hsc_saturation__out_t rg_hsc_saturation;
+    } regmap__isp_config__hsc_saturation_cfg__out_t;
+
+    typedef struct {
+        logic [15:0] value;
+    } regmap__isp_config__hsc_clip_cfg__rg_hsc_clip__out_t;
+
+    typedef struct {
+        regmap__isp_config__hsc_clip_cfg__rg_hsc_clip__out_t rg_hsc_clip;
+    } regmap__isp_config__hsc_clip_cfg__out_t;
+
+    typedef struct {
         regmap__isp_config__isp_enable_cfg__out_t isp_enable_cfg;
         regmap__isp_config__dpc_thres_cfg__out_t dpc_thres_cfg;
         regmap__isp_config__dpc_clip_cfg__out_t dpc_clip_cfg;
@@ -194,6 +938,99 @@ package regmap_pkg;
         regmap__isp_config__cnf_gain_3_cfg__out_t cnf_gain_3_cfg;
         regmap__isp_config__cnf_clip_cfg__out_t cnf_clip_cfg;
         regmap__isp_config__cnf_thres_cfg__out_t cnf_thres_cfg;
+        regmap__isp_config__cfa_clip_cfg__out_t cfa_clip_cfg;
+        regmap__isp_config__ccm_coef_r_0_cfg__out_t ccm_coef_r_0_cfg;
+        regmap__isp_config__ccm_coef_r_1_cfg__out_t ccm_coef_r_1_cfg;
+        regmap__isp_config__ccm_coef_r_2_cfg__out_t ccm_coef_r_2_cfg;
+        regmap__isp_config__ccm_coef_r_3_cfg__out_t ccm_coef_r_3_cfg;
+        regmap__isp_config__ccm_coef_g_0_cfg__out_t ccm_coef_g_0_cfg;
+        regmap__isp_config__ccm_coef_g_1_cfg__out_t ccm_coef_g_1_cfg;
+        regmap__isp_config__ccm_coef_g_2_cfg__out_t ccm_coef_g_2_cfg;
+        regmap__isp_config__ccm_coef_g_3_cfg__out_t ccm_coef_g_3_cfg;
+        regmap__isp_config__ccm_coef_b_0_cfg__out_t ccm_coef_b_0_cfg;
+        regmap__isp_config__ccm_coef_b_1_cfg__out_t ccm_coef_b_1_cfg;
+        regmap__isp_config__ccm_coef_b_2_cfg__out_t ccm_coef_b_2_cfg;
+        regmap__isp_config__ccm_coef_b_3_cfg__out_t ccm_coef_b_3_cfg;
+        regmap__isp_config__csc_coef_r_0_cfg__out_t csc_coef_r_0_cfg;
+        regmap__isp_config__csc_coef_r_1_cfg__out_t csc_coef_r_1_cfg;
+        regmap__isp_config__csc_coef_r_2_cfg__out_t csc_coef_r_2_cfg;
+        regmap__isp_config__csc_coef_r_3_cfg__out_t csc_coef_r_3_cfg;
+        regmap__isp_config__csc_coef_g_0_cfg__out_t csc_coef_g_0_cfg;
+        regmap__isp_config__csc_coef_g_1_cfg__out_t csc_coef_g_1_cfg;
+        regmap__isp_config__csc_coef_g_2_cfg__out_t csc_coef_g_2_cfg;
+        regmap__isp_config__csc_coef_g_3_cfg__out_t csc_coef_g_3_cfg;
+        regmap__isp_config__csc_coef_b_0_cfg__out_t csc_coef_b_0_cfg;
+        regmap__isp_config__csc_coef_b_1_cfg__out_t csc_coef_b_1_cfg;
+        regmap__isp_config__csc_coef_b_2_cfg__out_t csc_coef_b_2_cfg;
+        regmap__isp_config__csc_coef_b_3_cfg__out_t csc_coef_b_3_cfg;
+        regmap__isp_config__nlm_clip_cfg__out_t nlm_clip_cfg;
+        regmap__isp_config__bnf_dw_00_cfg__out_t bnf_dw_00_cfg;
+        regmap__isp_config__bnf_dw_01_cfg__out_t bnf_dw_01_cfg;
+        regmap__isp_config__bnf_dw_02_cfg__out_t bnf_dw_02_cfg;
+        regmap__isp_config__bnf_dw_03_cfg__out_t bnf_dw_03_cfg;
+        regmap__isp_config__bnf_dw_04_cfg__out_t bnf_dw_04_cfg;
+        regmap__isp_config__bnf_dw_10_cfg__out_t bnf_dw_10_cfg;
+        regmap__isp_config__bnf_dw_11_cfg__out_t bnf_dw_11_cfg;
+        regmap__isp_config__bnf_dw_12_cfg__out_t bnf_dw_12_cfg;
+        regmap__isp_config__bnf_dw_13_cfg__out_t bnf_dw_13_cfg;
+        regmap__isp_config__bnf_dw_14_cfg__out_t bnf_dw_14_cfg;
+        regmap__isp_config__bnf_dw_20_cfg__out_t bnf_dw_20_cfg;
+        regmap__isp_config__bnf_dw_21_cfg__out_t bnf_dw_21_cfg;
+        regmap__isp_config__bnf_dw_22_cfg__out_t bnf_dw_22_cfg;
+        regmap__isp_config__bnf_dw_23_cfg__out_t bnf_dw_23_cfg;
+        regmap__isp_config__bnf_dw_24_cfg__out_t bnf_dw_24_cfg;
+        regmap__isp_config__bnf_dw_30_cfg__out_t bnf_dw_30_cfg;
+        regmap__isp_config__bnf_dw_31_cfg__out_t bnf_dw_31_cfg;
+        regmap__isp_config__bnf_dw_32_cfg__out_t bnf_dw_32_cfg;
+        regmap__isp_config__bnf_dw_33_cfg__out_t bnf_dw_33_cfg;
+        regmap__isp_config__bnf_dw_34_cfg__out_t bnf_dw_34_cfg;
+        regmap__isp_config__bnf_dw_40_cfg__out_t bnf_dw_40_cfg;
+        regmap__isp_config__bnf_dw_41_cfg__out_t bnf_dw_41_cfg;
+        regmap__isp_config__bnf_dw_42_cfg__out_t bnf_dw_42_cfg;
+        regmap__isp_config__bnf_dw_43_cfg__out_t bnf_dw_43_cfg;
+        regmap__isp_config__bnf_dw_44_cfg__out_t bnf_dw_44_cfg;
+        regmap__isp_config__bnf_rw_0_cfg__out_t bnf_rw_0_cfg;
+        regmap__isp_config__bnf_rw_1_cfg__out_t bnf_rw_1_cfg;
+        regmap__isp_config__bnf_rw_2_cfg__out_t bnf_rw_2_cfg;
+        regmap__isp_config__bnf_rw_3_cfg__out_t bnf_rw_3_cfg;
+        regmap__isp_config__bnf_rthres_0_cfg__out_t bnf_rthres_0_cfg;
+        regmap__isp_config__bnf_rthres_1_cfg__out_t bnf_rthres_1_cfg;
+        regmap__isp_config__bnf_rthres_2_cfg__out_t bnf_rthres_2_cfg;
+        regmap__isp_config__bnf_clip_cfg__out_t bnf_clip_cfg;
+        regmap__isp_config__edge_filter_00_cfg__out_t edge_filter_00_cfg;
+        regmap__isp_config__edge_filter_01_cfg__out_t edge_filter_01_cfg;
+        regmap__isp_config__edge_filter_02_cfg__out_t edge_filter_02_cfg;
+        regmap__isp_config__edge_filter_03_cfg__out_t edge_filter_03_cfg;
+        regmap__isp_config__edge_filter_04_cfg__out_t edge_filter_04_cfg;
+        regmap__isp_config__edge_filter_10_cfg__out_t edge_filter_10_cfg;
+        regmap__isp_config__edge_filter_11_cfg__out_t edge_filter_11_cfg;
+        regmap__isp_config__edge_filter_12_cfg__out_t edge_filter_12_cfg;
+        regmap__isp_config__edge_filter_13_cfg__out_t edge_filter_13_cfg;
+        regmap__isp_config__edge_filter_14_cfg__out_t edge_filter_14_cfg;
+        regmap__isp_config__edge_filter_20_cfg__out_t edge_filter_20_cfg;
+        regmap__isp_config__edge_filter_21_cfg__out_t edge_filter_21_cfg;
+        regmap__isp_config__edge_filter_22_cfg__out_t edge_filter_22_cfg;
+        regmap__isp_config__edge_filter_23_cfg__out_t edge_filter_23_cfg;
+        regmap__isp_config__edge_filter_24_cfg__out_t edge_filter_24_cfg;
+        regmap__isp_config__eeh_gain_0_cfg__out_t eeh_gain_0_cfg;
+        regmap__isp_config__eeh_gain_1_cfg__out_t eeh_gain_1_cfg;
+        regmap__isp_config__eeh_rthres_0_cfg__out_t eeh_rthres_0_cfg;
+        regmap__isp_config__eeh_rthres_1_cfg__out_t eeh_rthres_1_cfg;
+        regmap__isp_config__eeh_emclip_0_cfg__out_t eeh_emclip_0_cfg;
+        regmap__isp_config__eeh_emclip_1_cfg__out_t eeh_emclip_1_cfg;
+        regmap__isp_config__bcc_brightness_cfg__out_t bcc_brightness_cfg;
+        regmap__isp_config__bcc_constrast_cfg__out_t bcc_constrast_cfg;
+        regmap__isp_config__bcc_clip_cfg__out_t bcc_clip_cfg;
+        regmap__isp_config__fcs_edge_0_cfg__out_t fcs_edge_0_cfg;
+        regmap__isp_config__fcs_edge_1_cfg__out_t fcs_edge_1_cfg;
+        regmap__isp_config__fcs_gain_cfg__out_t fcs_gain_cfg;
+        regmap__isp_config__fcs_intercept_cfg__out_t fcs_intercept_cfg;
+        regmap__isp_config__fcs_slop_cfg__out_t fcs_slop_cfg;
+        regmap__isp_config__fcs_clip_cfg__out_t fcs_clip_cfg;
+        regmap__isp_config__hue_cos_cfg__out_t hue_cos_cfg;
+        regmap__isp_config__hue_sin_cfg__out_t hue_sin_cfg;
+        regmap__isp_config__hsc_saturation_cfg__out_t hsc_saturation_cfg;
+        regmap__isp_config__hsc_clip_cfg__out_t hsc_clip_cfg;
     } regmap__isp_config__out_t;
 
     typedef struct {

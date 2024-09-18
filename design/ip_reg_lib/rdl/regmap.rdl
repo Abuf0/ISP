@@ -4,6 +4,7 @@ default accesswidth = 16;
 default regwidth = 16;
 littleendian;
 	regfile isp_config{
+		desc = "ISP configuration";
 		reg {
 			field {
 				sw = rw;
@@ -136,7 +137,7 @@ littleendian;
 			field {
 				sw = rw;
 				hw = r;
-				desc = "CNF gain up-clip value";
+				desc = "CNF up-clip value";
 			} rg_cnf_clip[15:0] = 0x00ff;
 		} cnf_clip_cfg;
 		reg {
@@ -146,6 +147,696 @@ littleendian;
 				desc = "CNF threshold value";
 			} rg_cnf_thres[15:0] = 0x0;
 		} cnf_thres_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CFA up-clip value";
+			} rg_cfa_clip[15:0] = 0x00ff;
+		} cfa_clip_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CCM coef_r value for channel_0";
+			} rg_ccm_coef_r_0[15:0] = 0x400;
+		} ccm_coef_r_0_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CCM coef_r value for channel_1";
+			} rg_ccm_coef_r_1[15:0] = 0x0;
+		} ccm_coef_r_1_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CCM coef_r value for channel_2";
+			} rg_ccm_coef_r_2[15:0] = 0x0;
+		} ccm_coef_r_2_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CCM coef_r value for channel_3";
+			} rg_ccm_coef_r_3[15:0] = 0x0;
+		} ccm_coef_r_3_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CCM coef_g value for channel_0";
+			} rg_ccm_coef_g_0[15:0] = 0x0;
+		} ccm_coef_g_0_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CCM coef_g value for channel_1";
+			} rg_ccm_coef_g_1[15:0] = 0x400;
+		} ccm_coef_g_1_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CCM coef_g value for channel_2";
+			} rg_ccm_coef_g_2[15:0] = 0x0;
+		} ccm_coef_g_2_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CCM coef_g value for channel_3";
+			} rg_ccm_coef_g_3[15:0] = 0x0;
+		} ccm_coef_g_3_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CCM coef_b value for channel_0";
+			} rg_ccm_coef_b_0[15:0] = 0x0;
+		} ccm_coef_b_0_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CCM coef_b value for channel_1";
+			} rg_ccm_coef_b_1[15:0] = 0x0;
+		} ccm_coef_b_1_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CCM coef_b value for channel_2";
+			} rg_ccm_coef_b_2[15:0] = 0x400;
+		} ccm_coef_b_2_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "CCM coef_b value for channel_3";
+			} rg_ccm_coef_b_3[15:0] = 0x0;
+		} ccm_coef_b_3_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "csc coef_r value for channel_0";
+			} rg_csc_coef_r_0[15:0] = 0xffb7;
+		} csc_coef_r_0_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "csc coef_r value for channel_1";
+			} rg_csc_coef_r_1[15:0] = 0xfe87;
+		} csc_coef_r_1_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "csc coef_r value for channel_2";
+			} rg_csc_coef_r_2[15:0] = 0x01c2;
+		} csc_coef_r_2_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "csc coef_r value for channel_3";
+			} rg_csc_coef_r_3[15:0] = 0x80;
+		} csc_coef_r_3_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "csc coef_g value for channel_0";
+			} rg_csc_coef_g_0[15:0] = 0x01c2;
+		} csc_coef_g_0_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "csc coef_g value for channel_1";
+			} rg_csc_coef_g_1[15:0] = 0xfed6;
+		} csc_coef_g_1_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "csc coef_g value for channel_2";
+			} rg_csc_coef_g_2[15:0] = 0xff68;
+		} csc_coef_g_2_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "csc coef_g value for channel_3";
+			} rg_csc_coef_g_3[15:0] = 0x80;
+		} csc_coef_g_3_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "csc coef_b value for channel_0";
+			} rg_csc_coef_b_0[15:0] = 0x66;
+		} csc_coef_b_0_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "csc coef_b value for channel_1";
+			} rg_csc_coef_b_1[15:0] = 0x204;
+		} csc_coef_b_1_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "csc coef_b value for channel_2";
+			} rg_csc_coef_b_2[15:0] = 0x107;
+		} csc_coef_b_2_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "csc coef_b value for channel_3";
+			} rg_csc_coef_b_3[15:0] = 0x10;
+		} csc_coef_b_3_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "NLM up-clip value";
+			} rg_nlm_clip[15:0] = 0x00ff;
+		} nlm_clip_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_00[15:0] = 0x8;
+		} bnf_dw_00_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_01[15:0] = 0xc;
+		} bnf_dw_01_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_02[15:0] = 0x20;
+		} bnf_dw_02_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_03[15:0] = 0xc;
+		} bnf_dw_03_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_04[15:0] = 0x8;
+		} bnf_dw_04_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_10[15:0] = 0xc;
+		} bnf_dw_10_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_11[15:0] = 0x40;
+		} bnf_dw_11_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_12[15:0] = 0x80;
+		} bnf_dw_12_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_13[15:0] = 0x40;
+		} bnf_dw_13_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_14[15:0] = 0xc;
+		} bnf_dw_14_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_20[15:0] = 0x20;
+		} bnf_dw_20_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_21[15:0] = 0x80;
+		} bnf_dw_21_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_22[15:0] = 0x400;
+		} bnf_dw_22_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_23[15:0] = 0x80;
+		} bnf_dw_23_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_24[15:0] = 0x20;
+		} bnf_dw_24_cfg;
+
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_30[15:0] = 0xc;
+		} bnf_dw_30_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_31[15:0] = 0x40;
+		} bnf_dw_31_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_32[15:0] = 0x80;
+		} bnf_dw_32_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_33[15:0] = 0x40;
+		} bnf_dw_33_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_34[15:0] = 0xc;
+		} bnf_dw_34_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_40[15:0] = 0x8;
+		} bnf_dw_40_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_41[15:0] = 0xc;
+		} bnf_dw_41_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_42[15:0] = 0x20;
+		} bnf_dw_42_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_43[15:0] = 0xc;
+		} bnf_dw_43_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF dw value";
+			} rg_bnf_dw_44[15:0] = 0x8;
+		} bnf_dw_44_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF rw value";
+			} rg_bnf_rw_0[15:0] = 0x8;
+		} bnf_rw_0_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF rw value";
+			} rg_bnf_rw_1[15:0] = 0xc;
+		} bnf_rw_1_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF rw value";
+			} rg_bnf_rw_2[15:0] = 0x10;
+		} bnf_rw_2_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF rw value";
+			} rg_bnf_rw_3[15:0] = 0x20;
+		} bnf_rw_3_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF threshold value";
+			} rg_bnf_rthres_0[15:0] = 0x8;
+		} bnf_rthres_0_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF rw value";
+			} rg_bnf_rthres_1[15:0] = 0xc;
+		} bnf_rthres_1_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF rw value";
+			} rg_bnf_rthres_2[15:0] = 0x10;
+		} bnf_rthres_2_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BNF up-clip value";
+			} rg_bnf_clip[15:0] = 0xff;
+		} bnf_clip_cfg;
+
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_00[4:0] = 0x1f;
+		} edge_filter_00_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_01[4:0] = 0x0;
+		} edge_filter_01_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_02[4:0] = 0x1f;
+		} edge_filter_02_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_03[4:0] = 0x0;
+		} edge_filter_03_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_04[4:0] = 0x1f;
+		} edge_filter_04_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_10[4:0] = 0x1f;
+		} edge_filter_10_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_11[4:0] = 0x0;
+		} edge_filter_11_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_12[4:0] = 0x8;
+		} edge_filter_12_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_13[4:0] = 0x0;
+		} edge_filter_13_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_14[4:0] = 0x1f;
+		} edge_filter_14_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_20[4:0] = 0x1f;
+		} edge_filter_20_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_21[4:0] = 0x0;
+		} edge_filter_21_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_22[4:0] = 0x1f;
+		} edge_filter_22_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_23[4:0] = 0x0;
+		} edge_filter_23_cfg;
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH filter value";
+			} rg_edge_filter_24[4:0] = 0x1f;
+		} edge_filter_24_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH gain value";
+			} rg_eeh_gain_0[15:0] = 0x20;
+		} eeh_gain_0_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH gain value";
+			} rg_eeh_gain_1[15:0] = 0x80;
+		} eeh_gain_1_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH rthres value";
+			} rg_eeh_rthres_0[15:0] = 0x20;
+		} eeh_rthres_0_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH rthres value";
+			} rg_eeh_rthres_1[15:0] = 0x40;
+		} eeh_rthres_1_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH emclip value";
+			} rg_eeh_emclip_0[15:0] = 0x20;
+		} eeh_emclip_0_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "EEH rthres value";
+			} rg_eeh_emclip_1[15:0] = 0xffc0;
+		} eeh_emclip_1_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BCC brightness value";
+			} rg_bcc_brightness[15:0] = 0xa;
+		} bcc_brightness_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BCC constrast value";
+			} rg_bcc_constrast[15:0] = 0xa;
+		} bcc_constrast_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "BCC up-clip value";
+			} rg_bcc_clip[15:0] = 0xff;
+		} bcc_clip_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "FCS edge value";
+			} rg_fcs_edge_0[15:0] = 0x20;
+		} fcs_edge_0_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "FCS edge value";
+			} rg_fcs_edge_1[15:0] = 0x40;
+		} fcs_edge_1_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "FCS gain value";
+			} rg_fcs_gain[15:0] = 0x20;
+		} fcs_gain_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "FCS intercept value";
+			} rg_fcs_intercept[15:0] = 0x2;
+		} fcs_intercept_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "FCS slop value";
+			} rg_fcs_slop[15:0] = 0x3;
+		} fcs_slop_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "FCS clip value";
+			} rg_fcs_clip[15:0] = 0xff;
+		} fcs_clip_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "HSC cos value";
+			} rg_hue_cos[15:0] = 0xff62;
+		} hue_cos_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "HSC sin value";
+			} rg_hue_sin[15:0] = 0xca;
+		} hue_sin_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "HSC saturation value";
+			} rg_hsc_saturation[15:0] = 0x100;
+		} hsc_saturation_cfg;
+
+		reg {
+			field {
+				sw = rw;
+				hw = r;
+				desc = "HSC clip value";
+			} rg_hsc_clip[15:0] = 0xff;
+		} hsc_clip_cfg;
 
 	} isp_config @0x0000;
 };

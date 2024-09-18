@@ -7,7 +7,7 @@ module regmap (
 
         input wire s_cpuif_req,
         input wire s_cpuif_req_is_wr,
-        input wire [5:0] s_cpuif_addr,
+        input wire [7:0] s_cpuif_addr,
         input wire [15:0] s_cpuif_wr_data,
         input wire [15:0] s_cpuif_wr_biten,
         output wire s_cpuif_req_stall_wr,
@@ -27,7 +27,7 @@ module regmap (
     //--------------------------------------------------------------------------
     logic cpuif_req;
     logic cpuif_req_is_wr;
-    logic [5:0] cpuif_addr;
+    logic [7:0] cpuif_addr;
     logic [15:0] cpuif_wr_data;
     logic [15:0] cpuif_wr_biten;
     logic cpuif_req_stall_wr;
@@ -87,6 +87,99 @@ module regmap (
             logic cnf_gain_3_cfg;
             logic cnf_clip_cfg;
             logic cnf_thres_cfg;
+            logic cfa_clip_cfg;
+            logic ccm_coef_r_0_cfg;
+            logic ccm_coef_r_1_cfg;
+            logic ccm_coef_r_2_cfg;
+            logic ccm_coef_r_3_cfg;
+            logic ccm_coef_g_0_cfg;
+            logic ccm_coef_g_1_cfg;
+            logic ccm_coef_g_2_cfg;
+            logic ccm_coef_g_3_cfg;
+            logic ccm_coef_b_0_cfg;
+            logic ccm_coef_b_1_cfg;
+            logic ccm_coef_b_2_cfg;
+            logic ccm_coef_b_3_cfg;
+            logic csc_coef_r_0_cfg;
+            logic csc_coef_r_1_cfg;
+            logic csc_coef_r_2_cfg;
+            logic csc_coef_r_3_cfg;
+            logic csc_coef_g_0_cfg;
+            logic csc_coef_g_1_cfg;
+            logic csc_coef_g_2_cfg;
+            logic csc_coef_g_3_cfg;
+            logic csc_coef_b_0_cfg;
+            logic csc_coef_b_1_cfg;
+            logic csc_coef_b_2_cfg;
+            logic csc_coef_b_3_cfg;
+            logic nlm_clip_cfg;
+            logic bnf_dw_00_cfg;
+            logic bnf_dw_01_cfg;
+            logic bnf_dw_02_cfg;
+            logic bnf_dw_03_cfg;
+            logic bnf_dw_04_cfg;
+            logic bnf_dw_10_cfg;
+            logic bnf_dw_11_cfg;
+            logic bnf_dw_12_cfg;
+            logic bnf_dw_13_cfg;
+            logic bnf_dw_14_cfg;
+            logic bnf_dw_20_cfg;
+            logic bnf_dw_21_cfg;
+            logic bnf_dw_22_cfg;
+            logic bnf_dw_23_cfg;
+            logic bnf_dw_24_cfg;
+            logic bnf_dw_30_cfg;
+            logic bnf_dw_31_cfg;
+            logic bnf_dw_32_cfg;
+            logic bnf_dw_33_cfg;
+            logic bnf_dw_34_cfg;
+            logic bnf_dw_40_cfg;
+            logic bnf_dw_41_cfg;
+            logic bnf_dw_42_cfg;
+            logic bnf_dw_43_cfg;
+            logic bnf_dw_44_cfg;
+            logic bnf_rw_0_cfg;
+            logic bnf_rw_1_cfg;
+            logic bnf_rw_2_cfg;
+            logic bnf_rw_3_cfg;
+            logic bnf_rthres_0_cfg;
+            logic bnf_rthres_1_cfg;
+            logic bnf_rthres_2_cfg;
+            logic bnf_clip_cfg;
+            logic edge_filter_00_cfg;
+            logic edge_filter_01_cfg;
+            logic edge_filter_02_cfg;
+            logic edge_filter_03_cfg;
+            logic edge_filter_04_cfg;
+            logic edge_filter_10_cfg;
+            logic edge_filter_11_cfg;
+            logic edge_filter_12_cfg;
+            logic edge_filter_13_cfg;
+            logic edge_filter_14_cfg;
+            logic edge_filter_20_cfg;
+            logic edge_filter_21_cfg;
+            logic edge_filter_22_cfg;
+            logic edge_filter_23_cfg;
+            logic edge_filter_24_cfg;
+            logic eeh_gain_0_cfg;
+            logic eeh_gain_1_cfg;
+            logic eeh_rthres_0_cfg;
+            logic eeh_rthres_1_cfg;
+            logic eeh_emclip_0_cfg;
+            logic eeh_emclip_1_cfg;
+            logic bcc_brightness_cfg;
+            logic bcc_constrast_cfg;
+            logic bcc_clip_cfg;
+            logic fcs_edge_0_cfg;
+            logic fcs_edge_1_cfg;
+            logic fcs_gain_cfg;
+            logic fcs_intercept_cfg;
+            logic fcs_slop_cfg;
+            logic fcs_clip_cfg;
+            logic hue_cos_cfg;
+            logic hue_sin_cfg;
+            logic hsc_saturation_cfg;
+            logic hsc_clip_cfg;
         } isp_config;
     } decoded_reg_strb_t;
     decoded_reg_strb_t decoded_reg_strb;
@@ -96,26 +189,119 @@ module regmap (
     logic [15:0] decoded_wr_biten;
 
     always_comb begin
-        decoded_reg_strb.isp_config.isp_enable_cfg = cpuif_req_masked & (cpuif_addr == 6'h0);
-        decoded_reg_strb.isp_config.bayer_pattern_cfg = cpuif_req_masked & (cpuif_addr == 6'h2);
-        decoded_reg_strb.isp_config.dpc_thres_cfg = cpuif_req_masked & (cpuif_addr == 6'h4);
-        decoded_reg_strb.isp_config.dpc_clip_cfg = cpuif_req_masked & (cpuif_addr == 6'h6);
-        decoded_reg_strb.isp_config.blc_bias_0_cfg = cpuif_req_masked & (cpuif_addr == 6'h8);
-        decoded_reg_strb.isp_config.blc_bias_1_cfg = cpuif_req_masked & (cpuif_addr == 6'ha);
-        decoded_reg_strb.isp_config.blc_bias_2_cfg = cpuif_req_masked & (cpuif_addr == 6'hc);
-        decoded_reg_strb.isp_config.blc_bias_3_cfg = cpuif_req_masked & (cpuif_addr == 6'he);
-        decoded_reg_strb.isp_config.blc_clip_cfg = cpuif_req_masked & (cpuif_addr == 6'h10);
-        decoded_reg_strb.isp_config.awb_gain_0_cfg = cpuif_req_masked & (cpuif_addr == 6'h12);
-        decoded_reg_strb.isp_config.awb_gain_1_cfg = cpuif_req_masked & (cpuif_addr == 6'h14);
-        decoded_reg_strb.isp_config.awb_gain_2_cfg = cpuif_req_masked & (cpuif_addr == 6'h16);
-        decoded_reg_strb.isp_config.awb_gain_3_cfg = cpuif_req_masked & (cpuif_addr == 6'h18);
-        decoded_reg_strb.isp_config.awb_clip_cfg = cpuif_req_masked & (cpuif_addr == 6'h1a);
-        decoded_reg_strb.isp_config.cnf_gain_0_cfg = cpuif_req_masked & (cpuif_addr == 6'h1c);
-        decoded_reg_strb.isp_config.cnf_gain_1_cfg = cpuif_req_masked & (cpuif_addr == 6'h1e);
-        decoded_reg_strb.isp_config.cnf_gain_2_cfg = cpuif_req_masked & (cpuif_addr == 6'h20);
-        decoded_reg_strb.isp_config.cnf_gain_3_cfg = cpuif_req_masked & (cpuif_addr == 6'h22);
-        decoded_reg_strb.isp_config.cnf_clip_cfg = cpuif_req_masked & (cpuif_addr == 6'h24);
-        decoded_reg_strb.isp_config.cnf_thres_cfg = cpuif_req_masked & (cpuif_addr == 6'h26);
+        decoded_reg_strb.isp_config.isp_enable_cfg = cpuif_req_masked & (cpuif_addr == 8'h0);
+        decoded_reg_strb.isp_config.bayer_pattern_cfg = cpuif_req_masked & (cpuif_addr == 8'h2);
+        decoded_reg_strb.isp_config.dpc_thres_cfg = cpuif_req_masked & (cpuif_addr == 8'h4);
+        decoded_reg_strb.isp_config.dpc_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h6);
+        decoded_reg_strb.isp_config.blc_bias_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h8);
+        decoded_reg_strb.isp_config.blc_bias_1_cfg = cpuif_req_masked & (cpuif_addr == 8'ha);
+        decoded_reg_strb.isp_config.blc_bias_2_cfg = cpuif_req_masked & (cpuif_addr == 8'hc);
+        decoded_reg_strb.isp_config.blc_bias_3_cfg = cpuif_req_masked & (cpuif_addr == 8'he);
+        decoded_reg_strb.isp_config.blc_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h10);
+        decoded_reg_strb.isp_config.awb_gain_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h12);
+        decoded_reg_strb.isp_config.awb_gain_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h14);
+        decoded_reg_strb.isp_config.awb_gain_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h16);
+        decoded_reg_strb.isp_config.awb_gain_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h18);
+        decoded_reg_strb.isp_config.awb_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h1a);
+        decoded_reg_strb.isp_config.cnf_gain_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h1c);
+        decoded_reg_strb.isp_config.cnf_gain_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h1e);
+        decoded_reg_strb.isp_config.cnf_gain_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h20);
+        decoded_reg_strb.isp_config.cnf_gain_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h22);
+        decoded_reg_strb.isp_config.cnf_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h24);
+        decoded_reg_strb.isp_config.cnf_thres_cfg = cpuif_req_masked & (cpuif_addr == 8'h26);
+        decoded_reg_strb.isp_config.cfa_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h28);
+        decoded_reg_strb.isp_config.ccm_coef_r_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h2a);
+        decoded_reg_strb.isp_config.ccm_coef_r_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h2c);
+        decoded_reg_strb.isp_config.ccm_coef_r_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h2e);
+        decoded_reg_strb.isp_config.ccm_coef_r_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h30);
+        decoded_reg_strb.isp_config.ccm_coef_g_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h32);
+        decoded_reg_strb.isp_config.ccm_coef_g_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h34);
+        decoded_reg_strb.isp_config.ccm_coef_g_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h36);
+        decoded_reg_strb.isp_config.ccm_coef_g_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h38);
+        decoded_reg_strb.isp_config.ccm_coef_b_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h3a);
+        decoded_reg_strb.isp_config.ccm_coef_b_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h3c);
+        decoded_reg_strb.isp_config.ccm_coef_b_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h3e);
+        decoded_reg_strb.isp_config.ccm_coef_b_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h40);
+        decoded_reg_strb.isp_config.csc_coef_r_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h42);
+        decoded_reg_strb.isp_config.csc_coef_r_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h44);
+        decoded_reg_strb.isp_config.csc_coef_r_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h46);
+        decoded_reg_strb.isp_config.csc_coef_r_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h48);
+        decoded_reg_strb.isp_config.csc_coef_g_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h4a);
+        decoded_reg_strb.isp_config.csc_coef_g_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h4c);
+        decoded_reg_strb.isp_config.csc_coef_g_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h4e);
+        decoded_reg_strb.isp_config.csc_coef_g_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h50);
+        decoded_reg_strb.isp_config.csc_coef_b_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h52);
+        decoded_reg_strb.isp_config.csc_coef_b_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h54);
+        decoded_reg_strb.isp_config.csc_coef_b_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h56);
+        decoded_reg_strb.isp_config.csc_coef_b_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h58);
+        decoded_reg_strb.isp_config.nlm_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h5a);
+        decoded_reg_strb.isp_config.bnf_dw_00_cfg = cpuif_req_masked & (cpuif_addr == 8'h5c);
+        decoded_reg_strb.isp_config.bnf_dw_01_cfg = cpuif_req_masked & (cpuif_addr == 8'h5e);
+        decoded_reg_strb.isp_config.bnf_dw_02_cfg = cpuif_req_masked & (cpuif_addr == 8'h60);
+        decoded_reg_strb.isp_config.bnf_dw_03_cfg = cpuif_req_masked & (cpuif_addr == 8'h62);
+        decoded_reg_strb.isp_config.bnf_dw_04_cfg = cpuif_req_masked & (cpuif_addr == 8'h64);
+        decoded_reg_strb.isp_config.bnf_dw_10_cfg = cpuif_req_masked & (cpuif_addr == 8'h66);
+        decoded_reg_strb.isp_config.bnf_dw_11_cfg = cpuif_req_masked & (cpuif_addr == 8'h68);
+        decoded_reg_strb.isp_config.bnf_dw_12_cfg = cpuif_req_masked & (cpuif_addr == 8'h6a);
+        decoded_reg_strb.isp_config.bnf_dw_13_cfg = cpuif_req_masked & (cpuif_addr == 8'h6c);
+        decoded_reg_strb.isp_config.bnf_dw_14_cfg = cpuif_req_masked & (cpuif_addr == 8'h6e);
+        decoded_reg_strb.isp_config.bnf_dw_20_cfg = cpuif_req_masked & (cpuif_addr == 8'h70);
+        decoded_reg_strb.isp_config.bnf_dw_21_cfg = cpuif_req_masked & (cpuif_addr == 8'h72);
+        decoded_reg_strb.isp_config.bnf_dw_22_cfg = cpuif_req_masked & (cpuif_addr == 8'h74);
+        decoded_reg_strb.isp_config.bnf_dw_23_cfg = cpuif_req_masked & (cpuif_addr == 8'h76);
+        decoded_reg_strb.isp_config.bnf_dw_24_cfg = cpuif_req_masked & (cpuif_addr == 8'h78);
+        decoded_reg_strb.isp_config.bnf_dw_30_cfg = cpuif_req_masked & (cpuif_addr == 8'h7a);
+        decoded_reg_strb.isp_config.bnf_dw_31_cfg = cpuif_req_masked & (cpuif_addr == 8'h7c);
+        decoded_reg_strb.isp_config.bnf_dw_32_cfg = cpuif_req_masked & (cpuif_addr == 8'h7e);
+        decoded_reg_strb.isp_config.bnf_dw_33_cfg = cpuif_req_masked & (cpuif_addr == 8'h80);
+        decoded_reg_strb.isp_config.bnf_dw_34_cfg = cpuif_req_masked & (cpuif_addr == 8'h82);
+        decoded_reg_strb.isp_config.bnf_dw_40_cfg = cpuif_req_masked & (cpuif_addr == 8'h84);
+        decoded_reg_strb.isp_config.bnf_dw_41_cfg = cpuif_req_masked & (cpuif_addr == 8'h86);
+        decoded_reg_strb.isp_config.bnf_dw_42_cfg = cpuif_req_masked & (cpuif_addr == 8'h88);
+        decoded_reg_strb.isp_config.bnf_dw_43_cfg = cpuif_req_masked & (cpuif_addr == 8'h8a);
+        decoded_reg_strb.isp_config.bnf_dw_44_cfg = cpuif_req_masked & (cpuif_addr == 8'h8c);
+        decoded_reg_strb.isp_config.bnf_rw_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h8e);
+        decoded_reg_strb.isp_config.bnf_rw_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h90);
+        decoded_reg_strb.isp_config.bnf_rw_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h92);
+        decoded_reg_strb.isp_config.bnf_rw_3_cfg = cpuif_req_masked & (cpuif_addr == 8'h94);
+        decoded_reg_strb.isp_config.bnf_rthres_0_cfg = cpuif_req_masked & (cpuif_addr == 8'h96);
+        decoded_reg_strb.isp_config.bnf_rthres_1_cfg = cpuif_req_masked & (cpuif_addr == 8'h98);
+        decoded_reg_strb.isp_config.bnf_rthres_2_cfg = cpuif_req_masked & (cpuif_addr == 8'h9a);
+        decoded_reg_strb.isp_config.bnf_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'h9c);
+        decoded_reg_strb.isp_config.edge_filter_00_cfg = cpuif_req_masked & (cpuif_addr == 8'h9e);
+        decoded_reg_strb.isp_config.edge_filter_01_cfg = cpuif_req_masked & (cpuif_addr == 8'ha0);
+        decoded_reg_strb.isp_config.edge_filter_02_cfg = cpuif_req_masked & (cpuif_addr == 8'ha2);
+        decoded_reg_strb.isp_config.edge_filter_03_cfg = cpuif_req_masked & (cpuif_addr == 8'ha4);
+        decoded_reg_strb.isp_config.edge_filter_04_cfg = cpuif_req_masked & (cpuif_addr == 8'ha6);
+        decoded_reg_strb.isp_config.edge_filter_10_cfg = cpuif_req_masked & (cpuif_addr == 8'ha8);
+        decoded_reg_strb.isp_config.edge_filter_11_cfg = cpuif_req_masked & (cpuif_addr == 8'haa);
+        decoded_reg_strb.isp_config.edge_filter_12_cfg = cpuif_req_masked & (cpuif_addr == 8'hac);
+        decoded_reg_strb.isp_config.edge_filter_13_cfg = cpuif_req_masked & (cpuif_addr == 8'hae);
+        decoded_reg_strb.isp_config.edge_filter_14_cfg = cpuif_req_masked & (cpuif_addr == 8'hb0);
+        decoded_reg_strb.isp_config.edge_filter_20_cfg = cpuif_req_masked & (cpuif_addr == 8'hb2);
+        decoded_reg_strb.isp_config.edge_filter_21_cfg = cpuif_req_masked & (cpuif_addr == 8'hb4);
+        decoded_reg_strb.isp_config.edge_filter_22_cfg = cpuif_req_masked & (cpuif_addr == 8'hb6);
+        decoded_reg_strb.isp_config.edge_filter_23_cfg = cpuif_req_masked & (cpuif_addr == 8'hb8);
+        decoded_reg_strb.isp_config.edge_filter_24_cfg = cpuif_req_masked & (cpuif_addr == 8'hba);
+        decoded_reg_strb.isp_config.eeh_gain_0_cfg = cpuif_req_masked & (cpuif_addr == 8'hbc);
+        decoded_reg_strb.isp_config.eeh_gain_1_cfg = cpuif_req_masked & (cpuif_addr == 8'hbe);
+        decoded_reg_strb.isp_config.eeh_rthres_0_cfg = cpuif_req_masked & (cpuif_addr == 8'hc0);
+        decoded_reg_strb.isp_config.eeh_rthres_1_cfg = cpuif_req_masked & (cpuif_addr == 8'hc2);
+        decoded_reg_strb.isp_config.eeh_emclip_0_cfg = cpuif_req_masked & (cpuif_addr == 8'hc4);
+        decoded_reg_strb.isp_config.eeh_emclip_1_cfg = cpuif_req_masked & (cpuif_addr == 8'hc6);
+        decoded_reg_strb.isp_config.bcc_brightness_cfg = cpuif_req_masked & (cpuif_addr == 8'hc8);
+        decoded_reg_strb.isp_config.bcc_constrast_cfg = cpuif_req_masked & (cpuif_addr == 8'hca);
+        decoded_reg_strb.isp_config.bcc_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'hcc);
+        decoded_reg_strb.isp_config.fcs_edge_0_cfg = cpuif_req_masked & (cpuif_addr == 8'hce);
+        decoded_reg_strb.isp_config.fcs_edge_1_cfg = cpuif_req_masked & (cpuif_addr == 8'hd0);
+        decoded_reg_strb.isp_config.fcs_gain_cfg = cpuif_req_masked & (cpuif_addr == 8'hd2);
+        decoded_reg_strb.isp_config.fcs_intercept_cfg = cpuif_req_masked & (cpuif_addr == 8'hd4);
+        decoded_reg_strb.isp_config.fcs_slop_cfg = cpuif_req_masked & (cpuif_addr == 8'hd6);
+        decoded_reg_strb.isp_config.fcs_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'hd8);
+        decoded_reg_strb.isp_config.hue_cos_cfg = cpuif_req_masked & (cpuif_addr == 8'hda);
+        decoded_reg_strb.isp_config.hue_sin_cfg = cpuif_req_masked & (cpuif_addr == 8'hdc);
+        decoded_reg_strb.isp_config.hsc_saturation_cfg = cpuif_req_masked & (cpuif_addr == 8'hde);
+        decoded_reg_strb.isp_config.hsc_clip_cfg = cpuif_req_masked & (cpuif_addr == 8'he0);
     end
 
     // Pass down signals to next stage
@@ -249,6 +435,564 @@ module regmap (
                     logic load_next;
                 } rg_cnf_thres;
             } cnf_thres_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_cfa_clip;
+            } cfa_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_ccm_coef_r_0;
+            } ccm_coef_r_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_ccm_coef_r_1;
+            } ccm_coef_r_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_ccm_coef_r_2;
+            } ccm_coef_r_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_ccm_coef_r_3;
+            } ccm_coef_r_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_ccm_coef_g_0;
+            } ccm_coef_g_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_ccm_coef_g_1;
+            } ccm_coef_g_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_ccm_coef_g_2;
+            } ccm_coef_g_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_ccm_coef_g_3;
+            } ccm_coef_g_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_ccm_coef_b_0;
+            } ccm_coef_b_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_ccm_coef_b_1;
+            } ccm_coef_b_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_ccm_coef_b_2;
+            } ccm_coef_b_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_ccm_coef_b_3;
+            } ccm_coef_b_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_csc_coef_r_0;
+            } csc_coef_r_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_csc_coef_r_1;
+            } csc_coef_r_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_csc_coef_r_2;
+            } csc_coef_r_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_csc_coef_r_3;
+            } csc_coef_r_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_csc_coef_g_0;
+            } csc_coef_g_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_csc_coef_g_1;
+            } csc_coef_g_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_csc_coef_g_2;
+            } csc_coef_g_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_csc_coef_g_3;
+            } csc_coef_g_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_csc_coef_b_0;
+            } csc_coef_b_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_csc_coef_b_1;
+            } csc_coef_b_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_csc_coef_b_2;
+            } csc_coef_b_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_csc_coef_b_3;
+            } csc_coef_b_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_nlm_clip;
+            } nlm_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_00;
+            } bnf_dw_00_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_01;
+            } bnf_dw_01_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_02;
+            } bnf_dw_02_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_03;
+            } bnf_dw_03_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_04;
+            } bnf_dw_04_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_10;
+            } bnf_dw_10_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_11;
+            } bnf_dw_11_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_12;
+            } bnf_dw_12_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_13;
+            } bnf_dw_13_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_14;
+            } bnf_dw_14_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_20;
+            } bnf_dw_20_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_21;
+            } bnf_dw_21_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_22;
+            } bnf_dw_22_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_23;
+            } bnf_dw_23_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_24;
+            } bnf_dw_24_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_30;
+            } bnf_dw_30_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_31;
+            } bnf_dw_31_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_32;
+            } bnf_dw_32_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_33;
+            } bnf_dw_33_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_34;
+            } bnf_dw_34_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_40;
+            } bnf_dw_40_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_41;
+            } bnf_dw_41_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_42;
+            } bnf_dw_42_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_43;
+            } bnf_dw_43_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_dw_44;
+            } bnf_dw_44_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_rw_0;
+            } bnf_rw_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_rw_1;
+            } bnf_rw_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_rw_2;
+            } bnf_rw_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_rw_3;
+            } bnf_rw_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_rthres_0;
+            } bnf_rthres_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_rthres_1;
+            } bnf_rthres_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_rthres_2;
+            } bnf_rthres_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bnf_clip;
+            } bnf_clip_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_00;
+            } edge_filter_00_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_01;
+            } edge_filter_01_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_02;
+            } edge_filter_02_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_03;
+            } edge_filter_03_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_04;
+            } edge_filter_04_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_10;
+            } edge_filter_10_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_11;
+            } edge_filter_11_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_12;
+            } edge_filter_12_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_13;
+            } edge_filter_13_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_14;
+            } edge_filter_14_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_20;
+            } edge_filter_20_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_21;
+            } edge_filter_21_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_22;
+            } edge_filter_22_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_23;
+            } edge_filter_23_cfg;
+            struct {
+                struct {
+                    logic [4:0] next;
+                    logic load_next;
+                } rg_edge_filter_24;
+            } edge_filter_24_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_eeh_gain_0;
+            } eeh_gain_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_eeh_gain_1;
+            } eeh_gain_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_eeh_rthres_0;
+            } eeh_rthres_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_eeh_rthres_1;
+            } eeh_rthres_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_eeh_emclip_0;
+            } eeh_emclip_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_eeh_emclip_1;
+            } eeh_emclip_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bcc_brightness;
+            } bcc_brightness_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bcc_constrast;
+            } bcc_constrast_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_bcc_clip;
+            } bcc_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_fcs_edge_0;
+            } fcs_edge_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_fcs_edge_1;
+            } fcs_edge_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_fcs_gain;
+            } fcs_gain_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_fcs_intercept;
+            } fcs_intercept_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_fcs_slop;
+            } fcs_slop_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_fcs_clip;
+            } fcs_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_hue_cos;
+            } hue_cos_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_hue_sin;
+            } hue_sin_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_hsc_saturation;
+            } hsc_saturation_cfg;
+            struct {
+                struct {
+                    logic [15:0] next;
+                    logic load_next;
+                } rg_hsc_clip;
+            } hsc_clip_cfg;
         } isp_config;
     } field_combo_t;
     field_combo_t field_combo;
@@ -355,6 +1099,471 @@ module regmap (
                     logic [15:0] value;
                 } rg_cnf_thres;
             } cnf_thres_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_cfa_clip;
+            } cfa_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_ccm_coef_r_0;
+            } ccm_coef_r_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_ccm_coef_r_1;
+            } ccm_coef_r_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_ccm_coef_r_2;
+            } ccm_coef_r_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_ccm_coef_r_3;
+            } ccm_coef_r_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_ccm_coef_g_0;
+            } ccm_coef_g_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_ccm_coef_g_1;
+            } ccm_coef_g_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_ccm_coef_g_2;
+            } ccm_coef_g_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_ccm_coef_g_3;
+            } ccm_coef_g_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_ccm_coef_b_0;
+            } ccm_coef_b_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_ccm_coef_b_1;
+            } ccm_coef_b_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_ccm_coef_b_2;
+            } ccm_coef_b_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_ccm_coef_b_3;
+            } ccm_coef_b_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_csc_coef_r_0;
+            } csc_coef_r_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_csc_coef_r_1;
+            } csc_coef_r_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_csc_coef_r_2;
+            } csc_coef_r_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_csc_coef_r_3;
+            } csc_coef_r_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_csc_coef_g_0;
+            } csc_coef_g_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_csc_coef_g_1;
+            } csc_coef_g_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_csc_coef_g_2;
+            } csc_coef_g_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_csc_coef_g_3;
+            } csc_coef_g_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_csc_coef_b_0;
+            } csc_coef_b_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_csc_coef_b_1;
+            } csc_coef_b_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_csc_coef_b_2;
+            } csc_coef_b_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_csc_coef_b_3;
+            } csc_coef_b_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_nlm_clip;
+            } nlm_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_00;
+            } bnf_dw_00_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_01;
+            } bnf_dw_01_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_02;
+            } bnf_dw_02_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_03;
+            } bnf_dw_03_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_04;
+            } bnf_dw_04_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_10;
+            } bnf_dw_10_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_11;
+            } bnf_dw_11_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_12;
+            } bnf_dw_12_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_13;
+            } bnf_dw_13_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_14;
+            } bnf_dw_14_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_20;
+            } bnf_dw_20_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_21;
+            } bnf_dw_21_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_22;
+            } bnf_dw_22_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_23;
+            } bnf_dw_23_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_24;
+            } bnf_dw_24_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_30;
+            } bnf_dw_30_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_31;
+            } bnf_dw_31_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_32;
+            } bnf_dw_32_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_33;
+            } bnf_dw_33_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_34;
+            } bnf_dw_34_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_40;
+            } bnf_dw_40_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_41;
+            } bnf_dw_41_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_42;
+            } bnf_dw_42_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_43;
+            } bnf_dw_43_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_dw_44;
+            } bnf_dw_44_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_rw_0;
+            } bnf_rw_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_rw_1;
+            } bnf_rw_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_rw_2;
+            } bnf_rw_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_rw_3;
+            } bnf_rw_3_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_rthres_0;
+            } bnf_rthres_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_rthres_1;
+            } bnf_rthres_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_rthres_2;
+            } bnf_rthres_2_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bnf_clip;
+            } bnf_clip_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_00;
+            } edge_filter_00_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_01;
+            } edge_filter_01_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_02;
+            } edge_filter_02_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_03;
+            } edge_filter_03_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_04;
+            } edge_filter_04_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_10;
+            } edge_filter_10_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_11;
+            } edge_filter_11_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_12;
+            } edge_filter_12_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_13;
+            } edge_filter_13_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_14;
+            } edge_filter_14_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_20;
+            } edge_filter_20_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_21;
+            } edge_filter_21_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_22;
+            } edge_filter_22_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_23;
+            } edge_filter_23_cfg;
+            struct {
+                struct {
+                    logic [4:0] value;
+                } rg_edge_filter_24;
+            } edge_filter_24_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_eeh_gain_0;
+            } eeh_gain_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_eeh_gain_1;
+            } eeh_gain_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_eeh_rthres_0;
+            } eeh_rthres_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_eeh_rthres_1;
+            } eeh_rthres_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_eeh_emclip_0;
+            } eeh_emclip_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_eeh_emclip_1;
+            } eeh_emclip_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bcc_brightness;
+            } bcc_brightness_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bcc_constrast;
+            } bcc_constrast_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_bcc_clip;
+            } bcc_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_fcs_edge_0;
+            } fcs_edge_0_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_fcs_edge_1;
+            } fcs_edge_1_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_fcs_gain;
+            } fcs_gain_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_fcs_intercept;
+            } fcs_intercept_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_fcs_slop;
+            } fcs_slop_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_fcs_clip;
+            } fcs_clip_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_hue_cos;
+            } hue_cos_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_hue_sin;
+            } hue_sin_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_hsc_saturation;
+            } hsc_saturation_cfg;
+            struct {
+                struct {
+                    logic [15:0] value;
+                } rg_hsc_clip;
+            } hsc_clip_cfg;
         } isp_config;
     } field_storage_t;
     field_storage_t field_storage;
@@ -781,6 +1990,1959 @@ module regmap (
         end
     end
     assign hwif_out.isp_config.cnf_thres_cfg.rg_cnf_thres.value = field_storage.isp_config.cnf_thres_cfg.rg_cnf_thres.value;
+    // Field: regmap.isp_config.cfa_clip_cfg.rg_cfa_clip
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.cfa_clip_cfg.rg_cfa_clip.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.cfa_clip_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.cfa_clip_cfg.rg_cfa_clip.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.cfa_clip_cfg.rg_cfa_clip.next = next_c;
+        field_combo.isp_config.cfa_clip_cfg.rg_cfa_clip.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.cfa_clip_cfg.rg_cfa_clip.value <= 16'hff;
+        end else if(field_combo.isp_config.cfa_clip_cfg.rg_cfa_clip.load_next) begin
+            field_storage.isp_config.cfa_clip_cfg.rg_cfa_clip.value <= field_combo.isp_config.cfa_clip_cfg.rg_cfa_clip.next;
+        end
+    end
+    assign hwif_out.isp_config.cfa_clip_cfg.rg_cfa_clip.value = field_storage.isp_config.cfa_clip_cfg.rg_cfa_clip.value;
+    // Field: regmap.isp_config.ccm_coef_r_0_cfg.rg_ccm_coef_r_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.ccm_coef_r_0_cfg.rg_ccm_coef_r_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.ccm_coef_r_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.ccm_coef_r_0_cfg.rg_ccm_coef_r_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.ccm_coef_r_0_cfg.rg_ccm_coef_r_0.next = next_c;
+        field_combo.isp_config.ccm_coef_r_0_cfg.rg_ccm_coef_r_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.ccm_coef_r_0_cfg.rg_ccm_coef_r_0.value <= 16'h400;
+        end else if(field_combo.isp_config.ccm_coef_r_0_cfg.rg_ccm_coef_r_0.load_next) begin
+            field_storage.isp_config.ccm_coef_r_0_cfg.rg_ccm_coef_r_0.value <= field_combo.isp_config.ccm_coef_r_0_cfg.rg_ccm_coef_r_0.next;
+        end
+    end
+    assign hwif_out.isp_config.ccm_coef_r_0_cfg.rg_ccm_coef_r_0.value = field_storage.isp_config.ccm_coef_r_0_cfg.rg_ccm_coef_r_0.value;
+    // Field: regmap.isp_config.ccm_coef_r_1_cfg.rg_ccm_coef_r_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.ccm_coef_r_1_cfg.rg_ccm_coef_r_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.ccm_coef_r_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.ccm_coef_r_1_cfg.rg_ccm_coef_r_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.ccm_coef_r_1_cfg.rg_ccm_coef_r_1.next = next_c;
+        field_combo.isp_config.ccm_coef_r_1_cfg.rg_ccm_coef_r_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.ccm_coef_r_1_cfg.rg_ccm_coef_r_1.value <= 16'h0;
+        end else if(field_combo.isp_config.ccm_coef_r_1_cfg.rg_ccm_coef_r_1.load_next) begin
+            field_storage.isp_config.ccm_coef_r_1_cfg.rg_ccm_coef_r_1.value <= field_combo.isp_config.ccm_coef_r_1_cfg.rg_ccm_coef_r_1.next;
+        end
+    end
+    assign hwif_out.isp_config.ccm_coef_r_1_cfg.rg_ccm_coef_r_1.value = field_storage.isp_config.ccm_coef_r_1_cfg.rg_ccm_coef_r_1.value;
+    // Field: regmap.isp_config.ccm_coef_r_2_cfg.rg_ccm_coef_r_2
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.ccm_coef_r_2_cfg.rg_ccm_coef_r_2.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.ccm_coef_r_2_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.ccm_coef_r_2_cfg.rg_ccm_coef_r_2.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.ccm_coef_r_2_cfg.rg_ccm_coef_r_2.next = next_c;
+        field_combo.isp_config.ccm_coef_r_2_cfg.rg_ccm_coef_r_2.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.ccm_coef_r_2_cfg.rg_ccm_coef_r_2.value <= 16'h0;
+        end else if(field_combo.isp_config.ccm_coef_r_2_cfg.rg_ccm_coef_r_2.load_next) begin
+            field_storage.isp_config.ccm_coef_r_2_cfg.rg_ccm_coef_r_2.value <= field_combo.isp_config.ccm_coef_r_2_cfg.rg_ccm_coef_r_2.next;
+        end
+    end
+    assign hwif_out.isp_config.ccm_coef_r_2_cfg.rg_ccm_coef_r_2.value = field_storage.isp_config.ccm_coef_r_2_cfg.rg_ccm_coef_r_2.value;
+    // Field: regmap.isp_config.ccm_coef_r_3_cfg.rg_ccm_coef_r_3
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.ccm_coef_r_3_cfg.rg_ccm_coef_r_3.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.ccm_coef_r_3_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.ccm_coef_r_3_cfg.rg_ccm_coef_r_3.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.ccm_coef_r_3_cfg.rg_ccm_coef_r_3.next = next_c;
+        field_combo.isp_config.ccm_coef_r_3_cfg.rg_ccm_coef_r_3.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.ccm_coef_r_3_cfg.rg_ccm_coef_r_3.value <= 16'h0;
+        end else if(field_combo.isp_config.ccm_coef_r_3_cfg.rg_ccm_coef_r_3.load_next) begin
+            field_storage.isp_config.ccm_coef_r_3_cfg.rg_ccm_coef_r_3.value <= field_combo.isp_config.ccm_coef_r_3_cfg.rg_ccm_coef_r_3.next;
+        end
+    end
+    assign hwif_out.isp_config.ccm_coef_r_3_cfg.rg_ccm_coef_r_3.value = field_storage.isp_config.ccm_coef_r_3_cfg.rg_ccm_coef_r_3.value;
+    // Field: regmap.isp_config.ccm_coef_g_0_cfg.rg_ccm_coef_g_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.ccm_coef_g_0_cfg.rg_ccm_coef_g_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.ccm_coef_g_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.ccm_coef_g_0_cfg.rg_ccm_coef_g_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.ccm_coef_g_0_cfg.rg_ccm_coef_g_0.next = next_c;
+        field_combo.isp_config.ccm_coef_g_0_cfg.rg_ccm_coef_g_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.ccm_coef_g_0_cfg.rg_ccm_coef_g_0.value <= 16'h0;
+        end else if(field_combo.isp_config.ccm_coef_g_0_cfg.rg_ccm_coef_g_0.load_next) begin
+            field_storage.isp_config.ccm_coef_g_0_cfg.rg_ccm_coef_g_0.value <= field_combo.isp_config.ccm_coef_g_0_cfg.rg_ccm_coef_g_0.next;
+        end
+    end
+    assign hwif_out.isp_config.ccm_coef_g_0_cfg.rg_ccm_coef_g_0.value = field_storage.isp_config.ccm_coef_g_0_cfg.rg_ccm_coef_g_0.value;
+    // Field: regmap.isp_config.ccm_coef_g_1_cfg.rg_ccm_coef_g_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.ccm_coef_g_1_cfg.rg_ccm_coef_g_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.ccm_coef_g_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.ccm_coef_g_1_cfg.rg_ccm_coef_g_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.ccm_coef_g_1_cfg.rg_ccm_coef_g_1.next = next_c;
+        field_combo.isp_config.ccm_coef_g_1_cfg.rg_ccm_coef_g_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.ccm_coef_g_1_cfg.rg_ccm_coef_g_1.value <= 16'h400;
+        end else if(field_combo.isp_config.ccm_coef_g_1_cfg.rg_ccm_coef_g_1.load_next) begin
+            field_storage.isp_config.ccm_coef_g_1_cfg.rg_ccm_coef_g_1.value <= field_combo.isp_config.ccm_coef_g_1_cfg.rg_ccm_coef_g_1.next;
+        end
+    end
+    assign hwif_out.isp_config.ccm_coef_g_1_cfg.rg_ccm_coef_g_1.value = field_storage.isp_config.ccm_coef_g_1_cfg.rg_ccm_coef_g_1.value;
+    // Field: regmap.isp_config.ccm_coef_g_2_cfg.rg_ccm_coef_g_2
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.ccm_coef_g_2_cfg.rg_ccm_coef_g_2.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.ccm_coef_g_2_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.ccm_coef_g_2_cfg.rg_ccm_coef_g_2.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.ccm_coef_g_2_cfg.rg_ccm_coef_g_2.next = next_c;
+        field_combo.isp_config.ccm_coef_g_2_cfg.rg_ccm_coef_g_2.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.ccm_coef_g_2_cfg.rg_ccm_coef_g_2.value <= 16'h0;
+        end else if(field_combo.isp_config.ccm_coef_g_2_cfg.rg_ccm_coef_g_2.load_next) begin
+            field_storage.isp_config.ccm_coef_g_2_cfg.rg_ccm_coef_g_2.value <= field_combo.isp_config.ccm_coef_g_2_cfg.rg_ccm_coef_g_2.next;
+        end
+    end
+    assign hwif_out.isp_config.ccm_coef_g_2_cfg.rg_ccm_coef_g_2.value = field_storage.isp_config.ccm_coef_g_2_cfg.rg_ccm_coef_g_2.value;
+    // Field: regmap.isp_config.ccm_coef_g_3_cfg.rg_ccm_coef_g_3
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.ccm_coef_g_3_cfg.rg_ccm_coef_g_3.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.ccm_coef_g_3_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.ccm_coef_g_3_cfg.rg_ccm_coef_g_3.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.ccm_coef_g_3_cfg.rg_ccm_coef_g_3.next = next_c;
+        field_combo.isp_config.ccm_coef_g_3_cfg.rg_ccm_coef_g_3.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.ccm_coef_g_3_cfg.rg_ccm_coef_g_3.value <= 16'h0;
+        end else if(field_combo.isp_config.ccm_coef_g_3_cfg.rg_ccm_coef_g_3.load_next) begin
+            field_storage.isp_config.ccm_coef_g_3_cfg.rg_ccm_coef_g_3.value <= field_combo.isp_config.ccm_coef_g_3_cfg.rg_ccm_coef_g_3.next;
+        end
+    end
+    assign hwif_out.isp_config.ccm_coef_g_3_cfg.rg_ccm_coef_g_3.value = field_storage.isp_config.ccm_coef_g_3_cfg.rg_ccm_coef_g_3.value;
+    // Field: regmap.isp_config.ccm_coef_b_0_cfg.rg_ccm_coef_b_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.ccm_coef_b_0_cfg.rg_ccm_coef_b_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.ccm_coef_b_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.ccm_coef_b_0_cfg.rg_ccm_coef_b_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.ccm_coef_b_0_cfg.rg_ccm_coef_b_0.next = next_c;
+        field_combo.isp_config.ccm_coef_b_0_cfg.rg_ccm_coef_b_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.ccm_coef_b_0_cfg.rg_ccm_coef_b_0.value <= 16'h0;
+        end else if(field_combo.isp_config.ccm_coef_b_0_cfg.rg_ccm_coef_b_0.load_next) begin
+            field_storage.isp_config.ccm_coef_b_0_cfg.rg_ccm_coef_b_0.value <= field_combo.isp_config.ccm_coef_b_0_cfg.rg_ccm_coef_b_0.next;
+        end
+    end
+    assign hwif_out.isp_config.ccm_coef_b_0_cfg.rg_ccm_coef_b_0.value = field_storage.isp_config.ccm_coef_b_0_cfg.rg_ccm_coef_b_0.value;
+    // Field: regmap.isp_config.ccm_coef_b_1_cfg.rg_ccm_coef_b_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.ccm_coef_b_1_cfg.rg_ccm_coef_b_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.ccm_coef_b_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.ccm_coef_b_1_cfg.rg_ccm_coef_b_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.ccm_coef_b_1_cfg.rg_ccm_coef_b_1.next = next_c;
+        field_combo.isp_config.ccm_coef_b_1_cfg.rg_ccm_coef_b_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.ccm_coef_b_1_cfg.rg_ccm_coef_b_1.value <= 16'h0;
+        end else if(field_combo.isp_config.ccm_coef_b_1_cfg.rg_ccm_coef_b_1.load_next) begin
+            field_storage.isp_config.ccm_coef_b_1_cfg.rg_ccm_coef_b_1.value <= field_combo.isp_config.ccm_coef_b_1_cfg.rg_ccm_coef_b_1.next;
+        end
+    end
+    assign hwif_out.isp_config.ccm_coef_b_1_cfg.rg_ccm_coef_b_1.value = field_storage.isp_config.ccm_coef_b_1_cfg.rg_ccm_coef_b_1.value;
+    // Field: regmap.isp_config.ccm_coef_b_2_cfg.rg_ccm_coef_b_2
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.ccm_coef_b_2_cfg.rg_ccm_coef_b_2.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.ccm_coef_b_2_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.ccm_coef_b_2_cfg.rg_ccm_coef_b_2.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.ccm_coef_b_2_cfg.rg_ccm_coef_b_2.next = next_c;
+        field_combo.isp_config.ccm_coef_b_2_cfg.rg_ccm_coef_b_2.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.ccm_coef_b_2_cfg.rg_ccm_coef_b_2.value <= 16'h400;
+        end else if(field_combo.isp_config.ccm_coef_b_2_cfg.rg_ccm_coef_b_2.load_next) begin
+            field_storage.isp_config.ccm_coef_b_2_cfg.rg_ccm_coef_b_2.value <= field_combo.isp_config.ccm_coef_b_2_cfg.rg_ccm_coef_b_2.next;
+        end
+    end
+    assign hwif_out.isp_config.ccm_coef_b_2_cfg.rg_ccm_coef_b_2.value = field_storage.isp_config.ccm_coef_b_2_cfg.rg_ccm_coef_b_2.value;
+    // Field: regmap.isp_config.ccm_coef_b_3_cfg.rg_ccm_coef_b_3
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.ccm_coef_b_3_cfg.rg_ccm_coef_b_3.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.ccm_coef_b_3_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.ccm_coef_b_3_cfg.rg_ccm_coef_b_3.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.ccm_coef_b_3_cfg.rg_ccm_coef_b_3.next = next_c;
+        field_combo.isp_config.ccm_coef_b_3_cfg.rg_ccm_coef_b_3.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.ccm_coef_b_3_cfg.rg_ccm_coef_b_3.value <= 16'h0;
+        end else if(field_combo.isp_config.ccm_coef_b_3_cfg.rg_ccm_coef_b_3.load_next) begin
+            field_storage.isp_config.ccm_coef_b_3_cfg.rg_ccm_coef_b_3.value <= field_combo.isp_config.ccm_coef_b_3_cfg.rg_ccm_coef_b_3.next;
+        end
+    end
+    assign hwif_out.isp_config.ccm_coef_b_3_cfg.rg_ccm_coef_b_3.value = field_storage.isp_config.ccm_coef_b_3_cfg.rg_ccm_coef_b_3.value;
+    // Field: regmap.isp_config.csc_coef_r_0_cfg.rg_csc_coef_r_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.csc_coef_r_0_cfg.rg_csc_coef_r_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.csc_coef_r_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.csc_coef_r_0_cfg.rg_csc_coef_r_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.csc_coef_r_0_cfg.rg_csc_coef_r_0.next = next_c;
+        field_combo.isp_config.csc_coef_r_0_cfg.rg_csc_coef_r_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.csc_coef_r_0_cfg.rg_csc_coef_r_0.value <= 16'hffb7;
+        end else if(field_combo.isp_config.csc_coef_r_0_cfg.rg_csc_coef_r_0.load_next) begin
+            field_storage.isp_config.csc_coef_r_0_cfg.rg_csc_coef_r_0.value <= field_combo.isp_config.csc_coef_r_0_cfg.rg_csc_coef_r_0.next;
+        end
+    end
+    assign hwif_out.isp_config.csc_coef_r_0_cfg.rg_csc_coef_r_0.value = field_storage.isp_config.csc_coef_r_0_cfg.rg_csc_coef_r_0.value;
+    // Field: regmap.isp_config.csc_coef_r_1_cfg.rg_csc_coef_r_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.csc_coef_r_1_cfg.rg_csc_coef_r_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.csc_coef_r_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.csc_coef_r_1_cfg.rg_csc_coef_r_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.csc_coef_r_1_cfg.rg_csc_coef_r_1.next = next_c;
+        field_combo.isp_config.csc_coef_r_1_cfg.rg_csc_coef_r_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.csc_coef_r_1_cfg.rg_csc_coef_r_1.value <= 16'hfe87;
+        end else if(field_combo.isp_config.csc_coef_r_1_cfg.rg_csc_coef_r_1.load_next) begin
+            field_storage.isp_config.csc_coef_r_1_cfg.rg_csc_coef_r_1.value <= field_combo.isp_config.csc_coef_r_1_cfg.rg_csc_coef_r_1.next;
+        end
+    end
+    assign hwif_out.isp_config.csc_coef_r_1_cfg.rg_csc_coef_r_1.value = field_storage.isp_config.csc_coef_r_1_cfg.rg_csc_coef_r_1.value;
+    // Field: regmap.isp_config.csc_coef_r_2_cfg.rg_csc_coef_r_2
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.csc_coef_r_2_cfg.rg_csc_coef_r_2.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.csc_coef_r_2_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.csc_coef_r_2_cfg.rg_csc_coef_r_2.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.csc_coef_r_2_cfg.rg_csc_coef_r_2.next = next_c;
+        field_combo.isp_config.csc_coef_r_2_cfg.rg_csc_coef_r_2.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.csc_coef_r_2_cfg.rg_csc_coef_r_2.value <= 16'h1c2;
+        end else if(field_combo.isp_config.csc_coef_r_2_cfg.rg_csc_coef_r_2.load_next) begin
+            field_storage.isp_config.csc_coef_r_2_cfg.rg_csc_coef_r_2.value <= field_combo.isp_config.csc_coef_r_2_cfg.rg_csc_coef_r_2.next;
+        end
+    end
+    assign hwif_out.isp_config.csc_coef_r_2_cfg.rg_csc_coef_r_2.value = field_storage.isp_config.csc_coef_r_2_cfg.rg_csc_coef_r_2.value;
+    // Field: regmap.isp_config.csc_coef_r_3_cfg.rg_csc_coef_r_3
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.csc_coef_r_3_cfg.rg_csc_coef_r_3.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.csc_coef_r_3_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.csc_coef_r_3_cfg.rg_csc_coef_r_3.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.csc_coef_r_3_cfg.rg_csc_coef_r_3.next = next_c;
+        field_combo.isp_config.csc_coef_r_3_cfg.rg_csc_coef_r_3.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.csc_coef_r_3_cfg.rg_csc_coef_r_3.value <= 16'h80;
+        end else if(field_combo.isp_config.csc_coef_r_3_cfg.rg_csc_coef_r_3.load_next) begin
+            field_storage.isp_config.csc_coef_r_3_cfg.rg_csc_coef_r_3.value <= field_combo.isp_config.csc_coef_r_3_cfg.rg_csc_coef_r_3.next;
+        end
+    end
+    assign hwif_out.isp_config.csc_coef_r_3_cfg.rg_csc_coef_r_3.value = field_storage.isp_config.csc_coef_r_3_cfg.rg_csc_coef_r_3.value;
+    // Field: regmap.isp_config.csc_coef_g_0_cfg.rg_csc_coef_g_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.csc_coef_g_0_cfg.rg_csc_coef_g_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.csc_coef_g_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.csc_coef_g_0_cfg.rg_csc_coef_g_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.csc_coef_g_0_cfg.rg_csc_coef_g_0.next = next_c;
+        field_combo.isp_config.csc_coef_g_0_cfg.rg_csc_coef_g_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.csc_coef_g_0_cfg.rg_csc_coef_g_0.value <= 16'h1c2;
+        end else if(field_combo.isp_config.csc_coef_g_0_cfg.rg_csc_coef_g_0.load_next) begin
+            field_storage.isp_config.csc_coef_g_0_cfg.rg_csc_coef_g_0.value <= field_combo.isp_config.csc_coef_g_0_cfg.rg_csc_coef_g_0.next;
+        end
+    end
+    assign hwif_out.isp_config.csc_coef_g_0_cfg.rg_csc_coef_g_0.value = field_storage.isp_config.csc_coef_g_0_cfg.rg_csc_coef_g_0.value;
+    // Field: regmap.isp_config.csc_coef_g_1_cfg.rg_csc_coef_g_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.csc_coef_g_1_cfg.rg_csc_coef_g_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.csc_coef_g_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.csc_coef_g_1_cfg.rg_csc_coef_g_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.csc_coef_g_1_cfg.rg_csc_coef_g_1.next = next_c;
+        field_combo.isp_config.csc_coef_g_1_cfg.rg_csc_coef_g_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.csc_coef_g_1_cfg.rg_csc_coef_g_1.value <= 16'hfed6;
+        end else if(field_combo.isp_config.csc_coef_g_1_cfg.rg_csc_coef_g_1.load_next) begin
+            field_storage.isp_config.csc_coef_g_1_cfg.rg_csc_coef_g_1.value <= field_combo.isp_config.csc_coef_g_1_cfg.rg_csc_coef_g_1.next;
+        end
+    end
+    assign hwif_out.isp_config.csc_coef_g_1_cfg.rg_csc_coef_g_1.value = field_storage.isp_config.csc_coef_g_1_cfg.rg_csc_coef_g_1.value;
+    // Field: regmap.isp_config.csc_coef_g_2_cfg.rg_csc_coef_g_2
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.csc_coef_g_2_cfg.rg_csc_coef_g_2.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.csc_coef_g_2_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.csc_coef_g_2_cfg.rg_csc_coef_g_2.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.csc_coef_g_2_cfg.rg_csc_coef_g_2.next = next_c;
+        field_combo.isp_config.csc_coef_g_2_cfg.rg_csc_coef_g_2.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.csc_coef_g_2_cfg.rg_csc_coef_g_2.value <= 16'hff68;
+        end else if(field_combo.isp_config.csc_coef_g_2_cfg.rg_csc_coef_g_2.load_next) begin
+            field_storage.isp_config.csc_coef_g_2_cfg.rg_csc_coef_g_2.value <= field_combo.isp_config.csc_coef_g_2_cfg.rg_csc_coef_g_2.next;
+        end
+    end
+    assign hwif_out.isp_config.csc_coef_g_2_cfg.rg_csc_coef_g_2.value = field_storage.isp_config.csc_coef_g_2_cfg.rg_csc_coef_g_2.value;
+    // Field: regmap.isp_config.csc_coef_g_3_cfg.rg_csc_coef_g_3
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.csc_coef_g_3_cfg.rg_csc_coef_g_3.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.csc_coef_g_3_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.csc_coef_g_3_cfg.rg_csc_coef_g_3.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.csc_coef_g_3_cfg.rg_csc_coef_g_3.next = next_c;
+        field_combo.isp_config.csc_coef_g_3_cfg.rg_csc_coef_g_3.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.csc_coef_g_3_cfg.rg_csc_coef_g_3.value <= 16'h80;
+        end else if(field_combo.isp_config.csc_coef_g_3_cfg.rg_csc_coef_g_3.load_next) begin
+            field_storage.isp_config.csc_coef_g_3_cfg.rg_csc_coef_g_3.value <= field_combo.isp_config.csc_coef_g_3_cfg.rg_csc_coef_g_3.next;
+        end
+    end
+    assign hwif_out.isp_config.csc_coef_g_3_cfg.rg_csc_coef_g_3.value = field_storage.isp_config.csc_coef_g_3_cfg.rg_csc_coef_g_3.value;
+    // Field: regmap.isp_config.csc_coef_b_0_cfg.rg_csc_coef_b_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.csc_coef_b_0_cfg.rg_csc_coef_b_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.csc_coef_b_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.csc_coef_b_0_cfg.rg_csc_coef_b_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.csc_coef_b_0_cfg.rg_csc_coef_b_0.next = next_c;
+        field_combo.isp_config.csc_coef_b_0_cfg.rg_csc_coef_b_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.csc_coef_b_0_cfg.rg_csc_coef_b_0.value <= 16'h66;
+        end else if(field_combo.isp_config.csc_coef_b_0_cfg.rg_csc_coef_b_0.load_next) begin
+            field_storage.isp_config.csc_coef_b_0_cfg.rg_csc_coef_b_0.value <= field_combo.isp_config.csc_coef_b_0_cfg.rg_csc_coef_b_0.next;
+        end
+    end
+    assign hwif_out.isp_config.csc_coef_b_0_cfg.rg_csc_coef_b_0.value = field_storage.isp_config.csc_coef_b_0_cfg.rg_csc_coef_b_0.value;
+    // Field: regmap.isp_config.csc_coef_b_1_cfg.rg_csc_coef_b_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.csc_coef_b_1_cfg.rg_csc_coef_b_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.csc_coef_b_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.csc_coef_b_1_cfg.rg_csc_coef_b_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.csc_coef_b_1_cfg.rg_csc_coef_b_1.next = next_c;
+        field_combo.isp_config.csc_coef_b_1_cfg.rg_csc_coef_b_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.csc_coef_b_1_cfg.rg_csc_coef_b_1.value <= 16'h204;
+        end else if(field_combo.isp_config.csc_coef_b_1_cfg.rg_csc_coef_b_1.load_next) begin
+            field_storage.isp_config.csc_coef_b_1_cfg.rg_csc_coef_b_1.value <= field_combo.isp_config.csc_coef_b_1_cfg.rg_csc_coef_b_1.next;
+        end
+    end
+    assign hwif_out.isp_config.csc_coef_b_1_cfg.rg_csc_coef_b_1.value = field_storage.isp_config.csc_coef_b_1_cfg.rg_csc_coef_b_1.value;
+    // Field: regmap.isp_config.csc_coef_b_2_cfg.rg_csc_coef_b_2
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.csc_coef_b_2_cfg.rg_csc_coef_b_2.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.csc_coef_b_2_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.csc_coef_b_2_cfg.rg_csc_coef_b_2.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.csc_coef_b_2_cfg.rg_csc_coef_b_2.next = next_c;
+        field_combo.isp_config.csc_coef_b_2_cfg.rg_csc_coef_b_2.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.csc_coef_b_2_cfg.rg_csc_coef_b_2.value <= 16'h107;
+        end else if(field_combo.isp_config.csc_coef_b_2_cfg.rg_csc_coef_b_2.load_next) begin
+            field_storage.isp_config.csc_coef_b_2_cfg.rg_csc_coef_b_2.value <= field_combo.isp_config.csc_coef_b_2_cfg.rg_csc_coef_b_2.next;
+        end
+    end
+    assign hwif_out.isp_config.csc_coef_b_2_cfg.rg_csc_coef_b_2.value = field_storage.isp_config.csc_coef_b_2_cfg.rg_csc_coef_b_2.value;
+    // Field: regmap.isp_config.csc_coef_b_3_cfg.rg_csc_coef_b_3
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.csc_coef_b_3_cfg.rg_csc_coef_b_3.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.csc_coef_b_3_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.csc_coef_b_3_cfg.rg_csc_coef_b_3.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.csc_coef_b_3_cfg.rg_csc_coef_b_3.next = next_c;
+        field_combo.isp_config.csc_coef_b_3_cfg.rg_csc_coef_b_3.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.csc_coef_b_3_cfg.rg_csc_coef_b_3.value <= 16'h10;
+        end else if(field_combo.isp_config.csc_coef_b_3_cfg.rg_csc_coef_b_3.load_next) begin
+            field_storage.isp_config.csc_coef_b_3_cfg.rg_csc_coef_b_3.value <= field_combo.isp_config.csc_coef_b_3_cfg.rg_csc_coef_b_3.next;
+        end
+    end
+    assign hwif_out.isp_config.csc_coef_b_3_cfg.rg_csc_coef_b_3.value = field_storage.isp_config.csc_coef_b_3_cfg.rg_csc_coef_b_3.value;
+    // Field: regmap.isp_config.nlm_clip_cfg.rg_nlm_clip
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.nlm_clip_cfg.rg_nlm_clip.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.nlm_clip_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.nlm_clip_cfg.rg_nlm_clip.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.nlm_clip_cfg.rg_nlm_clip.next = next_c;
+        field_combo.isp_config.nlm_clip_cfg.rg_nlm_clip.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.nlm_clip_cfg.rg_nlm_clip.value <= 16'hff;
+        end else if(field_combo.isp_config.nlm_clip_cfg.rg_nlm_clip.load_next) begin
+            field_storage.isp_config.nlm_clip_cfg.rg_nlm_clip.value <= field_combo.isp_config.nlm_clip_cfg.rg_nlm_clip.next;
+        end
+    end
+    assign hwif_out.isp_config.nlm_clip_cfg.rg_nlm_clip.value = field_storage.isp_config.nlm_clip_cfg.rg_nlm_clip.value;
+    // Field: regmap.isp_config.bnf_dw_00_cfg.rg_bnf_dw_00
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_00_cfg.rg_bnf_dw_00.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_00_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_00_cfg.rg_bnf_dw_00.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_00_cfg.rg_bnf_dw_00.next = next_c;
+        field_combo.isp_config.bnf_dw_00_cfg.rg_bnf_dw_00.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_00_cfg.rg_bnf_dw_00.value <= 16'h8;
+        end else if(field_combo.isp_config.bnf_dw_00_cfg.rg_bnf_dw_00.load_next) begin
+            field_storage.isp_config.bnf_dw_00_cfg.rg_bnf_dw_00.value <= field_combo.isp_config.bnf_dw_00_cfg.rg_bnf_dw_00.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_00_cfg.rg_bnf_dw_00.value = field_storage.isp_config.bnf_dw_00_cfg.rg_bnf_dw_00.value;
+    // Field: regmap.isp_config.bnf_dw_01_cfg.rg_bnf_dw_01
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_01_cfg.rg_bnf_dw_01.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_01_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_01_cfg.rg_bnf_dw_01.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_01_cfg.rg_bnf_dw_01.next = next_c;
+        field_combo.isp_config.bnf_dw_01_cfg.rg_bnf_dw_01.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_01_cfg.rg_bnf_dw_01.value <= 16'hc;
+        end else if(field_combo.isp_config.bnf_dw_01_cfg.rg_bnf_dw_01.load_next) begin
+            field_storage.isp_config.bnf_dw_01_cfg.rg_bnf_dw_01.value <= field_combo.isp_config.bnf_dw_01_cfg.rg_bnf_dw_01.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_01_cfg.rg_bnf_dw_01.value = field_storage.isp_config.bnf_dw_01_cfg.rg_bnf_dw_01.value;
+    // Field: regmap.isp_config.bnf_dw_02_cfg.rg_bnf_dw_02
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_02_cfg.rg_bnf_dw_02.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_02_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_02_cfg.rg_bnf_dw_02.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_02_cfg.rg_bnf_dw_02.next = next_c;
+        field_combo.isp_config.bnf_dw_02_cfg.rg_bnf_dw_02.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_02_cfg.rg_bnf_dw_02.value <= 16'h20;
+        end else if(field_combo.isp_config.bnf_dw_02_cfg.rg_bnf_dw_02.load_next) begin
+            field_storage.isp_config.bnf_dw_02_cfg.rg_bnf_dw_02.value <= field_combo.isp_config.bnf_dw_02_cfg.rg_bnf_dw_02.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_02_cfg.rg_bnf_dw_02.value = field_storage.isp_config.bnf_dw_02_cfg.rg_bnf_dw_02.value;
+    // Field: regmap.isp_config.bnf_dw_03_cfg.rg_bnf_dw_03
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_03_cfg.rg_bnf_dw_03.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_03_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_03_cfg.rg_bnf_dw_03.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_03_cfg.rg_bnf_dw_03.next = next_c;
+        field_combo.isp_config.bnf_dw_03_cfg.rg_bnf_dw_03.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_03_cfg.rg_bnf_dw_03.value <= 16'hc;
+        end else if(field_combo.isp_config.bnf_dw_03_cfg.rg_bnf_dw_03.load_next) begin
+            field_storage.isp_config.bnf_dw_03_cfg.rg_bnf_dw_03.value <= field_combo.isp_config.bnf_dw_03_cfg.rg_bnf_dw_03.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_03_cfg.rg_bnf_dw_03.value = field_storage.isp_config.bnf_dw_03_cfg.rg_bnf_dw_03.value;
+    // Field: regmap.isp_config.bnf_dw_04_cfg.rg_bnf_dw_04
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_04_cfg.rg_bnf_dw_04.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_04_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_04_cfg.rg_bnf_dw_04.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_04_cfg.rg_bnf_dw_04.next = next_c;
+        field_combo.isp_config.bnf_dw_04_cfg.rg_bnf_dw_04.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_04_cfg.rg_bnf_dw_04.value <= 16'h8;
+        end else if(field_combo.isp_config.bnf_dw_04_cfg.rg_bnf_dw_04.load_next) begin
+            field_storage.isp_config.bnf_dw_04_cfg.rg_bnf_dw_04.value <= field_combo.isp_config.bnf_dw_04_cfg.rg_bnf_dw_04.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_04_cfg.rg_bnf_dw_04.value = field_storage.isp_config.bnf_dw_04_cfg.rg_bnf_dw_04.value;
+    // Field: regmap.isp_config.bnf_dw_10_cfg.rg_bnf_dw_10
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_10_cfg.rg_bnf_dw_10.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_10_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_10_cfg.rg_bnf_dw_10.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_10_cfg.rg_bnf_dw_10.next = next_c;
+        field_combo.isp_config.bnf_dw_10_cfg.rg_bnf_dw_10.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_10_cfg.rg_bnf_dw_10.value <= 16'hc;
+        end else if(field_combo.isp_config.bnf_dw_10_cfg.rg_bnf_dw_10.load_next) begin
+            field_storage.isp_config.bnf_dw_10_cfg.rg_bnf_dw_10.value <= field_combo.isp_config.bnf_dw_10_cfg.rg_bnf_dw_10.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_10_cfg.rg_bnf_dw_10.value = field_storage.isp_config.bnf_dw_10_cfg.rg_bnf_dw_10.value;
+    // Field: regmap.isp_config.bnf_dw_11_cfg.rg_bnf_dw_11
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_11_cfg.rg_bnf_dw_11.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_11_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_11_cfg.rg_bnf_dw_11.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_11_cfg.rg_bnf_dw_11.next = next_c;
+        field_combo.isp_config.bnf_dw_11_cfg.rg_bnf_dw_11.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_11_cfg.rg_bnf_dw_11.value <= 16'h40;
+        end else if(field_combo.isp_config.bnf_dw_11_cfg.rg_bnf_dw_11.load_next) begin
+            field_storage.isp_config.bnf_dw_11_cfg.rg_bnf_dw_11.value <= field_combo.isp_config.bnf_dw_11_cfg.rg_bnf_dw_11.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_11_cfg.rg_bnf_dw_11.value = field_storage.isp_config.bnf_dw_11_cfg.rg_bnf_dw_11.value;
+    // Field: regmap.isp_config.bnf_dw_12_cfg.rg_bnf_dw_12
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_12_cfg.rg_bnf_dw_12.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_12_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_12_cfg.rg_bnf_dw_12.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_12_cfg.rg_bnf_dw_12.next = next_c;
+        field_combo.isp_config.bnf_dw_12_cfg.rg_bnf_dw_12.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_12_cfg.rg_bnf_dw_12.value <= 16'h80;
+        end else if(field_combo.isp_config.bnf_dw_12_cfg.rg_bnf_dw_12.load_next) begin
+            field_storage.isp_config.bnf_dw_12_cfg.rg_bnf_dw_12.value <= field_combo.isp_config.bnf_dw_12_cfg.rg_bnf_dw_12.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_12_cfg.rg_bnf_dw_12.value = field_storage.isp_config.bnf_dw_12_cfg.rg_bnf_dw_12.value;
+    // Field: regmap.isp_config.bnf_dw_13_cfg.rg_bnf_dw_13
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_13_cfg.rg_bnf_dw_13.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_13_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_13_cfg.rg_bnf_dw_13.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_13_cfg.rg_bnf_dw_13.next = next_c;
+        field_combo.isp_config.bnf_dw_13_cfg.rg_bnf_dw_13.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_13_cfg.rg_bnf_dw_13.value <= 16'h40;
+        end else if(field_combo.isp_config.bnf_dw_13_cfg.rg_bnf_dw_13.load_next) begin
+            field_storage.isp_config.bnf_dw_13_cfg.rg_bnf_dw_13.value <= field_combo.isp_config.bnf_dw_13_cfg.rg_bnf_dw_13.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_13_cfg.rg_bnf_dw_13.value = field_storage.isp_config.bnf_dw_13_cfg.rg_bnf_dw_13.value;
+    // Field: regmap.isp_config.bnf_dw_14_cfg.rg_bnf_dw_14
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_14_cfg.rg_bnf_dw_14.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_14_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_14_cfg.rg_bnf_dw_14.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_14_cfg.rg_bnf_dw_14.next = next_c;
+        field_combo.isp_config.bnf_dw_14_cfg.rg_bnf_dw_14.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_14_cfg.rg_bnf_dw_14.value <= 16'hc;
+        end else if(field_combo.isp_config.bnf_dw_14_cfg.rg_bnf_dw_14.load_next) begin
+            field_storage.isp_config.bnf_dw_14_cfg.rg_bnf_dw_14.value <= field_combo.isp_config.bnf_dw_14_cfg.rg_bnf_dw_14.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_14_cfg.rg_bnf_dw_14.value = field_storage.isp_config.bnf_dw_14_cfg.rg_bnf_dw_14.value;
+    // Field: regmap.isp_config.bnf_dw_20_cfg.rg_bnf_dw_20
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_20_cfg.rg_bnf_dw_20.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_20_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_20_cfg.rg_bnf_dw_20.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_20_cfg.rg_bnf_dw_20.next = next_c;
+        field_combo.isp_config.bnf_dw_20_cfg.rg_bnf_dw_20.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_20_cfg.rg_bnf_dw_20.value <= 16'h20;
+        end else if(field_combo.isp_config.bnf_dw_20_cfg.rg_bnf_dw_20.load_next) begin
+            field_storage.isp_config.bnf_dw_20_cfg.rg_bnf_dw_20.value <= field_combo.isp_config.bnf_dw_20_cfg.rg_bnf_dw_20.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_20_cfg.rg_bnf_dw_20.value = field_storage.isp_config.bnf_dw_20_cfg.rg_bnf_dw_20.value;
+    // Field: regmap.isp_config.bnf_dw_21_cfg.rg_bnf_dw_21
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_21_cfg.rg_bnf_dw_21.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_21_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_21_cfg.rg_bnf_dw_21.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_21_cfg.rg_bnf_dw_21.next = next_c;
+        field_combo.isp_config.bnf_dw_21_cfg.rg_bnf_dw_21.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_21_cfg.rg_bnf_dw_21.value <= 16'h80;
+        end else if(field_combo.isp_config.bnf_dw_21_cfg.rg_bnf_dw_21.load_next) begin
+            field_storage.isp_config.bnf_dw_21_cfg.rg_bnf_dw_21.value <= field_combo.isp_config.bnf_dw_21_cfg.rg_bnf_dw_21.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_21_cfg.rg_bnf_dw_21.value = field_storage.isp_config.bnf_dw_21_cfg.rg_bnf_dw_21.value;
+    // Field: regmap.isp_config.bnf_dw_22_cfg.rg_bnf_dw_22
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_22_cfg.rg_bnf_dw_22.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_22_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_22_cfg.rg_bnf_dw_22.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_22_cfg.rg_bnf_dw_22.next = next_c;
+        field_combo.isp_config.bnf_dw_22_cfg.rg_bnf_dw_22.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_22_cfg.rg_bnf_dw_22.value <= 16'h400;
+        end else if(field_combo.isp_config.bnf_dw_22_cfg.rg_bnf_dw_22.load_next) begin
+            field_storage.isp_config.bnf_dw_22_cfg.rg_bnf_dw_22.value <= field_combo.isp_config.bnf_dw_22_cfg.rg_bnf_dw_22.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_22_cfg.rg_bnf_dw_22.value = field_storage.isp_config.bnf_dw_22_cfg.rg_bnf_dw_22.value;
+    // Field: regmap.isp_config.bnf_dw_23_cfg.rg_bnf_dw_23
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_23_cfg.rg_bnf_dw_23.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_23_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_23_cfg.rg_bnf_dw_23.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_23_cfg.rg_bnf_dw_23.next = next_c;
+        field_combo.isp_config.bnf_dw_23_cfg.rg_bnf_dw_23.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_23_cfg.rg_bnf_dw_23.value <= 16'h80;
+        end else if(field_combo.isp_config.bnf_dw_23_cfg.rg_bnf_dw_23.load_next) begin
+            field_storage.isp_config.bnf_dw_23_cfg.rg_bnf_dw_23.value <= field_combo.isp_config.bnf_dw_23_cfg.rg_bnf_dw_23.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_23_cfg.rg_bnf_dw_23.value = field_storage.isp_config.bnf_dw_23_cfg.rg_bnf_dw_23.value;
+    // Field: regmap.isp_config.bnf_dw_24_cfg.rg_bnf_dw_24
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_24_cfg.rg_bnf_dw_24.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_24_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_24_cfg.rg_bnf_dw_24.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_24_cfg.rg_bnf_dw_24.next = next_c;
+        field_combo.isp_config.bnf_dw_24_cfg.rg_bnf_dw_24.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_24_cfg.rg_bnf_dw_24.value <= 16'h20;
+        end else if(field_combo.isp_config.bnf_dw_24_cfg.rg_bnf_dw_24.load_next) begin
+            field_storage.isp_config.bnf_dw_24_cfg.rg_bnf_dw_24.value <= field_combo.isp_config.bnf_dw_24_cfg.rg_bnf_dw_24.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_24_cfg.rg_bnf_dw_24.value = field_storage.isp_config.bnf_dw_24_cfg.rg_bnf_dw_24.value;
+    // Field: regmap.isp_config.bnf_dw_30_cfg.rg_bnf_dw_30
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_30_cfg.rg_bnf_dw_30.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_30_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_30_cfg.rg_bnf_dw_30.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_30_cfg.rg_bnf_dw_30.next = next_c;
+        field_combo.isp_config.bnf_dw_30_cfg.rg_bnf_dw_30.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_30_cfg.rg_bnf_dw_30.value <= 16'hc;
+        end else if(field_combo.isp_config.bnf_dw_30_cfg.rg_bnf_dw_30.load_next) begin
+            field_storage.isp_config.bnf_dw_30_cfg.rg_bnf_dw_30.value <= field_combo.isp_config.bnf_dw_30_cfg.rg_bnf_dw_30.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_30_cfg.rg_bnf_dw_30.value = field_storage.isp_config.bnf_dw_30_cfg.rg_bnf_dw_30.value;
+    // Field: regmap.isp_config.bnf_dw_31_cfg.rg_bnf_dw_31
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_31_cfg.rg_bnf_dw_31.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_31_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_31_cfg.rg_bnf_dw_31.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_31_cfg.rg_bnf_dw_31.next = next_c;
+        field_combo.isp_config.bnf_dw_31_cfg.rg_bnf_dw_31.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_31_cfg.rg_bnf_dw_31.value <= 16'h40;
+        end else if(field_combo.isp_config.bnf_dw_31_cfg.rg_bnf_dw_31.load_next) begin
+            field_storage.isp_config.bnf_dw_31_cfg.rg_bnf_dw_31.value <= field_combo.isp_config.bnf_dw_31_cfg.rg_bnf_dw_31.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_31_cfg.rg_bnf_dw_31.value = field_storage.isp_config.bnf_dw_31_cfg.rg_bnf_dw_31.value;
+    // Field: regmap.isp_config.bnf_dw_32_cfg.rg_bnf_dw_32
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_32_cfg.rg_bnf_dw_32.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_32_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_32_cfg.rg_bnf_dw_32.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_32_cfg.rg_bnf_dw_32.next = next_c;
+        field_combo.isp_config.bnf_dw_32_cfg.rg_bnf_dw_32.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_32_cfg.rg_bnf_dw_32.value <= 16'h80;
+        end else if(field_combo.isp_config.bnf_dw_32_cfg.rg_bnf_dw_32.load_next) begin
+            field_storage.isp_config.bnf_dw_32_cfg.rg_bnf_dw_32.value <= field_combo.isp_config.bnf_dw_32_cfg.rg_bnf_dw_32.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_32_cfg.rg_bnf_dw_32.value = field_storage.isp_config.bnf_dw_32_cfg.rg_bnf_dw_32.value;
+    // Field: regmap.isp_config.bnf_dw_33_cfg.rg_bnf_dw_33
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_33_cfg.rg_bnf_dw_33.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_33_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_33_cfg.rg_bnf_dw_33.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_33_cfg.rg_bnf_dw_33.next = next_c;
+        field_combo.isp_config.bnf_dw_33_cfg.rg_bnf_dw_33.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_33_cfg.rg_bnf_dw_33.value <= 16'h40;
+        end else if(field_combo.isp_config.bnf_dw_33_cfg.rg_bnf_dw_33.load_next) begin
+            field_storage.isp_config.bnf_dw_33_cfg.rg_bnf_dw_33.value <= field_combo.isp_config.bnf_dw_33_cfg.rg_bnf_dw_33.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_33_cfg.rg_bnf_dw_33.value = field_storage.isp_config.bnf_dw_33_cfg.rg_bnf_dw_33.value;
+    // Field: regmap.isp_config.bnf_dw_34_cfg.rg_bnf_dw_34
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_34_cfg.rg_bnf_dw_34.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_34_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_34_cfg.rg_bnf_dw_34.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_34_cfg.rg_bnf_dw_34.next = next_c;
+        field_combo.isp_config.bnf_dw_34_cfg.rg_bnf_dw_34.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_34_cfg.rg_bnf_dw_34.value <= 16'hc;
+        end else if(field_combo.isp_config.bnf_dw_34_cfg.rg_bnf_dw_34.load_next) begin
+            field_storage.isp_config.bnf_dw_34_cfg.rg_bnf_dw_34.value <= field_combo.isp_config.bnf_dw_34_cfg.rg_bnf_dw_34.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_34_cfg.rg_bnf_dw_34.value = field_storage.isp_config.bnf_dw_34_cfg.rg_bnf_dw_34.value;
+    // Field: regmap.isp_config.bnf_dw_40_cfg.rg_bnf_dw_40
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_40_cfg.rg_bnf_dw_40.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_40_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_40_cfg.rg_bnf_dw_40.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_40_cfg.rg_bnf_dw_40.next = next_c;
+        field_combo.isp_config.bnf_dw_40_cfg.rg_bnf_dw_40.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_40_cfg.rg_bnf_dw_40.value <= 16'h8;
+        end else if(field_combo.isp_config.bnf_dw_40_cfg.rg_bnf_dw_40.load_next) begin
+            field_storage.isp_config.bnf_dw_40_cfg.rg_bnf_dw_40.value <= field_combo.isp_config.bnf_dw_40_cfg.rg_bnf_dw_40.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_40_cfg.rg_bnf_dw_40.value = field_storage.isp_config.bnf_dw_40_cfg.rg_bnf_dw_40.value;
+    // Field: regmap.isp_config.bnf_dw_41_cfg.rg_bnf_dw_41
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_41_cfg.rg_bnf_dw_41.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_41_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_41_cfg.rg_bnf_dw_41.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_41_cfg.rg_bnf_dw_41.next = next_c;
+        field_combo.isp_config.bnf_dw_41_cfg.rg_bnf_dw_41.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_41_cfg.rg_bnf_dw_41.value <= 16'hc;
+        end else if(field_combo.isp_config.bnf_dw_41_cfg.rg_bnf_dw_41.load_next) begin
+            field_storage.isp_config.bnf_dw_41_cfg.rg_bnf_dw_41.value <= field_combo.isp_config.bnf_dw_41_cfg.rg_bnf_dw_41.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_41_cfg.rg_bnf_dw_41.value = field_storage.isp_config.bnf_dw_41_cfg.rg_bnf_dw_41.value;
+    // Field: regmap.isp_config.bnf_dw_42_cfg.rg_bnf_dw_42
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_42_cfg.rg_bnf_dw_42.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_42_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_42_cfg.rg_bnf_dw_42.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_42_cfg.rg_bnf_dw_42.next = next_c;
+        field_combo.isp_config.bnf_dw_42_cfg.rg_bnf_dw_42.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_42_cfg.rg_bnf_dw_42.value <= 16'h20;
+        end else if(field_combo.isp_config.bnf_dw_42_cfg.rg_bnf_dw_42.load_next) begin
+            field_storage.isp_config.bnf_dw_42_cfg.rg_bnf_dw_42.value <= field_combo.isp_config.bnf_dw_42_cfg.rg_bnf_dw_42.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_42_cfg.rg_bnf_dw_42.value = field_storage.isp_config.bnf_dw_42_cfg.rg_bnf_dw_42.value;
+    // Field: regmap.isp_config.bnf_dw_43_cfg.rg_bnf_dw_43
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_43_cfg.rg_bnf_dw_43.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_43_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_43_cfg.rg_bnf_dw_43.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_43_cfg.rg_bnf_dw_43.next = next_c;
+        field_combo.isp_config.bnf_dw_43_cfg.rg_bnf_dw_43.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_43_cfg.rg_bnf_dw_43.value <= 16'hc;
+        end else if(field_combo.isp_config.bnf_dw_43_cfg.rg_bnf_dw_43.load_next) begin
+            field_storage.isp_config.bnf_dw_43_cfg.rg_bnf_dw_43.value <= field_combo.isp_config.bnf_dw_43_cfg.rg_bnf_dw_43.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_43_cfg.rg_bnf_dw_43.value = field_storage.isp_config.bnf_dw_43_cfg.rg_bnf_dw_43.value;
+    // Field: regmap.isp_config.bnf_dw_44_cfg.rg_bnf_dw_44
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_dw_44_cfg.rg_bnf_dw_44.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_dw_44_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_dw_44_cfg.rg_bnf_dw_44.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_dw_44_cfg.rg_bnf_dw_44.next = next_c;
+        field_combo.isp_config.bnf_dw_44_cfg.rg_bnf_dw_44.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_dw_44_cfg.rg_bnf_dw_44.value <= 16'h8;
+        end else if(field_combo.isp_config.bnf_dw_44_cfg.rg_bnf_dw_44.load_next) begin
+            field_storage.isp_config.bnf_dw_44_cfg.rg_bnf_dw_44.value <= field_combo.isp_config.bnf_dw_44_cfg.rg_bnf_dw_44.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_dw_44_cfg.rg_bnf_dw_44.value = field_storage.isp_config.bnf_dw_44_cfg.rg_bnf_dw_44.value;
+    // Field: regmap.isp_config.bnf_rw_0_cfg.rg_bnf_rw_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_rw_0_cfg.rg_bnf_rw_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_rw_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_rw_0_cfg.rg_bnf_rw_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_rw_0_cfg.rg_bnf_rw_0.next = next_c;
+        field_combo.isp_config.bnf_rw_0_cfg.rg_bnf_rw_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_rw_0_cfg.rg_bnf_rw_0.value <= 16'h8;
+        end else if(field_combo.isp_config.bnf_rw_0_cfg.rg_bnf_rw_0.load_next) begin
+            field_storage.isp_config.bnf_rw_0_cfg.rg_bnf_rw_0.value <= field_combo.isp_config.bnf_rw_0_cfg.rg_bnf_rw_0.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_rw_0_cfg.rg_bnf_rw_0.value = field_storage.isp_config.bnf_rw_0_cfg.rg_bnf_rw_0.value;
+    // Field: regmap.isp_config.bnf_rw_1_cfg.rg_bnf_rw_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_rw_1_cfg.rg_bnf_rw_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_rw_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_rw_1_cfg.rg_bnf_rw_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_rw_1_cfg.rg_bnf_rw_1.next = next_c;
+        field_combo.isp_config.bnf_rw_1_cfg.rg_bnf_rw_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_rw_1_cfg.rg_bnf_rw_1.value <= 16'hc;
+        end else if(field_combo.isp_config.bnf_rw_1_cfg.rg_bnf_rw_1.load_next) begin
+            field_storage.isp_config.bnf_rw_1_cfg.rg_bnf_rw_1.value <= field_combo.isp_config.bnf_rw_1_cfg.rg_bnf_rw_1.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_rw_1_cfg.rg_bnf_rw_1.value = field_storage.isp_config.bnf_rw_1_cfg.rg_bnf_rw_1.value;
+    // Field: regmap.isp_config.bnf_rw_2_cfg.rg_bnf_rw_2
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_rw_2_cfg.rg_bnf_rw_2.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_rw_2_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_rw_2_cfg.rg_bnf_rw_2.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_rw_2_cfg.rg_bnf_rw_2.next = next_c;
+        field_combo.isp_config.bnf_rw_2_cfg.rg_bnf_rw_2.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_rw_2_cfg.rg_bnf_rw_2.value <= 16'h10;
+        end else if(field_combo.isp_config.bnf_rw_2_cfg.rg_bnf_rw_2.load_next) begin
+            field_storage.isp_config.bnf_rw_2_cfg.rg_bnf_rw_2.value <= field_combo.isp_config.bnf_rw_2_cfg.rg_bnf_rw_2.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_rw_2_cfg.rg_bnf_rw_2.value = field_storage.isp_config.bnf_rw_2_cfg.rg_bnf_rw_2.value;
+    // Field: regmap.isp_config.bnf_rw_3_cfg.rg_bnf_rw_3
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_rw_3_cfg.rg_bnf_rw_3.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_rw_3_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_rw_3_cfg.rg_bnf_rw_3.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_rw_3_cfg.rg_bnf_rw_3.next = next_c;
+        field_combo.isp_config.bnf_rw_3_cfg.rg_bnf_rw_3.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_rw_3_cfg.rg_bnf_rw_3.value <= 16'h20;
+        end else if(field_combo.isp_config.bnf_rw_3_cfg.rg_bnf_rw_3.load_next) begin
+            field_storage.isp_config.bnf_rw_3_cfg.rg_bnf_rw_3.value <= field_combo.isp_config.bnf_rw_3_cfg.rg_bnf_rw_3.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_rw_3_cfg.rg_bnf_rw_3.value = field_storage.isp_config.bnf_rw_3_cfg.rg_bnf_rw_3.value;
+    // Field: regmap.isp_config.bnf_rthres_0_cfg.rg_bnf_rthres_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_rthres_0_cfg.rg_bnf_rthres_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_rthres_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_rthres_0_cfg.rg_bnf_rthres_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_rthres_0_cfg.rg_bnf_rthres_0.next = next_c;
+        field_combo.isp_config.bnf_rthres_0_cfg.rg_bnf_rthres_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_rthres_0_cfg.rg_bnf_rthres_0.value <= 16'h8;
+        end else if(field_combo.isp_config.bnf_rthres_0_cfg.rg_bnf_rthres_0.load_next) begin
+            field_storage.isp_config.bnf_rthres_0_cfg.rg_bnf_rthres_0.value <= field_combo.isp_config.bnf_rthres_0_cfg.rg_bnf_rthres_0.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_rthres_0_cfg.rg_bnf_rthres_0.value = field_storage.isp_config.bnf_rthres_0_cfg.rg_bnf_rthres_0.value;
+    // Field: regmap.isp_config.bnf_rthres_1_cfg.rg_bnf_rthres_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_rthres_1_cfg.rg_bnf_rthres_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_rthres_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_rthres_1_cfg.rg_bnf_rthres_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_rthres_1_cfg.rg_bnf_rthres_1.next = next_c;
+        field_combo.isp_config.bnf_rthres_1_cfg.rg_bnf_rthres_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_rthres_1_cfg.rg_bnf_rthres_1.value <= 16'hc;
+        end else if(field_combo.isp_config.bnf_rthres_1_cfg.rg_bnf_rthres_1.load_next) begin
+            field_storage.isp_config.bnf_rthres_1_cfg.rg_bnf_rthres_1.value <= field_combo.isp_config.bnf_rthres_1_cfg.rg_bnf_rthres_1.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_rthres_1_cfg.rg_bnf_rthres_1.value = field_storage.isp_config.bnf_rthres_1_cfg.rg_bnf_rthres_1.value;
+    // Field: regmap.isp_config.bnf_rthres_2_cfg.rg_bnf_rthres_2
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_rthres_2_cfg.rg_bnf_rthres_2.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_rthres_2_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_rthres_2_cfg.rg_bnf_rthres_2.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_rthres_2_cfg.rg_bnf_rthres_2.next = next_c;
+        field_combo.isp_config.bnf_rthres_2_cfg.rg_bnf_rthres_2.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_rthres_2_cfg.rg_bnf_rthres_2.value <= 16'h10;
+        end else if(field_combo.isp_config.bnf_rthres_2_cfg.rg_bnf_rthres_2.load_next) begin
+            field_storage.isp_config.bnf_rthres_2_cfg.rg_bnf_rthres_2.value <= field_combo.isp_config.bnf_rthres_2_cfg.rg_bnf_rthres_2.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_rthres_2_cfg.rg_bnf_rthres_2.value = field_storage.isp_config.bnf_rthres_2_cfg.rg_bnf_rthres_2.value;
+    // Field: regmap.isp_config.bnf_clip_cfg.rg_bnf_clip
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bnf_clip_cfg.rg_bnf_clip.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bnf_clip_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bnf_clip_cfg.rg_bnf_clip.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bnf_clip_cfg.rg_bnf_clip.next = next_c;
+        field_combo.isp_config.bnf_clip_cfg.rg_bnf_clip.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bnf_clip_cfg.rg_bnf_clip.value <= 16'hff;
+        end else if(field_combo.isp_config.bnf_clip_cfg.rg_bnf_clip.load_next) begin
+            field_storage.isp_config.bnf_clip_cfg.rg_bnf_clip.value <= field_combo.isp_config.bnf_clip_cfg.rg_bnf_clip.next;
+        end
+    end
+    assign hwif_out.isp_config.bnf_clip_cfg.rg_bnf_clip.value = field_storage.isp_config.bnf_clip_cfg.rg_bnf_clip.value;
+    // Field: regmap.isp_config.edge_filter_00_cfg.rg_edge_filter_00
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_00_cfg.rg_edge_filter_00.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_00_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_00_cfg.rg_edge_filter_00.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_00_cfg.rg_edge_filter_00.next = next_c;
+        field_combo.isp_config.edge_filter_00_cfg.rg_edge_filter_00.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_00_cfg.rg_edge_filter_00.value <= 5'h1f;
+        end else if(field_combo.isp_config.edge_filter_00_cfg.rg_edge_filter_00.load_next) begin
+            field_storage.isp_config.edge_filter_00_cfg.rg_edge_filter_00.value <= field_combo.isp_config.edge_filter_00_cfg.rg_edge_filter_00.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_00_cfg.rg_edge_filter_00.value = field_storage.isp_config.edge_filter_00_cfg.rg_edge_filter_00.value;
+    // Field: regmap.isp_config.edge_filter_01_cfg.rg_edge_filter_01
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_01_cfg.rg_edge_filter_01.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_01_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_01_cfg.rg_edge_filter_01.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_01_cfg.rg_edge_filter_01.next = next_c;
+        field_combo.isp_config.edge_filter_01_cfg.rg_edge_filter_01.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_01_cfg.rg_edge_filter_01.value <= 5'h0;
+        end else if(field_combo.isp_config.edge_filter_01_cfg.rg_edge_filter_01.load_next) begin
+            field_storage.isp_config.edge_filter_01_cfg.rg_edge_filter_01.value <= field_combo.isp_config.edge_filter_01_cfg.rg_edge_filter_01.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_01_cfg.rg_edge_filter_01.value = field_storage.isp_config.edge_filter_01_cfg.rg_edge_filter_01.value;
+    // Field: regmap.isp_config.edge_filter_02_cfg.rg_edge_filter_02
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_02_cfg.rg_edge_filter_02.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_02_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_02_cfg.rg_edge_filter_02.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_02_cfg.rg_edge_filter_02.next = next_c;
+        field_combo.isp_config.edge_filter_02_cfg.rg_edge_filter_02.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_02_cfg.rg_edge_filter_02.value <= 5'h1f;
+        end else if(field_combo.isp_config.edge_filter_02_cfg.rg_edge_filter_02.load_next) begin
+            field_storage.isp_config.edge_filter_02_cfg.rg_edge_filter_02.value <= field_combo.isp_config.edge_filter_02_cfg.rg_edge_filter_02.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_02_cfg.rg_edge_filter_02.value = field_storage.isp_config.edge_filter_02_cfg.rg_edge_filter_02.value;
+    // Field: regmap.isp_config.edge_filter_03_cfg.rg_edge_filter_03
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_03_cfg.rg_edge_filter_03.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_03_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_03_cfg.rg_edge_filter_03.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_03_cfg.rg_edge_filter_03.next = next_c;
+        field_combo.isp_config.edge_filter_03_cfg.rg_edge_filter_03.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_03_cfg.rg_edge_filter_03.value <= 5'h0;
+        end else if(field_combo.isp_config.edge_filter_03_cfg.rg_edge_filter_03.load_next) begin
+            field_storage.isp_config.edge_filter_03_cfg.rg_edge_filter_03.value <= field_combo.isp_config.edge_filter_03_cfg.rg_edge_filter_03.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_03_cfg.rg_edge_filter_03.value = field_storage.isp_config.edge_filter_03_cfg.rg_edge_filter_03.value;
+    // Field: regmap.isp_config.edge_filter_04_cfg.rg_edge_filter_04
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_04_cfg.rg_edge_filter_04.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_04_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_04_cfg.rg_edge_filter_04.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_04_cfg.rg_edge_filter_04.next = next_c;
+        field_combo.isp_config.edge_filter_04_cfg.rg_edge_filter_04.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_04_cfg.rg_edge_filter_04.value <= 5'h1f;
+        end else if(field_combo.isp_config.edge_filter_04_cfg.rg_edge_filter_04.load_next) begin
+            field_storage.isp_config.edge_filter_04_cfg.rg_edge_filter_04.value <= field_combo.isp_config.edge_filter_04_cfg.rg_edge_filter_04.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_04_cfg.rg_edge_filter_04.value = field_storage.isp_config.edge_filter_04_cfg.rg_edge_filter_04.value;
+    // Field: regmap.isp_config.edge_filter_10_cfg.rg_edge_filter_10
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_10_cfg.rg_edge_filter_10.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_10_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_10_cfg.rg_edge_filter_10.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_10_cfg.rg_edge_filter_10.next = next_c;
+        field_combo.isp_config.edge_filter_10_cfg.rg_edge_filter_10.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_10_cfg.rg_edge_filter_10.value <= 5'h1f;
+        end else if(field_combo.isp_config.edge_filter_10_cfg.rg_edge_filter_10.load_next) begin
+            field_storage.isp_config.edge_filter_10_cfg.rg_edge_filter_10.value <= field_combo.isp_config.edge_filter_10_cfg.rg_edge_filter_10.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_10_cfg.rg_edge_filter_10.value = field_storage.isp_config.edge_filter_10_cfg.rg_edge_filter_10.value;
+    // Field: regmap.isp_config.edge_filter_11_cfg.rg_edge_filter_11
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_11_cfg.rg_edge_filter_11.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_11_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_11_cfg.rg_edge_filter_11.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_11_cfg.rg_edge_filter_11.next = next_c;
+        field_combo.isp_config.edge_filter_11_cfg.rg_edge_filter_11.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_11_cfg.rg_edge_filter_11.value <= 5'h0;
+        end else if(field_combo.isp_config.edge_filter_11_cfg.rg_edge_filter_11.load_next) begin
+            field_storage.isp_config.edge_filter_11_cfg.rg_edge_filter_11.value <= field_combo.isp_config.edge_filter_11_cfg.rg_edge_filter_11.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_11_cfg.rg_edge_filter_11.value = field_storage.isp_config.edge_filter_11_cfg.rg_edge_filter_11.value;
+    // Field: regmap.isp_config.edge_filter_12_cfg.rg_edge_filter_12
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_12_cfg.rg_edge_filter_12.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_12_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_12_cfg.rg_edge_filter_12.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_12_cfg.rg_edge_filter_12.next = next_c;
+        field_combo.isp_config.edge_filter_12_cfg.rg_edge_filter_12.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_12_cfg.rg_edge_filter_12.value <= 5'h8;
+        end else if(field_combo.isp_config.edge_filter_12_cfg.rg_edge_filter_12.load_next) begin
+            field_storage.isp_config.edge_filter_12_cfg.rg_edge_filter_12.value <= field_combo.isp_config.edge_filter_12_cfg.rg_edge_filter_12.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_12_cfg.rg_edge_filter_12.value = field_storage.isp_config.edge_filter_12_cfg.rg_edge_filter_12.value;
+    // Field: regmap.isp_config.edge_filter_13_cfg.rg_edge_filter_13
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_13_cfg.rg_edge_filter_13.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_13_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_13_cfg.rg_edge_filter_13.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_13_cfg.rg_edge_filter_13.next = next_c;
+        field_combo.isp_config.edge_filter_13_cfg.rg_edge_filter_13.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_13_cfg.rg_edge_filter_13.value <= 5'h0;
+        end else if(field_combo.isp_config.edge_filter_13_cfg.rg_edge_filter_13.load_next) begin
+            field_storage.isp_config.edge_filter_13_cfg.rg_edge_filter_13.value <= field_combo.isp_config.edge_filter_13_cfg.rg_edge_filter_13.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_13_cfg.rg_edge_filter_13.value = field_storage.isp_config.edge_filter_13_cfg.rg_edge_filter_13.value;
+    // Field: regmap.isp_config.edge_filter_14_cfg.rg_edge_filter_14
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_14_cfg.rg_edge_filter_14.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_14_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_14_cfg.rg_edge_filter_14.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_14_cfg.rg_edge_filter_14.next = next_c;
+        field_combo.isp_config.edge_filter_14_cfg.rg_edge_filter_14.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_14_cfg.rg_edge_filter_14.value <= 5'h1f;
+        end else if(field_combo.isp_config.edge_filter_14_cfg.rg_edge_filter_14.load_next) begin
+            field_storage.isp_config.edge_filter_14_cfg.rg_edge_filter_14.value <= field_combo.isp_config.edge_filter_14_cfg.rg_edge_filter_14.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_14_cfg.rg_edge_filter_14.value = field_storage.isp_config.edge_filter_14_cfg.rg_edge_filter_14.value;
+    // Field: regmap.isp_config.edge_filter_20_cfg.rg_edge_filter_20
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_20_cfg.rg_edge_filter_20.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_20_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_20_cfg.rg_edge_filter_20.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_20_cfg.rg_edge_filter_20.next = next_c;
+        field_combo.isp_config.edge_filter_20_cfg.rg_edge_filter_20.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_20_cfg.rg_edge_filter_20.value <= 5'h1f;
+        end else if(field_combo.isp_config.edge_filter_20_cfg.rg_edge_filter_20.load_next) begin
+            field_storage.isp_config.edge_filter_20_cfg.rg_edge_filter_20.value <= field_combo.isp_config.edge_filter_20_cfg.rg_edge_filter_20.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_20_cfg.rg_edge_filter_20.value = field_storage.isp_config.edge_filter_20_cfg.rg_edge_filter_20.value;
+    // Field: regmap.isp_config.edge_filter_21_cfg.rg_edge_filter_21
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_21_cfg.rg_edge_filter_21.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_21_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_21_cfg.rg_edge_filter_21.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_21_cfg.rg_edge_filter_21.next = next_c;
+        field_combo.isp_config.edge_filter_21_cfg.rg_edge_filter_21.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_21_cfg.rg_edge_filter_21.value <= 5'h0;
+        end else if(field_combo.isp_config.edge_filter_21_cfg.rg_edge_filter_21.load_next) begin
+            field_storage.isp_config.edge_filter_21_cfg.rg_edge_filter_21.value <= field_combo.isp_config.edge_filter_21_cfg.rg_edge_filter_21.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_21_cfg.rg_edge_filter_21.value = field_storage.isp_config.edge_filter_21_cfg.rg_edge_filter_21.value;
+    // Field: regmap.isp_config.edge_filter_22_cfg.rg_edge_filter_22
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_22_cfg.rg_edge_filter_22.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_22_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_22_cfg.rg_edge_filter_22.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_22_cfg.rg_edge_filter_22.next = next_c;
+        field_combo.isp_config.edge_filter_22_cfg.rg_edge_filter_22.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_22_cfg.rg_edge_filter_22.value <= 5'h1f;
+        end else if(field_combo.isp_config.edge_filter_22_cfg.rg_edge_filter_22.load_next) begin
+            field_storage.isp_config.edge_filter_22_cfg.rg_edge_filter_22.value <= field_combo.isp_config.edge_filter_22_cfg.rg_edge_filter_22.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_22_cfg.rg_edge_filter_22.value = field_storage.isp_config.edge_filter_22_cfg.rg_edge_filter_22.value;
+    // Field: regmap.isp_config.edge_filter_23_cfg.rg_edge_filter_23
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_23_cfg.rg_edge_filter_23.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_23_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_23_cfg.rg_edge_filter_23.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_23_cfg.rg_edge_filter_23.next = next_c;
+        field_combo.isp_config.edge_filter_23_cfg.rg_edge_filter_23.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_23_cfg.rg_edge_filter_23.value <= 5'h0;
+        end else if(field_combo.isp_config.edge_filter_23_cfg.rg_edge_filter_23.load_next) begin
+            field_storage.isp_config.edge_filter_23_cfg.rg_edge_filter_23.value <= field_combo.isp_config.edge_filter_23_cfg.rg_edge_filter_23.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_23_cfg.rg_edge_filter_23.value = field_storage.isp_config.edge_filter_23_cfg.rg_edge_filter_23.value;
+    // Field: regmap.isp_config.edge_filter_24_cfg.rg_edge_filter_24
+    always_comb begin
+        automatic logic [4:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.edge_filter_24_cfg.rg_edge_filter_24.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.edge_filter_24_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.edge_filter_24_cfg.rg_edge_filter_24.value & ~decoded_wr_biten[4:0]) | (decoded_wr_data[4:0] & decoded_wr_biten[4:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.edge_filter_24_cfg.rg_edge_filter_24.next = next_c;
+        field_combo.isp_config.edge_filter_24_cfg.rg_edge_filter_24.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.edge_filter_24_cfg.rg_edge_filter_24.value <= 5'h1f;
+        end else if(field_combo.isp_config.edge_filter_24_cfg.rg_edge_filter_24.load_next) begin
+            field_storage.isp_config.edge_filter_24_cfg.rg_edge_filter_24.value <= field_combo.isp_config.edge_filter_24_cfg.rg_edge_filter_24.next;
+        end
+    end
+    assign hwif_out.isp_config.edge_filter_24_cfg.rg_edge_filter_24.value = field_storage.isp_config.edge_filter_24_cfg.rg_edge_filter_24.value;
+    // Field: regmap.isp_config.eeh_gain_0_cfg.rg_eeh_gain_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.eeh_gain_0_cfg.rg_eeh_gain_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.eeh_gain_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.eeh_gain_0_cfg.rg_eeh_gain_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.eeh_gain_0_cfg.rg_eeh_gain_0.next = next_c;
+        field_combo.isp_config.eeh_gain_0_cfg.rg_eeh_gain_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.eeh_gain_0_cfg.rg_eeh_gain_0.value <= 16'h20;
+        end else if(field_combo.isp_config.eeh_gain_0_cfg.rg_eeh_gain_0.load_next) begin
+            field_storage.isp_config.eeh_gain_0_cfg.rg_eeh_gain_0.value <= field_combo.isp_config.eeh_gain_0_cfg.rg_eeh_gain_0.next;
+        end
+    end
+    assign hwif_out.isp_config.eeh_gain_0_cfg.rg_eeh_gain_0.value = field_storage.isp_config.eeh_gain_0_cfg.rg_eeh_gain_0.value;
+    // Field: regmap.isp_config.eeh_gain_1_cfg.rg_eeh_gain_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.eeh_gain_1_cfg.rg_eeh_gain_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.eeh_gain_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.eeh_gain_1_cfg.rg_eeh_gain_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.eeh_gain_1_cfg.rg_eeh_gain_1.next = next_c;
+        field_combo.isp_config.eeh_gain_1_cfg.rg_eeh_gain_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.eeh_gain_1_cfg.rg_eeh_gain_1.value <= 16'h80;
+        end else if(field_combo.isp_config.eeh_gain_1_cfg.rg_eeh_gain_1.load_next) begin
+            field_storage.isp_config.eeh_gain_1_cfg.rg_eeh_gain_1.value <= field_combo.isp_config.eeh_gain_1_cfg.rg_eeh_gain_1.next;
+        end
+    end
+    assign hwif_out.isp_config.eeh_gain_1_cfg.rg_eeh_gain_1.value = field_storage.isp_config.eeh_gain_1_cfg.rg_eeh_gain_1.value;
+    // Field: regmap.isp_config.eeh_rthres_0_cfg.rg_eeh_rthres_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.eeh_rthres_0_cfg.rg_eeh_rthres_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.eeh_rthres_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.eeh_rthres_0_cfg.rg_eeh_rthres_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.eeh_rthres_0_cfg.rg_eeh_rthres_0.next = next_c;
+        field_combo.isp_config.eeh_rthres_0_cfg.rg_eeh_rthres_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.eeh_rthres_0_cfg.rg_eeh_rthres_0.value <= 16'h20;
+        end else if(field_combo.isp_config.eeh_rthres_0_cfg.rg_eeh_rthres_0.load_next) begin
+            field_storage.isp_config.eeh_rthres_0_cfg.rg_eeh_rthres_0.value <= field_combo.isp_config.eeh_rthres_0_cfg.rg_eeh_rthres_0.next;
+        end
+    end
+    assign hwif_out.isp_config.eeh_rthres_0_cfg.rg_eeh_rthres_0.value = field_storage.isp_config.eeh_rthres_0_cfg.rg_eeh_rthres_0.value;
+    // Field: regmap.isp_config.eeh_rthres_1_cfg.rg_eeh_rthres_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.eeh_rthres_1_cfg.rg_eeh_rthres_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.eeh_rthres_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.eeh_rthres_1_cfg.rg_eeh_rthres_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.eeh_rthres_1_cfg.rg_eeh_rthres_1.next = next_c;
+        field_combo.isp_config.eeh_rthres_1_cfg.rg_eeh_rthres_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.eeh_rthres_1_cfg.rg_eeh_rthres_1.value <= 16'h40;
+        end else if(field_combo.isp_config.eeh_rthres_1_cfg.rg_eeh_rthres_1.load_next) begin
+            field_storage.isp_config.eeh_rthres_1_cfg.rg_eeh_rthres_1.value <= field_combo.isp_config.eeh_rthres_1_cfg.rg_eeh_rthres_1.next;
+        end
+    end
+    assign hwif_out.isp_config.eeh_rthres_1_cfg.rg_eeh_rthres_1.value = field_storage.isp_config.eeh_rthres_1_cfg.rg_eeh_rthres_1.value;
+    // Field: regmap.isp_config.eeh_emclip_0_cfg.rg_eeh_emclip_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.eeh_emclip_0_cfg.rg_eeh_emclip_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.eeh_emclip_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.eeh_emclip_0_cfg.rg_eeh_emclip_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.eeh_emclip_0_cfg.rg_eeh_emclip_0.next = next_c;
+        field_combo.isp_config.eeh_emclip_0_cfg.rg_eeh_emclip_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.eeh_emclip_0_cfg.rg_eeh_emclip_0.value <= 16'h20;
+        end else if(field_combo.isp_config.eeh_emclip_0_cfg.rg_eeh_emclip_0.load_next) begin
+            field_storage.isp_config.eeh_emclip_0_cfg.rg_eeh_emclip_0.value <= field_combo.isp_config.eeh_emclip_0_cfg.rg_eeh_emclip_0.next;
+        end
+    end
+    assign hwif_out.isp_config.eeh_emclip_0_cfg.rg_eeh_emclip_0.value = field_storage.isp_config.eeh_emclip_0_cfg.rg_eeh_emclip_0.value;
+    // Field: regmap.isp_config.eeh_emclip_1_cfg.rg_eeh_emclip_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.eeh_emclip_1_cfg.rg_eeh_emclip_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.eeh_emclip_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.eeh_emclip_1_cfg.rg_eeh_emclip_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.eeh_emclip_1_cfg.rg_eeh_emclip_1.next = next_c;
+        field_combo.isp_config.eeh_emclip_1_cfg.rg_eeh_emclip_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.eeh_emclip_1_cfg.rg_eeh_emclip_1.value <= 16'hffc0;
+        end else if(field_combo.isp_config.eeh_emclip_1_cfg.rg_eeh_emclip_1.load_next) begin
+            field_storage.isp_config.eeh_emclip_1_cfg.rg_eeh_emclip_1.value <= field_combo.isp_config.eeh_emclip_1_cfg.rg_eeh_emclip_1.next;
+        end
+    end
+    assign hwif_out.isp_config.eeh_emclip_1_cfg.rg_eeh_emclip_1.value = field_storage.isp_config.eeh_emclip_1_cfg.rg_eeh_emclip_1.value;
+    // Field: regmap.isp_config.bcc_brightness_cfg.rg_bcc_brightness
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bcc_brightness_cfg.rg_bcc_brightness.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bcc_brightness_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bcc_brightness_cfg.rg_bcc_brightness.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bcc_brightness_cfg.rg_bcc_brightness.next = next_c;
+        field_combo.isp_config.bcc_brightness_cfg.rg_bcc_brightness.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bcc_brightness_cfg.rg_bcc_brightness.value <= 16'ha;
+        end else if(field_combo.isp_config.bcc_brightness_cfg.rg_bcc_brightness.load_next) begin
+            field_storage.isp_config.bcc_brightness_cfg.rg_bcc_brightness.value <= field_combo.isp_config.bcc_brightness_cfg.rg_bcc_brightness.next;
+        end
+    end
+    assign hwif_out.isp_config.bcc_brightness_cfg.rg_bcc_brightness.value = field_storage.isp_config.bcc_brightness_cfg.rg_bcc_brightness.value;
+    // Field: regmap.isp_config.bcc_constrast_cfg.rg_bcc_constrast
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bcc_constrast_cfg.rg_bcc_constrast.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bcc_constrast_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bcc_constrast_cfg.rg_bcc_constrast.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bcc_constrast_cfg.rg_bcc_constrast.next = next_c;
+        field_combo.isp_config.bcc_constrast_cfg.rg_bcc_constrast.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bcc_constrast_cfg.rg_bcc_constrast.value <= 16'ha;
+        end else if(field_combo.isp_config.bcc_constrast_cfg.rg_bcc_constrast.load_next) begin
+            field_storage.isp_config.bcc_constrast_cfg.rg_bcc_constrast.value <= field_combo.isp_config.bcc_constrast_cfg.rg_bcc_constrast.next;
+        end
+    end
+    assign hwif_out.isp_config.bcc_constrast_cfg.rg_bcc_constrast.value = field_storage.isp_config.bcc_constrast_cfg.rg_bcc_constrast.value;
+    // Field: regmap.isp_config.bcc_clip_cfg.rg_bcc_clip
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.bcc_clip_cfg.rg_bcc_clip.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.bcc_clip_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.bcc_clip_cfg.rg_bcc_clip.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.bcc_clip_cfg.rg_bcc_clip.next = next_c;
+        field_combo.isp_config.bcc_clip_cfg.rg_bcc_clip.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.bcc_clip_cfg.rg_bcc_clip.value <= 16'hff;
+        end else if(field_combo.isp_config.bcc_clip_cfg.rg_bcc_clip.load_next) begin
+            field_storage.isp_config.bcc_clip_cfg.rg_bcc_clip.value <= field_combo.isp_config.bcc_clip_cfg.rg_bcc_clip.next;
+        end
+    end
+    assign hwif_out.isp_config.bcc_clip_cfg.rg_bcc_clip.value = field_storage.isp_config.bcc_clip_cfg.rg_bcc_clip.value;
+    // Field: regmap.isp_config.fcs_edge_0_cfg.rg_fcs_edge_0
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.fcs_edge_0_cfg.rg_fcs_edge_0.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.fcs_edge_0_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.fcs_edge_0_cfg.rg_fcs_edge_0.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.fcs_edge_0_cfg.rg_fcs_edge_0.next = next_c;
+        field_combo.isp_config.fcs_edge_0_cfg.rg_fcs_edge_0.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.fcs_edge_0_cfg.rg_fcs_edge_0.value <= 16'h20;
+        end else if(field_combo.isp_config.fcs_edge_0_cfg.rg_fcs_edge_0.load_next) begin
+            field_storage.isp_config.fcs_edge_0_cfg.rg_fcs_edge_0.value <= field_combo.isp_config.fcs_edge_0_cfg.rg_fcs_edge_0.next;
+        end
+    end
+    assign hwif_out.isp_config.fcs_edge_0_cfg.rg_fcs_edge_0.value = field_storage.isp_config.fcs_edge_0_cfg.rg_fcs_edge_0.value;
+    // Field: regmap.isp_config.fcs_edge_1_cfg.rg_fcs_edge_1
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.fcs_edge_1_cfg.rg_fcs_edge_1.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.fcs_edge_1_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.fcs_edge_1_cfg.rg_fcs_edge_1.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.fcs_edge_1_cfg.rg_fcs_edge_1.next = next_c;
+        field_combo.isp_config.fcs_edge_1_cfg.rg_fcs_edge_1.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.fcs_edge_1_cfg.rg_fcs_edge_1.value <= 16'h40;
+        end else if(field_combo.isp_config.fcs_edge_1_cfg.rg_fcs_edge_1.load_next) begin
+            field_storage.isp_config.fcs_edge_1_cfg.rg_fcs_edge_1.value <= field_combo.isp_config.fcs_edge_1_cfg.rg_fcs_edge_1.next;
+        end
+    end
+    assign hwif_out.isp_config.fcs_edge_1_cfg.rg_fcs_edge_1.value = field_storage.isp_config.fcs_edge_1_cfg.rg_fcs_edge_1.value;
+    // Field: regmap.isp_config.fcs_gain_cfg.rg_fcs_gain
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.fcs_gain_cfg.rg_fcs_gain.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.fcs_gain_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.fcs_gain_cfg.rg_fcs_gain.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.fcs_gain_cfg.rg_fcs_gain.next = next_c;
+        field_combo.isp_config.fcs_gain_cfg.rg_fcs_gain.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.fcs_gain_cfg.rg_fcs_gain.value <= 16'h20;
+        end else if(field_combo.isp_config.fcs_gain_cfg.rg_fcs_gain.load_next) begin
+            field_storage.isp_config.fcs_gain_cfg.rg_fcs_gain.value <= field_combo.isp_config.fcs_gain_cfg.rg_fcs_gain.next;
+        end
+    end
+    assign hwif_out.isp_config.fcs_gain_cfg.rg_fcs_gain.value = field_storage.isp_config.fcs_gain_cfg.rg_fcs_gain.value;
+    // Field: regmap.isp_config.fcs_intercept_cfg.rg_fcs_intercept
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.fcs_intercept_cfg.rg_fcs_intercept.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.fcs_intercept_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.fcs_intercept_cfg.rg_fcs_intercept.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.fcs_intercept_cfg.rg_fcs_intercept.next = next_c;
+        field_combo.isp_config.fcs_intercept_cfg.rg_fcs_intercept.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.fcs_intercept_cfg.rg_fcs_intercept.value <= 16'h2;
+        end else if(field_combo.isp_config.fcs_intercept_cfg.rg_fcs_intercept.load_next) begin
+            field_storage.isp_config.fcs_intercept_cfg.rg_fcs_intercept.value <= field_combo.isp_config.fcs_intercept_cfg.rg_fcs_intercept.next;
+        end
+    end
+    assign hwif_out.isp_config.fcs_intercept_cfg.rg_fcs_intercept.value = field_storage.isp_config.fcs_intercept_cfg.rg_fcs_intercept.value;
+    // Field: regmap.isp_config.fcs_slop_cfg.rg_fcs_slop
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.fcs_slop_cfg.rg_fcs_slop.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.fcs_slop_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.fcs_slop_cfg.rg_fcs_slop.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.fcs_slop_cfg.rg_fcs_slop.next = next_c;
+        field_combo.isp_config.fcs_slop_cfg.rg_fcs_slop.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.fcs_slop_cfg.rg_fcs_slop.value <= 16'h3;
+        end else if(field_combo.isp_config.fcs_slop_cfg.rg_fcs_slop.load_next) begin
+            field_storage.isp_config.fcs_slop_cfg.rg_fcs_slop.value <= field_combo.isp_config.fcs_slop_cfg.rg_fcs_slop.next;
+        end
+    end
+    assign hwif_out.isp_config.fcs_slop_cfg.rg_fcs_slop.value = field_storage.isp_config.fcs_slop_cfg.rg_fcs_slop.value;
+    // Field: regmap.isp_config.fcs_clip_cfg.rg_fcs_clip
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.fcs_clip_cfg.rg_fcs_clip.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.fcs_clip_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.fcs_clip_cfg.rg_fcs_clip.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.fcs_clip_cfg.rg_fcs_clip.next = next_c;
+        field_combo.isp_config.fcs_clip_cfg.rg_fcs_clip.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.fcs_clip_cfg.rg_fcs_clip.value <= 16'hff;
+        end else if(field_combo.isp_config.fcs_clip_cfg.rg_fcs_clip.load_next) begin
+            field_storage.isp_config.fcs_clip_cfg.rg_fcs_clip.value <= field_combo.isp_config.fcs_clip_cfg.rg_fcs_clip.next;
+        end
+    end
+    assign hwif_out.isp_config.fcs_clip_cfg.rg_fcs_clip.value = field_storage.isp_config.fcs_clip_cfg.rg_fcs_clip.value;
+    // Field: regmap.isp_config.hue_cos_cfg.rg_hue_cos
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.hue_cos_cfg.rg_hue_cos.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.hue_cos_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.hue_cos_cfg.rg_hue_cos.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.hue_cos_cfg.rg_hue_cos.next = next_c;
+        field_combo.isp_config.hue_cos_cfg.rg_hue_cos.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.hue_cos_cfg.rg_hue_cos.value <= 16'hff62;
+        end else if(field_combo.isp_config.hue_cos_cfg.rg_hue_cos.load_next) begin
+            field_storage.isp_config.hue_cos_cfg.rg_hue_cos.value <= field_combo.isp_config.hue_cos_cfg.rg_hue_cos.next;
+        end
+    end
+    assign hwif_out.isp_config.hue_cos_cfg.rg_hue_cos.value = field_storage.isp_config.hue_cos_cfg.rg_hue_cos.value;
+    // Field: regmap.isp_config.hue_sin_cfg.rg_hue_sin
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.hue_sin_cfg.rg_hue_sin.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.hue_sin_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.hue_sin_cfg.rg_hue_sin.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.hue_sin_cfg.rg_hue_sin.next = next_c;
+        field_combo.isp_config.hue_sin_cfg.rg_hue_sin.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.hue_sin_cfg.rg_hue_sin.value <= 16'hca;
+        end else if(field_combo.isp_config.hue_sin_cfg.rg_hue_sin.load_next) begin
+            field_storage.isp_config.hue_sin_cfg.rg_hue_sin.value <= field_combo.isp_config.hue_sin_cfg.rg_hue_sin.next;
+        end
+    end
+    assign hwif_out.isp_config.hue_sin_cfg.rg_hue_sin.value = field_storage.isp_config.hue_sin_cfg.rg_hue_sin.value;
+    // Field: regmap.isp_config.hsc_saturation_cfg.rg_hsc_saturation
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.hsc_saturation_cfg.rg_hsc_saturation.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.hsc_saturation_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.hsc_saturation_cfg.rg_hsc_saturation.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.hsc_saturation_cfg.rg_hsc_saturation.next = next_c;
+        field_combo.isp_config.hsc_saturation_cfg.rg_hsc_saturation.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.hsc_saturation_cfg.rg_hsc_saturation.value <= 16'h100;
+        end else if(field_combo.isp_config.hsc_saturation_cfg.rg_hsc_saturation.load_next) begin
+            field_storage.isp_config.hsc_saturation_cfg.rg_hsc_saturation.value <= field_combo.isp_config.hsc_saturation_cfg.rg_hsc_saturation.next;
+        end
+    end
+    assign hwif_out.isp_config.hsc_saturation_cfg.rg_hsc_saturation.value = field_storage.isp_config.hsc_saturation_cfg.rg_hsc_saturation.value;
+    // Field: regmap.isp_config.hsc_clip_cfg.rg_hsc_clip
+    always_comb begin
+        automatic logic [15:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.isp_config.hsc_clip_cfg.rg_hsc_clip.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.isp_config.hsc_clip_cfg && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.isp_config.hsc_clip_cfg.rg_hsc_clip.value & ~decoded_wr_biten[15:0]) | (decoded_wr_data[15:0] & decoded_wr_biten[15:0]);
+            load_next_c = '1;
+        end
+        field_combo.isp_config.hsc_clip_cfg.rg_hsc_clip.next = next_c;
+        field_combo.isp_config.hsc_clip_cfg.rg_hsc_clip.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.isp_config.hsc_clip_cfg.rg_hsc_clip.value <= 16'hff;
+        end else if(field_combo.isp_config.hsc_clip_cfg.rg_hsc_clip.load_next) begin
+            field_storage.isp_config.hsc_clip_cfg.rg_hsc_clip.value <= field_combo.isp_config.hsc_clip_cfg.rg_hsc_clip.next;
+        end
+    end
+    assign hwif_out.isp_config.hsc_clip_cfg.rg_hsc_clip.value = field_storage.isp_config.hsc_clip_cfg.rg_hsc_clip.value;
 
     //--------------------------------------------------------------------------
     // Write response
@@ -798,7 +3960,7 @@ module regmap (
     logic [15:0] readback_data;
 
     // Assign readback values to a flattened array
-    logic [15:0] readback_array[20];
+    logic [15:0] readback_array[113];
     assign readback_array[0][15:0] = (decoded_reg_strb.isp_config.isp_enable_cfg && !decoded_req_is_wr) ? field_storage.isp_config.isp_enable_cfg.rg_isp_enable.value : '0;
     assign readback_array[1][1:0] = (decoded_reg_strb.isp_config.bayer_pattern_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bayer_pattern_cfg.rg_bayer_pattern.value : '0;
     assign readback_array[1][15:2] = '0;
@@ -820,6 +3982,114 @@ module regmap (
     assign readback_array[17][15:0] = (decoded_reg_strb.isp_config.cnf_gain_3_cfg && !decoded_req_is_wr) ? field_storage.isp_config.cnf_gain_3_cfg.rg_cnf_gain_3.value : '0;
     assign readback_array[18][15:0] = (decoded_reg_strb.isp_config.cnf_clip_cfg && !decoded_req_is_wr) ? field_storage.isp_config.cnf_clip_cfg.rg_cnf_clip.value : '0;
     assign readback_array[19][15:0] = (decoded_reg_strb.isp_config.cnf_thres_cfg && !decoded_req_is_wr) ? field_storage.isp_config.cnf_thres_cfg.rg_cnf_thres.value : '0;
+    assign readback_array[20][15:0] = (decoded_reg_strb.isp_config.cfa_clip_cfg && !decoded_req_is_wr) ? field_storage.isp_config.cfa_clip_cfg.rg_cfa_clip.value : '0;
+    assign readback_array[21][15:0] = (decoded_reg_strb.isp_config.ccm_coef_r_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.ccm_coef_r_0_cfg.rg_ccm_coef_r_0.value : '0;
+    assign readback_array[22][15:0] = (decoded_reg_strb.isp_config.ccm_coef_r_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.ccm_coef_r_1_cfg.rg_ccm_coef_r_1.value : '0;
+    assign readback_array[23][15:0] = (decoded_reg_strb.isp_config.ccm_coef_r_2_cfg && !decoded_req_is_wr) ? field_storage.isp_config.ccm_coef_r_2_cfg.rg_ccm_coef_r_2.value : '0;
+    assign readback_array[24][15:0] = (decoded_reg_strb.isp_config.ccm_coef_r_3_cfg && !decoded_req_is_wr) ? field_storage.isp_config.ccm_coef_r_3_cfg.rg_ccm_coef_r_3.value : '0;
+    assign readback_array[25][15:0] = (decoded_reg_strb.isp_config.ccm_coef_g_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.ccm_coef_g_0_cfg.rg_ccm_coef_g_0.value : '0;
+    assign readback_array[26][15:0] = (decoded_reg_strb.isp_config.ccm_coef_g_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.ccm_coef_g_1_cfg.rg_ccm_coef_g_1.value : '0;
+    assign readback_array[27][15:0] = (decoded_reg_strb.isp_config.ccm_coef_g_2_cfg && !decoded_req_is_wr) ? field_storage.isp_config.ccm_coef_g_2_cfg.rg_ccm_coef_g_2.value : '0;
+    assign readback_array[28][15:0] = (decoded_reg_strb.isp_config.ccm_coef_g_3_cfg && !decoded_req_is_wr) ? field_storage.isp_config.ccm_coef_g_3_cfg.rg_ccm_coef_g_3.value : '0;
+    assign readback_array[29][15:0] = (decoded_reg_strb.isp_config.ccm_coef_b_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.ccm_coef_b_0_cfg.rg_ccm_coef_b_0.value : '0;
+    assign readback_array[30][15:0] = (decoded_reg_strb.isp_config.ccm_coef_b_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.ccm_coef_b_1_cfg.rg_ccm_coef_b_1.value : '0;
+    assign readback_array[31][15:0] = (decoded_reg_strb.isp_config.ccm_coef_b_2_cfg && !decoded_req_is_wr) ? field_storage.isp_config.ccm_coef_b_2_cfg.rg_ccm_coef_b_2.value : '0;
+    assign readback_array[32][15:0] = (decoded_reg_strb.isp_config.ccm_coef_b_3_cfg && !decoded_req_is_wr) ? field_storage.isp_config.ccm_coef_b_3_cfg.rg_ccm_coef_b_3.value : '0;
+    assign readback_array[33][15:0] = (decoded_reg_strb.isp_config.csc_coef_r_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.csc_coef_r_0_cfg.rg_csc_coef_r_0.value : '0;
+    assign readback_array[34][15:0] = (decoded_reg_strb.isp_config.csc_coef_r_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.csc_coef_r_1_cfg.rg_csc_coef_r_1.value : '0;
+    assign readback_array[35][15:0] = (decoded_reg_strb.isp_config.csc_coef_r_2_cfg && !decoded_req_is_wr) ? field_storage.isp_config.csc_coef_r_2_cfg.rg_csc_coef_r_2.value : '0;
+    assign readback_array[36][15:0] = (decoded_reg_strb.isp_config.csc_coef_r_3_cfg && !decoded_req_is_wr) ? field_storage.isp_config.csc_coef_r_3_cfg.rg_csc_coef_r_3.value : '0;
+    assign readback_array[37][15:0] = (decoded_reg_strb.isp_config.csc_coef_g_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.csc_coef_g_0_cfg.rg_csc_coef_g_0.value : '0;
+    assign readback_array[38][15:0] = (decoded_reg_strb.isp_config.csc_coef_g_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.csc_coef_g_1_cfg.rg_csc_coef_g_1.value : '0;
+    assign readback_array[39][15:0] = (decoded_reg_strb.isp_config.csc_coef_g_2_cfg && !decoded_req_is_wr) ? field_storage.isp_config.csc_coef_g_2_cfg.rg_csc_coef_g_2.value : '0;
+    assign readback_array[40][15:0] = (decoded_reg_strb.isp_config.csc_coef_g_3_cfg && !decoded_req_is_wr) ? field_storage.isp_config.csc_coef_g_3_cfg.rg_csc_coef_g_3.value : '0;
+    assign readback_array[41][15:0] = (decoded_reg_strb.isp_config.csc_coef_b_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.csc_coef_b_0_cfg.rg_csc_coef_b_0.value : '0;
+    assign readback_array[42][15:0] = (decoded_reg_strb.isp_config.csc_coef_b_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.csc_coef_b_1_cfg.rg_csc_coef_b_1.value : '0;
+    assign readback_array[43][15:0] = (decoded_reg_strb.isp_config.csc_coef_b_2_cfg && !decoded_req_is_wr) ? field_storage.isp_config.csc_coef_b_2_cfg.rg_csc_coef_b_2.value : '0;
+    assign readback_array[44][15:0] = (decoded_reg_strb.isp_config.csc_coef_b_3_cfg && !decoded_req_is_wr) ? field_storage.isp_config.csc_coef_b_3_cfg.rg_csc_coef_b_3.value : '0;
+    assign readback_array[45][15:0] = (decoded_reg_strb.isp_config.nlm_clip_cfg && !decoded_req_is_wr) ? field_storage.isp_config.nlm_clip_cfg.rg_nlm_clip.value : '0;
+    assign readback_array[46][15:0] = (decoded_reg_strb.isp_config.bnf_dw_00_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_00_cfg.rg_bnf_dw_00.value : '0;
+    assign readback_array[47][15:0] = (decoded_reg_strb.isp_config.bnf_dw_01_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_01_cfg.rg_bnf_dw_01.value : '0;
+    assign readback_array[48][15:0] = (decoded_reg_strb.isp_config.bnf_dw_02_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_02_cfg.rg_bnf_dw_02.value : '0;
+    assign readback_array[49][15:0] = (decoded_reg_strb.isp_config.bnf_dw_03_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_03_cfg.rg_bnf_dw_03.value : '0;
+    assign readback_array[50][15:0] = (decoded_reg_strb.isp_config.bnf_dw_04_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_04_cfg.rg_bnf_dw_04.value : '0;
+    assign readback_array[51][15:0] = (decoded_reg_strb.isp_config.bnf_dw_10_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_10_cfg.rg_bnf_dw_10.value : '0;
+    assign readback_array[52][15:0] = (decoded_reg_strb.isp_config.bnf_dw_11_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_11_cfg.rg_bnf_dw_11.value : '0;
+    assign readback_array[53][15:0] = (decoded_reg_strb.isp_config.bnf_dw_12_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_12_cfg.rg_bnf_dw_12.value : '0;
+    assign readback_array[54][15:0] = (decoded_reg_strb.isp_config.bnf_dw_13_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_13_cfg.rg_bnf_dw_13.value : '0;
+    assign readback_array[55][15:0] = (decoded_reg_strb.isp_config.bnf_dw_14_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_14_cfg.rg_bnf_dw_14.value : '0;
+    assign readback_array[56][15:0] = (decoded_reg_strb.isp_config.bnf_dw_20_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_20_cfg.rg_bnf_dw_20.value : '0;
+    assign readback_array[57][15:0] = (decoded_reg_strb.isp_config.bnf_dw_21_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_21_cfg.rg_bnf_dw_21.value : '0;
+    assign readback_array[58][15:0] = (decoded_reg_strb.isp_config.bnf_dw_22_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_22_cfg.rg_bnf_dw_22.value : '0;
+    assign readback_array[59][15:0] = (decoded_reg_strb.isp_config.bnf_dw_23_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_23_cfg.rg_bnf_dw_23.value : '0;
+    assign readback_array[60][15:0] = (decoded_reg_strb.isp_config.bnf_dw_24_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_24_cfg.rg_bnf_dw_24.value : '0;
+    assign readback_array[61][15:0] = (decoded_reg_strb.isp_config.bnf_dw_30_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_30_cfg.rg_bnf_dw_30.value : '0;
+    assign readback_array[62][15:0] = (decoded_reg_strb.isp_config.bnf_dw_31_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_31_cfg.rg_bnf_dw_31.value : '0;
+    assign readback_array[63][15:0] = (decoded_reg_strb.isp_config.bnf_dw_32_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_32_cfg.rg_bnf_dw_32.value : '0;
+    assign readback_array[64][15:0] = (decoded_reg_strb.isp_config.bnf_dw_33_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_33_cfg.rg_bnf_dw_33.value : '0;
+    assign readback_array[65][15:0] = (decoded_reg_strb.isp_config.bnf_dw_34_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_34_cfg.rg_bnf_dw_34.value : '0;
+    assign readback_array[66][15:0] = (decoded_reg_strb.isp_config.bnf_dw_40_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_40_cfg.rg_bnf_dw_40.value : '0;
+    assign readback_array[67][15:0] = (decoded_reg_strb.isp_config.bnf_dw_41_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_41_cfg.rg_bnf_dw_41.value : '0;
+    assign readback_array[68][15:0] = (decoded_reg_strb.isp_config.bnf_dw_42_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_42_cfg.rg_bnf_dw_42.value : '0;
+    assign readback_array[69][15:0] = (decoded_reg_strb.isp_config.bnf_dw_43_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_43_cfg.rg_bnf_dw_43.value : '0;
+    assign readback_array[70][15:0] = (decoded_reg_strb.isp_config.bnf_dw_44_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_dw_44_cfg.rg_bnf_dw_44.value : '0;
+    assign readback_array[71][15:0] = (decoded_reg_strb.isp_config.bnf_rw_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_rw_0_cfg.rg_bnf_rw_0.value : '0;
+    assign readback_array[72][15:0] = (decoded_reg_strb.isp_config.bnf_rw_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_rw_1_cfg.rg_bnf_rw_1.value : '0;
+    assign readback_array[73][15:0] = (decoded_reg_strb.isp_config.bnf_rw_2_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_rw_2_cfg.rg_bnf_rw_2.value : '0;
+    assign readback_array[74][15:0] = (decoded_reg_strb.isp_config.bnf_rw_3_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_rw_3_cfg.rg_bnf_rw_3.value : '0;
+    assign readback_array[75][15:0] = (decoded_reg_strb.isp_config.bnf_rthres_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_rthres_0_cfg.rg_bnf_rthres_0.value : '0;
+    assign readback_array[76][15:0] = (decoded_reg_strb.isp_config.bnf_rthres_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_rthres_1_cfg.rg_bnf_rthres_1.value : '0;
+    assign readback_array[77][15:0] = (decoded_reg_strb.isp_config.bnf_rthres_2_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_rthres_2_cfg.rg_bnf_rthres_2.value : '0;
+    assign readback_array[78][15:0] = (decoded_reg_strb.isp_config.bnf_clip_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bnf_clip_cfg.rg_bnf_clip.value : '0;
+    assign readback_array[79][4:0] = (decoded_reg_strb.isp_config.edge_filter_00_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_00_cfg.rg_edge_filter_00.value : '0;
+    assign readback_array[79][15:5] = '0;
+    assign readback_array[80][4:0] = (decoded_reg_strb.isp_config.edge_filter_01_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_01_cfg.rg_edge_filter_01.value : '0;
+    assign readback_array[80][15:5] = '0;
+    assign readback_array[81][4:0] = (decoded_reg_strb.isp_config.edge_filter_02_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_02_cfg.rg_edge_filter_02.value : '0;
+    assign readback_array[81][15:5] = '0;
+    assign readback_array[82][4:0] = (decoded_reg_strb.isp_config.edge_filter_03_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_03_cfg.rg_edge_filter_03.value : '0;
+    assign readback_array[82][15:5] = '0;
+    assign readback_array[83][4:0] = (decoded_reg_strb.isp_config.edge_filter_04_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_04_cfg.rg_edge_filter_04.value : '0;
+    assign readback_array[83][15:5] = '0;
+    assign readback_array[84][4:0] = (decoded_reg_strb.isp_config.edge_filter_10_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_10_cfg.rg_edge_filter_10.value : '0;
+    assign readback_array[84][15:5] = '0;
+    assign readback_array[85][4:0] = (decoded_reg_strb.isp_config.edge_filter_11_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_11_cfg.rg_edge_filter_11.value : '0;
+    assign readback_array[85][15:5] = '0;
+    assign readback_array[86][4:0] = (decoded_reg_strb.isp_config.edge_filter_12_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_12_cfg.rg_edge_filter_12.value : '0;
+    assign readback_array[86][15:5] = '0;
+    assign readback_array[87][4:0] = (decoded_reg_strb.isp_config.edge_filter_13_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_13_cfg.rg_edge_filter_13.value : '0;
+    assign readback_array[87][15:5] = '0;
+    assign readback_array[88][4:0] = (decoded_reg_strb.isp_config.edge_filter_14_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_14_cfg.rg_edge_filter_14.value : '0;
+    assign readback_array[88][15:5] = '0;
+    assign readback_array[89][4:0] = (decoded_reg_strb.isp_config.edge_filter_20_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_20_cfg.rg_edge_filter_20.value : '0;
+    assign readback_array[89][15:5] = '0;
+    assign readback_array[90][4:0] = (decoded_reg_strb.isp_config.edge_filter_21_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_21_cfg.rg_edge_filter_21.value : '0;
+    assign readback_array[90][15:5] = '0;
+    assign readback_array[91][4:0] = (decoded_reg_strb.isp_config.edge_filter_22_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_22_cfg.rg_edge_filter_22.value : '0;
+    assign readback_array[91][15:5] = '0;
+    assign readback_array[92][4:0] = (decoded_reg_strb.isp_config.edge_filter_23_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_23_cfg.rg_edge_filter_23.value : '0;
+    assign readback_array[92][15:5] = '0;
+    assign readback_array[93][4:0] = (decoded_reg_strb.isp_config.edge_filter_24_cfg && !decoded_req_is_wr) ? field_storage.isp_config.edge_filter_24_cfg.rg_edge_filter_24.value : '0;
+    assign readback_array[93][15:5] = '0;
+    assign readback_array[94][15:0] = (decoded_reg_strb.isp_config.eeh_gain_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.eeh_gain_0_cfg.rg_eeh_gain_0.value : '0;
+    assign readback_array[95][15:0] = (decoded_reg_strb.isp_config.eeh_gain_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.eeh_gain_1_cfg.rg_eeh_gain_1.value : '0;
+    assign readback_array[96][15:0] = (decoded_reg_strb.isp_config.eeh_rthres_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.eeh_rthres_0_cfg.rg_eeh_rthres_0.value : '0;
+    assign readback_array[97][15:0] = (decoded_reg_strb.isp_config.eeh_rthres_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.eeh_rthres_1_cfg.rg_eeh_rthres_1.value : '0;
+    assign readback_array[98][15:0] = (decoded_reg_strb.isp_config.eeh_emclip_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.eeh_emclip_0_cfg.rg_eeh_emclip_0.value : '0;
+    assign readback_array[99][15:0] = (decoded_reg_strb.isp_config.eeh_emclip_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.eeh_emclip_1_cfg.rg_eeh_emclip_1.value : '0;
+    assign readback_array[100][15:0] = (decoded_reg_strb.isp_config.bcc_brightness_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bcc_brightness_cfg.rg_bcc_brightness.value : '0;
+    assign readback_array[101][15:0] = (decoded_reg_strb.isp_config.bcc_constrast_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bcc_constrast_cfg.rg_bcc_constrast.value : '0;
+    assign readback_array[102][15:0] = (decoded_reg_strb.isp_config.bcc_clip_cfg && !decoded_req_is_wr) ? field_storage.isp_config.bcc_clip_cfg.rg_bcc_clip.value : '0;
+    assign readback_array[103][15:0] = (decoded_reg_strb.isp_config.fcs_edge_0_cfg && !decoded_req_is_wr) ? field_storage.isp_config.fcs_edge_0_cfg.rg_fcs_edge_0.value : '0;
+    assign readback_array[104][15:0] = (decoded_reg_strb.isp_config.fcs_edge_1_cfg && !decoded_req_is_wr) ? field_storage.isp_config.fcs_edge_1_cfg.rg_fcs_edge_1.value : '0;
+    assign readback_array[105][15:0] = (decoded_reg_strb.isp_config.fcs_gain_cfg && !decoded_req_is_wr) ? field_storage.isp_config.fcs_gain_cfg.rg_fcs_gain.value : '0;
+    assign readback_array[106][15:0] = (decoded_reg_strb.isp_config.fcs_intercept_cfg && !decoded_req_is_wr) ? field_storage.isp_config.fcs_intercept_cfg.rg_fcs_intercept.value : '0;
+    assign readback_array[107][15:0] = (decoded_reg_strb.isp_config.fcs_slop_cfg && !decoded_req_is_wr) ? field_storage.isp_config.fcs_slop_cfg.rg_fcs_slop.value : '0;
+    assign readback_array[108][15:0] = (decoded_reg_strb.isp_config.fcs_clip_cfg && !decoded_req_is_wr) ? field_storage.isp_config.fcs_clip_cfg.rg_fcs_clip.value : '0;
+    assign readback_array[109][15:0] = (decoded_reg_strb.isp_config.hue_cos_cfg && !decoded_req_is_wr) ? field_storage.isp_config.hue_cos_cfg.rg_hue_cos.value : '0;
+    assign readback_array[110][15:0] = (decoded_reg_strb.isp_config.hue_sin_cfg && !decoded_req_is_wr) ? field_storage.isp_config.hue_sin_cfg.rg_hue_sin.value : '0;
+    assign readback_array[111][15:0] = (decoded_reg_strb.isp_config.hsc_saturation_cfg && !decoded_req_is_wr) ? field_storage.isp_config.hsc_saturation_cfg.rg_hsc_saturation.value : '0;
+    assign readback_array[112][15:0] = (decoded_reg_strb.isp_config.hsc_clip_cfg && !decoded_req_is_wr) ? field_storage.isp_config.hsc_clip_cfg.rg_hsc_clip.value : '0;
 
     // Reduce the array
     always_comb begin
@@ -827,7 +4097,7 @@ module regmap (
         readback_done = decoded_req & ~decoded_req_is_wr;
         readback_err = '0;
         readback_data_var = '0;
-        for(int i=0; i<20; i++) readback_data_var |= readback_array[i];
+        for(int i=0; i<113; i++) readback_data_var |= readback_array[i];
         readback_data = readback_data_var;
     end
 

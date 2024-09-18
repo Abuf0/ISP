@@ -326,6 +326,25 @@ assign rd_en = 0;
 assign wt_en = 0;
 assign pixel_data_update = 'd0;
 
+/*
+i2c_slave_top i2c_slave_top_inst(
+    input clk                       ,
+    input rstn                      ,
+    input scl_in                    ,
+    input sda_in                    ,
+    output logic sda_out            ,
+    input [5:0] rg_i2cs_id          ,
+    input rg_i2cs_id_en             ,
+    input i2cs_id0                  ,
+    input [15:0] reg_rdata          ,
+    output logic [15:0] reg_addr    ,
+    output logic [15:0] reg_wdata   ,
+    output logic reg_wr_en          ,
+    output logic reg_rd_en          ,
+    output logic cmd_reset_i2c      
+);
+*/
+
 isp_top #(
     .DW  (DW   ),
     .BW  (BW   ),
