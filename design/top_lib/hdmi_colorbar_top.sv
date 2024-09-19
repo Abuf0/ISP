@@ -51,6 +51,8 @@ logic          rst_pix_n;
 logic          clk_i2c;
 logic          rstn_i2c;
 logic          pixel_icg_enable;
+logic          pixel_clk_alon;
+logic          pixel_clk_5x_alon;
 
 logic          sda_oe;
 
@@ -128,7 +130,7 @@ logic            rg_pixel_ckgt_en     ;
 
 logic            s_cpuif_req          ;
 logic            s_cpuif_req_is_wr    ;
-logic [11:0]     s_cpuif_addr         ;
+logic [13:0]     s_cpuif_addr         ;
 logic [15:0]     s_cpuif_wr_data      ;
 logic [15:0]     s_cpuif_wr_biten     ;
 logic            s_cpuif_req_stall_wr ;
@@ -293,8 +295,6 @@ assign hsc_clip       = 255 ;
 //*****************************************************
 
 `ifdef FPGA
-logic pixel_clk_alon;
-logic pixel_clk_5x_alon;
 logic enable_latch;
 clk_wiz_0  clk_wiz_0(
     .clk_in1        (sys_clk),
@@ -321,6 +321,8 @@ crgu crgu_inst(
     .pixel_icg_en   (pixel_icg_enable   ),  // sys domain
     .clk_out1       (pixel_clk_5x       ),
     .clk_out2       (pixel_clk          ),
+    .clk_out1_alon  (pixel_clk_5x_alon  ),
+    .clk_out2_alon  (pixel_clk_alon     ),
     .clk_i2c        (clk_i2c            ),
     .rstn_out1      (rst_pix_n          ),
     .rstn_i2c       (rstn_i2c           )
@@ -443,7 +445,7 @@ assign s_cpuif_wr_biten = 2'b11;
 assign reg_rdata = s_cpuif_rd_data;
 
 i2c_slave_top i2c_slave_top_inst(
-    .clk             ( pixel_clk     ), 
+    .clk             ( pixel_clk_alon), 
     .rstn            ( rst_pix_n     ), 
     .scl_in          ( scl_in        ), 
     .sda_in          ( sda_in        ), 
@@ -460,7 +462,7 @@ i2c_slave_top i2c_slave_top_inst(
 );
 
 reg_top reg_top_inst(
-.clk                       ( pixel_clk_5x         ),  // or pixel_clk
+.clk                       ( pixel_clk_5x_alon    ),  // or pixel_clk
 .arst_n                    ( rst_pix_n            ),  
 .s_cpuif_req               ( s_cpuif_req          ),  
 .s_cpuif_req_is_wr         ( s_cpuif_req_is_wr    ),  

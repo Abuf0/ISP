@@ -3,7 +3,7 @@ input               clk                        ,
 input               arst_n                     ,
 input               s_cpuif_req                ,
 input               s_cpuif_req_is_wr          ,
-input [11:0]        s_cpuif_addr               ,
+input [13:0]        s_cpuif_addr               ,
 input [15:0]        s_cpuif_wr_data            ,
 input [15:0]        s_cpuif_wr_biten           ,
 output              s_cpuif_req_stall_wr       ,
@@ -28,18 +28,18 @@ output [16-1:0]     rg_cfa_clip                ,
 output [24-1:0]     rg_ccm_coef_r [0:3]        ,
 output [24-1:0]     rg_ccm_coef_g [0:3]        ,
 output [24-1:0]     rg_ccm_coef_b [0:3]        ,
-output [24-1:0]     rg_csc_coef_r [0:3]        ,
-output [24-1:0]     rg_csc_coef_g [0:3]        ,
-output [24-1:0]     rg_csc_coef_b [0:3]        ,
+output logic signed [24-1:0]     rg_csc_coef_r [0:3]        ,   // TODO for port connection error
+output logic signed [24-1:0]     rg_csc_coef_g [0:3]        ,   // TODO for port connection error
+output logic signed [24-1:0]     rg_csc_coef_b [0:3]        ,   // TODO for port connection error
 output [24-1:0]     rg_nlm_clip                ,
-output [24-1:0]     rg_bnf_24 [0:4][0:4]       ,   
+output [24-1:0]     rg_bnf_dw [0:4][0:4]       ,   
 output [24-1:0]     rg_bnf_rw [0:3]            ,     
 output [24-1:0]     rg_bnf_rthres [0:2]        ,   
 output [24-1:0]     rg_bnf_clip                ,         
-output [4:0]        rg_edge_filter [0:2][0:4]  ,
+output logic signed [4:0]        rg_edge_filter [0:2][0:4]  ,   // TODO for port connection error
 output [24-1:0]     rg_eeh_rthres [0:1]        ,      
 output [24-1:0]     rg_eeh_gain [0:1]          , 
-output [24:0]       rg_eeh_emclip [0:1]        ,      
+output logic signed [24:0]       rg_eeh_emclip [0:1]        ,   // TODO for port connection error      
 output [24-1:0]     rg_bcc_brightness          ,
 output [24-1:0]     rg_bcc_contrast            ,
 output [24-1:0]     rg_bcc_clip                ,
@@ -58,7 +58,7 @@ output              rg_pixel_ckgt_en
 );                             
 
 // Signal assignments between simple and structured signal
-regmap_pkg::regmap__in_t hwif_in;
+//regmap_pkg::regmap__in_t hwif_in;
 regmap_pkg::regmap__out_t hwif_out;
 
 assign rg_isp_enable          =   hwif_out.isp_config.isp_enable_cfg.rg_isp_enable.value[15:0]     ;   
@@ -195,7 +195,7 @@ regmap regmap_inst (
     .s_cpuif_rd_data           ( s_cpuif_rd_data      ),  
     .s_cpuif_wr_ack            ( s_cpuif_wr_ack       ),  
     .s_cpuif_wr_err            ( s_cpuif_wr_err       ),  
-    .hwif_in                   ( hwif_in              ),  
+    //.hwif_in                   ( hwif_in              ),  
     .hwif_out                  ( hwif_out             )
 );
 

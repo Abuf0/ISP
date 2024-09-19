@@ -37,13 +37,15 @@ logic dev_sel;  // TODO
 logic rw_flag;
 logic [2:0] bit_cnt;
 logic bit_en;
+logic byte_en;
 logic [1:0] byte_cnt;
 logic [6:0] addr;
 logic [7:0] shift_in;  
 logic [7:0] shift_out; 
-logic [1:0] addr_data_flag;
+logic       addr_data_flag;
 logic [7:0] wdata;  // MUX by 16biy-reg_wdata
 logic [7:0] rdata;  // NUX by 16bit-reg_rdata
+logic [15:0] reg_rdata_buff;
 
 // rst_i2c_n <extra>
 logic scl_in_inv;
@@ -149,6 +151,8 @@ always_ff @(posedge scl_in or negedge rst_i2c_n) begin // clock edge
 end
 
 assign bit_en = (state_cs==ADDR) || (state_cs==READ) || (state_cs==WRITE);
+assign byte_En = (state_cs==READ) || (state_cs==WRITE);
+
 always_ff@(posedge scl_in_inv or negedge rst_i2c_n) begin
     if(~rst_i2c_n)
         bit_cnt <= 3'd0;
@@ -161,16 +165,16 @@ end
 always_ff@(posedge scl_in_inv or negedge rst_i2c_n) begin
     if(~rst_i2c_n)
         byte_cnt <= 2'd0;
-    else if(~bit_en || i2c_restart || (byte_cnt==1 && bit_cnt==3'd7))
+    else if(i2c_restart || (byte_cnt==1 && bit_cnt==3'd7))
         byte_cnt <= 2'd0;
-    else
+    else if(byte_en && bit_cnt==3'd7)
         byte_cnt <= byte_cnt+1'b1;
 end
 
 always_ff@(posedge scl_in_inv or negedge rst_i2c_n) begin
     if(~rst_i2c_n)
         addr_data_flag <= 1'd0;
-    else if(~bit_en || i2c_restart)
+    else if(i2c_restart)
         addr_data_flag <= 1'd0;
     else if(byte_cnt==1 && bit_cnt==3'd7)
         addr_data_flag <= ~addr_data_flag;
@@ -194,10 +198,17 @@ always_ff @(posedge scl_in or negedge rst_i2c_n) begin // clock edge
         shift_out <= 'd0;
     //else if(state_cs==AACK && rw_flag)
     //    shift_out <= rdata;
-    else if(state_cs==READ && addr_data_flag && bit_cnt==0)
-        shift_out <= (byte_cnt==0)? reg_rdata[15:8] : reg_rdata[7:0];
+    else if(state_cs==RACK && addr_data_flag && bit_cnt==0)
+        shift_out <= (byte_cnt==0)? reg_rdata[15:8] : reg_rdata_buff[7:0];
     else if(state_cs==READ)
         shift_out <= {shift_out[6:0],1'b0};
+end
+
+always_ff @(posedge scl_in or negedge rst_i2c_n) begin // clock edge
+    if(~rst_i2c_n) 
+        reg_rdata_buff <= 'd0;
+    else if(state_cs==RACK && addr_data_flag && bit_cnt==0)
+        reg_rdata_buff <= reg_rdata;
 end
 
 always_ff @(posedge scl_in or negedge rst_i2c_n) begin // clock edge
@@ -226,7 +237,7 @@ end
 always_ff @(posedge scl_in or negedge rst_i2c_n) begin // clock edge
     if(~rst_i2c_n)
         reg_wr_en <= 1'b0;
-    else if(state_cs==WRITE && ~addr_data_flag && byte_cnt==1 && bit_cnt==3'd7)
+    else if(state_cs==WRITE && addr_data_flag && byte_cnt==1 && bit_cnt==3'd7)
         reg_wr_en <= 1'b1;
     else 
         reg_wr_en <= 1'b0;

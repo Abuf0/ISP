@@ -25,8 +25,9 @@
 
 /ext3/home/wangyufei/Projects/6-ISP/design/ip_crgu/crgu.sv
 /ext3/home/wangyufei/Projects/6-ISP/design/ip_i2c_slave/i2c_slave_top.sv
-/ext3/home/wangyufei/Projects/6-ISP/design/ip_reg_lib/rtl/reg_top.sv
+/ext3/home/wangyufei/Projects/6-ISP/design/ip_reg_lib/rtl/regmap_pkg.sv
 /ext3/home/wangyufei/Projects/6-ISP/design/ip_reg_lib/rtl/regmap.sv
+/ext3/home/wangyufei/Projects/6-ISP/design/ip_reg_lib/rtl/reg_top.sv
 
 /ext3/home/wangyufei/Projects/6-ISP/design/ip_common_lib/sync/asyn_rst_syn.sv
 /ext3/home/wangyufei/Projects/6-ISP/design/ip_common_lib/sync/sync_reset_n.sv
