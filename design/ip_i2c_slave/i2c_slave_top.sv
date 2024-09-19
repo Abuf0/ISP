@@ -151,7 +151,7 @@ always_ff @(posedge scl_in or negedge rst_i2c_n) begin // clock edge
 end
 
 assign bit_en = (state_cs==ADDR) || (state_cs==READ) || (state_cs==WRITE);
-assign byte_En = (state_cs==READ) || (state_cs==WRITE);
+assign byte_en = (state_cs==READ) || (state_cs==WRITE);
 
 always_ff@(posedge scl_in_inv or negedge rst_i2c_n) begin
     if(~rst_i2c_n)

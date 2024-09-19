@@ -86,7 +86,7 @@ end
 
 task i2c_start;
     input [6:0] i2cs_id;
-    logic rw_flag;
+    input rw_flag;
     scl_in = 1;
     sda_in = 1;
     #(I2C_PRD/4)    sda_in = 0;
