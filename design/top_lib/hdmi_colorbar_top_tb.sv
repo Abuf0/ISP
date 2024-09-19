@@ -50,10 +50,19 @@ hdmi_colorbar_top #(
     .tmds_data_n             ( tmds_data_n        )
 );
 
+logic [15:0] rdata;
 initial
 begin
     #(PERIOD*2) sys_rst_n  =  1;
-    repeat(100000) @(posedge sys_clk);
+    #(PERIOD*5)
+    i2c_start(6'ha);    // I2C slave id
+    i2c_read(16'h0000,rdata);   // read isp enable
+    i2c_read(16'h3000,rdata);   // read ckgt en
+    i2c_write(16'h0000,16'h0003);   // write isp enable
+    i2c_write(16'h3000,16'h0001);   // start ISP
+    i2c_read(16'h0000,rdata);   
+    i2c_read(16'h3000,rdata);
+    repeat(10000) @(posedge sys_clk);
     $finish(2);
 end
 
@@ -86,6 +95,7 @@ task i2c_start;
     #(I2C_PRD/2)    scl_in = 0;
     #(I2C_PRD/4)    sda_in = i2cs_id_h[0];
     #(I2C_PRD/4)    scl_in = 1;
+    $display("<I2C start>\ti2c slave id is %h",i2cs_id_h);
 endtask
 
 task i2c_stop;
@@ -93,6 +103,7 @@ task i2c_stop;
     #(I2C_PRD/4)    sda_in = 0;
     #(I2C_PRD/4)    scl_in = 1;
     #(I2C_PRD/4)    sda_in = 1;
+    $display("<I2C stop>");
 endtask
 
 task i2c_read;
@@ -104,8 +115,12 @@ task i2c_read;
         #(I2C_PRD/4)    sda_in = raddr[15-i];
         #(I2C_PRD/4)    scl_in = 1;
     end
-    
-
+    for (i=0; i<16; i=i+1)  begin
+        #(I2C_PRD/2)    scl_in = 0;
+        #(I2C_PRD/4)    rdata[15-i] = sda_out;
+        #(I2C_PRD/4)    scl_in = 1;
+    end    
+    $display("<I2C read>\t[%h]=%h",raddr,rdata);
 endtask
 
 task i2c_write;
@@ -122,6 +137,7 @@ task i2c_write;
         #(I2C_PRD/4)    sda_in = wdata[15-i];
         #(I2C_PRD/4)    scl_in = 1;
     end
+    $display("<I2C write>\t[%h]=%h",waddr,wdata);
 endtask
 
 endmodule
